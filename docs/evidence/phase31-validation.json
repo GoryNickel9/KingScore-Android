@@ -1,0 +1,190 @@
+{
+  "verified_on": "2026-10-13",
+  "phase": 3,
+  "version": "0.3.1",
+  "version_code": 3,
+  "scope": "Home, essential statistics, published general/game rankings and paginated ELO history; mandatory online authentication",
+  "build": {
+    "result": "BUILD SUCCESSFUL",
+    "tasks": [
+      "testDebugUnitTest",
+      "lintDebug",
+      "assembleDebug",
+      "assembleDebugAndroidTest"
+    ],
+    "local_jvm_workaround": "Ignored temporary javaagent described in PHASE2.md; not included in app or CI"
+  },
+  "jvm": {
+    "tests": 75,
+    "failures": 0,
+    "errors": 0,
+    "suites": [
+      {
+        "name": "app.kingscore.android.core.auth.SupabaseAuthRepositoryTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.RowDecodersTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabasePlaysRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseRatingsRepositoryTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseReaderTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseStatisticsRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.auth.AppViewModelTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.plays.PlaysViewModelTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.ratings.RatingsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.stats.StatisticsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 22
+  },
+  "instrumentation": {
+    "api": 31,
+    "device": "Dedicated AVD sdk_gphone64_x86_64",
+    "tests": 13,
+    "result": "OK (13 tests)",
+    "seconds": 94.011,
+    "output": "docs/evidence/phase31-instrumentation.txt",
+    "includes": [
+      "Existing access/Keystore/history/detail tests",
+      "Home/statistics/rankings/history navigation",
+      "Distinct wins/draws/losses counter regression",
+      "Null rating and unlinked player",
+      "Offline removes ranking and open ELO history"
+    ]
+  },
+  "pagination": {
+    "fixture_rows": 1051,
+    "page_size": 50,
+    "ordering": "Catalog/rating pages: unsigned UUID ASC; published ELO history: date DESC, unsigned UUID DESC",
+    "not_an_immutable_snapshot": true
+  },
+  "statistics": {
+    "method": "Complete paginated scan before publishing totals; IDs and aggregates retained",
+    "partial_failed_scan_is_not_a_total": true,
+    "durations": "Include zero; exclude null/negative; expose coverage",
+    "linked_account": "players.account_user_id",
+    "general_rating_owner": "Linked player user_id, falling back to account ID"
+  },
+  "backend_query_probes": [
+    {
+      "name": "profile_link",
+      "status": 200,
+      "limit": 0,
+      "returned_rows": 0,
+      "identity": "anon query syntax probe outside Android client"
+    },
+    {
+      "name": "game_catalog",
+      "status": 200,
+      "limit": 0,
+      "returned_rows": 0,
+      "identity": "anon query syntax probe outside Android client"
+    },
+    {
+      "name": "general_ratings_scope",
+      "status": 200,
+      "limit": 0,
+      "returned_rows": 0,
+      "identity": "anon query syntax probe outside Android client"
+    },
+    {
+      "name": "game_ratings",
+      "status": 200,
+      "limit": 0,
+      "returned_rows": 0,
+      "identity": "anon query syntax probe outside Android client"
+    },
+    {
+      "name": "rating_history_cursor",
+      "status": 200,
+      "limit": 0,
+      "returned_rows": 0,
+      "identity": "anon query syntax probe outside Android client"
+    }
+  ],
+  "node_evidence_tests": {
+    "tests": 10,
+    "failures": 0
+  },
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 20979195,
+    "sha256": "25f83d3341fde3addcadf6da9a84517a0ed611a6d9d7b93a475c313d5754153d",
+    "signing": "debug key"
+  },
+  "screenshots": [
+    "docs/evidence/phase31-dashboard.png",
+    "docs/evidence/phase31-statistics.png",
+    "docs/evidence/phase31-ratings.png"
+  ],
+  "screenshot_method": "Compose root capture, excluding system bars; synthetic fixtures only",
+  "review": {
+    "subagent": "backend_audit",
+    "p1_or_p2_findings_remaining": 0,
+    "corrected": "V/P/S counter order with distinct-value UI regression"
+  },
+  "ci_at_local_evidence_capture": {
+    "previous_verified_commit": "2d14b4fe81c0508186227dc0099cf07ce21264a9",
+    "previous_result": "success",
+    "previous_run": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38414918651",
+    "current_increment": "Run created after commit/push; consult Actions for its final result",
+    "workflow": "Node evidence, debug build, JVM tests, lint; no emulator instrumentation"
+  },
+  "not_verified": [
+    "Real account login/admin authorization and comparison with real group data",
+    "Physical phone, API minimum 26 and TalkBack",
+    "Large font/landscape for new overview screens (history/detail previously verified)",
+    "Mobile performance benchmarks",
+    "Remaining phase 3 search/filters, game/player detail and images"
+  ],
+  "remote_schema_or_data_mutated": false,
+  "emulator_note": "Only the dedicated headless emulator was used; stay-on restored and emulator stopped after checks"
+}

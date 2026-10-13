@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.kingscore.android.core.auth.AuthProblem
 import app.kingscore.android.data.repository.*
+import app.kingscore.android.ui.modelFactory
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -28,7 +29,7 @@ import kingscore.contracts.v1.*
 
 @Composable
 fun HistoryRoute(repository: PlaysRepository, onAccessFailure: (AuthProblem) -> Unit, onOpen: (UUID) -> Unit) {
-    val model: HistoryViewModel = viewModel(factory = factory { HistoryViewModel(repository, onAccessFailure) })
+    val model: HistoryViewModel = viewModel(factory = modelFactory { HistoryViewModel(repository, onAccessFailure) })
     val state by model.history.collectAsStateWithLifecycle()
     var filter by rememberSaveable { mutableStateOf("ALL") }
     val source = PlaySource.entries.firstOrNull { it.name == filter }
@@ -38,17 +39,10 @@ fun HistoryRoute(repository: PlaysRepository, onAccessFailure: (AuthProblem) -> 
 
 @Composable
 fun DetailRoute(repository: PlaysRepository, accountId: UUID, id: UUID, onAccessFailure: (AuthProblem) -> Unit, onBack: () -> Unit) {
-    val model: PlayDetailViewModel = viewModel(factory = factory { PlayDetailViewModel(repository, id, onAccessFailure) })
+    val model: PlayDetailViewModel = viewModel(factory = modelFactory { PlayDetailViewModel(repository, id, onAccessFailure) })
     val state by model.detail.collectAsStateWithLifecycle()
     LaunchedEffect(model) { if (model.detail.value.loading) model.refresh() }
     DetailScreen(state, accountId, model::refresh, model::moreComments, model::retryComments, onBack)
-}
-
-private fun <T : ViewModel> factory(create: () -> T) = object : ViewModelProvider.Factory {
-    override fun <V : ViewModel> create(modelClass: Class<V>): V {
-        @Suppress("UNCHECKED_CAST")
-        return create() as V
-    }
 }
 
 @Composable

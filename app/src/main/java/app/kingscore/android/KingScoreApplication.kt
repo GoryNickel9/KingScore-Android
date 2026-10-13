@@ -7,6 +7,10 @@ import app.kingscore.android.core.network.AndroidNetworkMonitor
 import app.kingscore.android.data.remote.SupabaseReader
 import app.kingscore.android.data.remote.SupabasePlaysRepository
 import app.kingscore.android.data.repository.PlaysRepository
+import app.kingscore.android.data.repository.RatingsRepository
+import app.kingscore.android.data.repository.StatisticsRepository
+import app.kingscore.android.data.remote.SupabaseRatingsRepository
+import app.kingscore.android.data.remote.SupabaseStatisticsRepository
 import java.util.UUID
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
@@ -23,6 +27,8 @@ class KingScoreApplication : Application() {
         private set
 
     fun plays(accountId: UUID): PlaysRepository = SupabasePlaysRepository(SupabaseReader(checkNotNull(auth), network), accountId)
+    fun ratings(accountId: UUID): RatingsRepository = SupabaseRatingsRepository(SupabaseReader(checkNotNull(auth), network), accountId)
+    fun statistics(accountId: UUID): StatisticsRepository = SupabaseStatisticsRepository(SupabaseReader(checkNotNull(auth), network), accountId, plays(accountId))
 
     override fun onCreate() {
         super.onCreate()

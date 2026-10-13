@@ -77,14 +77,28 @@ Il test di pagina successiva fallita verifica che il cursore resti quello preced
 
 I test Ktor verificano GET utente prima di ogni GET dati, Bearer utente, nessuna richiesta anonima o offline, account differente rifiutato, un solo refresh 401 e 403 senza logout. I risultati della suite e il checksum dell'APK 0.3.0 sono in [evidence/phase3-validation.json](evidence/phase3-validation.json). Le immagini salvate mostrano esclusivamente fixture sintetiche.
 
+## Risultati Home, statistiche ed ELO, build 0.3.1
+
+| Controllo eseguito | Esito | Ambito |
+| --- | --- | --- |
+| Test JVM completi | 75 superati, zero errori | Repository, cursori, metriche, scope proprietario e cancellazione delle risposte obsolete |
+| Archivi sintetici oltre 1.000 righe | 1.051 righe attraversate | Catalogo, classifiche e aggregati non troncati alla prima pagina |
+| Test Android API 31 | 13 superati | Navigazione, fixture pubblicate, profilo non collegato, rating null e blocco senza rete, oltre ai percorsi precedenti |
+| Test evidenze Node | 10 superati | Contratti e limiti del perimetro |
+| Probe Supabase limit=0 | Cinque HTTP 200, zero righe | Sintassi delle nuove letture; nessun account reale o mutazione |
+| Lint debug | Zero errori, 22 warning | Versioni fissate e suggerimenti KTX |
+
+Checksum APK, suite, runner Android e screenshot sono in [evidence/phase31-validation.json](evidence/phase31-validation.json). Le catture usano la radice Compose per mostrare l'app, senza dipendere dalla cattura delle barre di sistema. I dati dei test sono sintetici. Home carica soltanto la prima pagina; Statistiche pubblica i totali dopo una scansione completa. Le classifiche leggono valori backend, senza ricalcolo ELO.
+
+La CI esegue i controlli Node, build, test JVM e lint. Non esegue i test Android su emulatore. Il commit 2d14b4f ha superato la [pipeline](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38414918651); il run dell'incremento 0.3.1 viene creato al push e può essere verificato nella [pagina Actions](https://github.com/GoryNickel9/KingScore-Android/actions).
+
 ## Controlli ancora aperti
 
 1. Login con account reale ordinario/admin, revoca remota effettiva e riavvio del processo con sessione reale. Nessuna credenziale utente è stata usata nei test.
 2. Installazione e aggiornamento su telefono fisico, API minima 26, TalkBack e caratteri grandi. I risultati dell'emulatore API 31 non coprono questi dispositivi.
-3. Rieseguire la CI dopo la correzione SDK locale: la prima esecuzione del commit 5cdbb78 si è fermata nel setup sul pacchetto `tools` non disponibile, prima di compilare il codice.
-4. Nella fase 3: dashboard, statistiche, ELO in sola lettura e filtri aggiuntivi. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
+3. Nella fase 3: filtri aggiuntivi, dettagli dedicati gioco/giocatore e immagini. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
 
-Non sono stati eseguiti benchmark mobili. Home, Statistiche ed ELO rimangono segnaposto nella build 0.3.0; i test UI non certificano funzioni ancora assenti.
+Non sono stati eseguiti benchmark mobili. Home, Statistiche ed ELO sono implementate nell'incremento 0.3.1; la verifica con dati reali rimane aperta.
 
 ## Controlli prima delle scritture partite
 

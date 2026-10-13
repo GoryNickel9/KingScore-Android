@@ -1,6 +1,6 @@
 # Architettura KingScore Android
 
-Il client è un'app Kotlin con Jetpack Compose, in un solo modulo Gradle `app`, organizzato per funzionalità. Supabase resta il backend condiviso con il sito. La fase 2 implementa Auth, connessione e navigazione; la fase 3 aggiunge repository di storico, dettaglio e commenti in lettura. I contratti di fase 1 sono indipendenti da Android e vengono compilati anche nell'app.
+Il client è un'app Kotlin con Jetpack Compose, in un solo modulo Gradle `app`, organizzato per funzionalità. Supabase resta il backend condiviso con il sito. La fase 2 implementa Auth, connessione e navigazione; la fase 3 aggiunge Home, storico, dettaglio, commenti in lettura, statistiche e rating pubblicati. I contratti di fase 1 sono indipendenti da Android e vengono compilati anche nell'app.
 
 ## Flusso dati
 
@@ -15,6 +15,8 @@ La UI presenta dati e raccoglie azioni. Il ViewModel mantiene lo stato della sch
 | `feature/auth`, `feature/navigation` | Login obbligatorio, logout e destinazioni per ruolo |
 | `feature/dashboard`, `plays`, `ratings`, `stats` | Consultazione online e letture ELO |
 | `feature/comments`, `playeditor`, `profile` | Commenti propri, editor admin e profilo in lettura |
+
+Home legge soltanto la prima pagina e mostra le cinque partite più recenti. Statistiche attraversa l'archivio su richiesta, conserva aggregati e ID e pubblica un risultato soltanto dopo la lettura completa. Classifiche e cataloghi usano cursori ID; lo storico ELO usa data e ID. Le viste condividono SupabaseReader e la stessa barriera di accesso, senza nuove dipendenze.
 
 ## Stati dell'app
 

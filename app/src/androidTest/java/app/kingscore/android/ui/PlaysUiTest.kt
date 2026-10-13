@@ -1,6 +1,7 @@
 package app.kingscore.android.ui
 
 import android.graphics.Bitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -30,9 +31,10 @@ class PlaysUiTest {
         showApp()
         compose.onNodeWithText("Partite").performClick()
         compose.onNodeWithText("Azul").assertIsDisplayed()
+        val callsBeforePagination = repo.historyCalls
         compose.onNodeWithTag("history-content").performScrollToNode(hasTestTag("more-plays"))
         compose.onNodeWithTag("more-plays").performClick()
-        compose.waitUntil { repo.historyCalls == 2 }
+        compose.waitUntil { repo.historyCalls == callsBeforePagination + 1 }
         compose.onNodeWithTag("history-content").performScrollToIndex(0)
         compose.onNodeWithText("3 partite caricate", substring = true).assertExists()
         capture("phase3-history")
@@ -52,7 +54,7 @@ class PlaysUiTest {
         compose.onNodeWithContentDescription("Torna allo storico").performClick()
         compose.onNodeWithTag("history-content").performScrollToIndex(0)
         compose.onNodeWithText("3 partite caricate", substring = true).assertExists()
-        assertEquals(2, repo.historyCalls)
+        assertEquals(callsBeforePagination + 1, repo.historyCalls)
     }
 
     @Test fun disconnectRemovesDetailAndReconnectionReloadsWithoutCachedRows() {
@@ -119,7 +121,7 @@ class PlaysUiTest {
     private fun capture(name: String) {
         compose.waitForIdle()
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val screenshot = instrumentation.uiAutomation.takeScreenshot()
+        val screenshot = compose.onRoot().captureToImage().asAndroidBitmap()
         File(instrumentation.targetContext.filesDir, "$name.png").outputStream().use { screenshot.compress(Bitmap.CompressFormat.PNG, 100, it) }
         screenshot.recycle()
     }

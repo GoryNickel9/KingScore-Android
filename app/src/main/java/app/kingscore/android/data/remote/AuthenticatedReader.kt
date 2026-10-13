@@ -18,7 +18,7 @@ fun interface AuthenticatedReader {
 class SupabaseReader(private val auth: SupabaseAuthRepository, private val network: NetworkMonitor) : AuthenticatedReader {
     override suspend fun get(accountId: UUID, resource: String, parameters: List<Pair<String, String>>): String {
         checkNetwork()
-        require(resource in setOf("plays", "play_comments"))
+        require(resource in setOf("plays", "play_comments", "players", "games", "player_ratings", "player_general_ratings", "elo_history"))
         return auth.withVerifiedSession(accountId) { client, token ->
             checkNetwork()
             val response = client.httpClient.get("${client.supabaseHttpUrl}/rest/v1/$resource") {

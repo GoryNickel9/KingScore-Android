@@ -16,7 +16,7 @@ Il login è obbligatorio per tutte le schermate funzionali: l'app non offre acce
 
 ## Analisi dello stato attuale
 
-`KingScore-Android` contiene i contratti verificati della fase 1 e un APK nativo di anteprima della fase 2: login, sessione cifrata, navigazione e blocco senza Internet. Le schermate dati saranno implementate nella fase 3. `../King-Score` contiene una web app React, TypeScript e Vite, con Supabase Auth, PostgreSQL, Storage e una funzione per il ricalcolo ELO notturno. L'app Android può riutilizzare il backend; schermate e accesso ai dati devono essere implementati in Kotlin.
+`KingScore-Android` contiene i contratti verificati della fase 1, login e sessione cifrata della fase 2 e le prime schermate dati della fase 3. La build 0.3.1 comprende Home, storico, dettaglio partita, statistiche essenziali, classifiche e storico ELO. `../King-Score` contiene una web app React, TypeScript e Vite, con Supabase Auth, PostgreSQL, Storage e una funzione per il ricalcolo ELO notturno. L'app Android riusa il backend attraverso letture verificate online.
 
 Schema, grant, policy e funzioni sono stati verificati sul progetto Supabase collegato il 13 ottobre 2026, con probe SQL read-only e richieste HTTP senza dati applicativi. Il dettaglio dei risultati e dei controlli ancora necessari è in [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md).
 
@@ -94,7 +94,7 @@ Criterio di uscita: APK installabile su emulatore e telefono; login, logout, ses
 
 ### Stato della fase 2
 
-Implementazione completata: progetto nativo, Auth, sessione cifrata, controllo rete, navigazione, adattatori JSON e pipeline CI. APK debug installato su emulatore API 31. La verifica con un account reale e su un telefono fisico resta aperta; la CI è configurata ma non eseguita su GitHub. Home, Partite, Statistiche ed ELO sono segnaposto. Dettagli e risultati: [docs/PHASE2.md](docs/PHASE2.md).
+Implementazione completata: progetto nativo, Auth, sessione cifrata, controllo rete, navigazione, adattatori JSON e pipeline CI. APK debug installato su emulatore API 31. La verifica con un account reale e su un telefono fisico resta aperta. La CI ha superato i controlli sul commit 2d14b4f della fase 3; le schermate dati sono descritte nella sezione successiva. Dettagli della build iniziale: [docs/PHASE2.md](docs/PHASE2.md).
 ### Fase 3 Consultazione online
 
 1. Implementare storico paginato con ricerca e filtri, dettaglio partita, punteggi, vincitori, risultato cooperativo, note e commenti in lettura. Conservare la distinzione fra punteggio zero e assente.
@@ -108,7 +108,7 @@ Criterio di uscita: stesso risultato del web sulle fixture, nessun troncamento c
 
 ### Stato dello storico e dettaglio della fase 3
 
-Implementati pagine da 50 con cursori, filtro modalità, dettaglio, punteggi e commenti in lettura. Le richieste verificano l'utente online; perdita di accesso e cambio account cancellano ViewModel e righe. Home, Statistiche, ELO, ricerca e filtri aggiuntivi restano da implementare. Risultati e limiti: [docs/PHASE3.md](docs/PHASE3.md).
+Implementati pagine da 50 con cursori, filtro modalità, dettaglio, punteggi e commenti in lettura. Le richieste verificano l'utente online; perdita di accesso e cambio account cancellano ViewModel e righe. La build 0.3.1 aggiunge Home, statistiche essenziali, classifiche generali/per gioco e storico ELO in lettura. Ricerca, filtri aggiuntivi, dettagli dedicati gioco/giocatore e immagini restano da implementare. Risultati e limiti: [docs/PHASE3.md](docs/PHASE3.md).
 
 ### Fase 4 Commenti e scritture admin
 
@@ -161,8 +161,8 @@ Push, widget e funzionalità social aggiuntive richiedono un caso d'uso specific
 
 La ricognizione comprende routing, autenticazione, schema tipizzato, servizi dati, salvataggio partite, core ELO, import e migrazioni del repository web. Il codice backend è stato esaminato anche da un subagent in sola lettura. La fase 1 ha aggiunto catalogo remoto, confronto dei tipi, probe di permessi e contratti Kotlin: [docs/TESTING.md](docs/TESTING.md) contiene metodi e limiti.
 
-La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Keystore su emulatore API 31. I risultati sono in [docs/TESTING.md](docs/TESTING.md). Login con account reali, telefono fisico, CI su GitHub e scritture isolate restano da verificare. Non sono stati eseguiti benchmark mobili né applicate migrazioni o modifiche dati remote.
+La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Keystore su emulatore API 31. La fase 3 estende questi controlli a letture, cursori e schermate dati. I risultati sono in [docs/TESTING.md](docs/TESTING.md). Login con account reali, telefono fisico e scritture isolate restano da verificare. Non sono stati eseguiti benchmark mobili né applicate migrazioni o modifiche dati remote.
 
 ## Prossima attività
 
-Proseguire la fase 3 con dashboard e letture ELO. Storico paginato, dettaglio partita e commenti in lettura sono implementati nella build 0.3.0, con login e rete obbligatori. Prima dell'editor della fase 4 serviranno ambiente isolato, deploy e test delle nuove RPC transazionali.
+Proseguire la fase 3 con ricerca e filtri dello storico. La build 0.3.1 include Home, statistiche essenziali, classifiche e storico ELO, oltre alle letture già implementate; login e rete rimangono obbligatori. Prima dell'editor della fase 4 serviranno ambiente isolato, deploy e test delle nuove RPC transazionali.

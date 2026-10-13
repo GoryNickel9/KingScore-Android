@@ -42,6 +42,11 @@ import androidx.navigation.compose.rememberNavController
 import app.kingscore.android.core.auth.Account
 import app.kingscore.android.core.auth.AuthProblem
 import app.kingscore.android.data.repository.PlaysRepository
+import app.kingscore.android.data.repository.StatisticsRepository
+import app.kingscore.android.data.repository.RatingsRepository
+import app.kingscore.android.feature.dashboard.DashboardRoute
+import app.kingscore.android.feature.stats.StatisticsRoute
+import app.kingscore.android.feature.ratings.RatingsRoute
 import app.kingscore.android.feature.plays.HistoryRoute
 import app.kingscore.android.feature.plays.DetailRoute
 import androidx.navigation.NavType
@@ -62,12 +67,15 @@ private val destinations = listOf(
 
 @Composable
 fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
-    playsFactory: ((UUID) -> PlaysRepository)? = null, onAccessFailure: (AuthProblem) -> Unit = {}) {
+    playsFactory: ((UUID) -> PlaysRepository)? = null, onAccessFailure: (AuthProblem) -> Unit = {},
+    statisticsFactory: ((UUID) -> StatisticsRepository)? = null, ratingsFactory: ((UUID) -> RatingsRepository)? = null) {
     val navigation = rememberNavController()
     val entry by navigation.currentBackStackEntryAsState()
     val context = LocalContext.current
     var browserUnavailable by remember { mutableStateOf(false) }
     val repository = remember(account.id, playsFactory) { playsFactory?.invoke(account.id) }
+    val statistics = remember(account.id, statisticsFactory) { statisticsFactory?.invoke(account.id) }
+    val ratings = remember(account.id, ratingsFactory) { ratingsFactory?.invoke(account.id) }
     val modelOwner = remember(account.id) { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
     DisposableEffect(modelOwner) { onDispose { modelOwner.viewModelStore.clear() } }
     CompositionLocalProvider(LocalViewModelStoreOwner provides modelOwner) {
@@ -97,6 +105,14 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                     composable(destination.route) {
                         if (destination.route == "plays" && repository != null) {
                             HistoryRoute(repository, onAccessFailure) { id -> navigation.navigate("play/$id") }
+                        } else if (destination.route == "home" && repository != null) {
+                            DashboardRoute(account, repository, onAccessFailure,
+                                onOpen = { navigation.navigate("play/$it") }, onHistory = { navigation.navigate("plays") },
+                                onRatings = { navigation.navigate("elo") })
+                        } else if (destination.route == "stats" && statistics != null) {
+                            StatisticsRoute(statistics, onAccessFailure)
+                        } else if (destination.route == "elo" && ratings != null) {
+                            RatingsRoute(account, ratings, onAccessFailure)
                         } else {
                             Column(Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                                 Text(destination.label, style = MaterialTheme.typography.headlineLarge)

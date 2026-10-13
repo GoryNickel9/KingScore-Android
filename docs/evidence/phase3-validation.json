@@ -163,12 +163,12 @@
     "previous_commit": "5cdbb78",
     "previous_result": "failure before build: SDK package tools unavailable",
     "local_fix": "Explicit packages: platform-tools platforms;android-36 build-tools;35.0.0",
-    "fixed_remote_run": "not executed"
+    "fixed_remote_run": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38414918651",
+    "fixed_remote_result": "success at commit 2d14b4fe81c0508186227dc0099cf07ce21264a9"
   },
   "not_verified": [
     "Real account login/admin authorization and real group data comparison",
     "Physical phone, API minimum 26 and TalkBack",
-    "Fresh remote GitHub CI with local fix",
     "Mobile performance benchmarks",
     "Home/statistics/ELO screens and writes (outside this increment)"
   ],

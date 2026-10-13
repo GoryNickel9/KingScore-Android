@@ -29,6 +29,8 @@ import app.kingscore.android.feature.auth.message
 import app.kingscore.android.feature.navigation.AuthenticatedNavigation
 import app.kingscore.android.core.auth.AuthProblem
 import app.kingscore.android.data.repository.PlaysRepository
+import app.kingscore.android.data.repository.RatingsRepository
+import app.kingscore.android.data.repository.StatisticsRepository
 import java.util.UUID
 
 @Composable
@@ -40,6 +42,8 @@ fun AppContent(
     onNetworkSettings: () -> Unit,
     playsFactory: ((UUID) -> PlaysRepository)? = null,
     onAccessFailure: (AuthProblem) -> Unit = {},
+    statisticsFactory: ((UUID) -> StatisticsRepository)? = null,
+    ratingsFactory: ((UUID) -> RatingsRepository)? = null,
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     val holder = rememberSaveableStateHolder()
@@ -71,7 +75,7 @@ fun AppContent(
                 }
                 is AccessState.SignedOut -> LoginScreen(email, { email = it }, access.problem, onSignIn)
                 is AccessState.Connected -> holder.SaveableStateProvider(access.account.id.toString()) {
-                    AuthenticatedNavigation(access.account, onSignOut, playsFactory, onAccessFailure)
+                    AuthenticatedNavigation(access.account, onSignOut, playsFactory, onAccessFailure, statisticsFactory, ratingsFactory)
                 }
                 is AccessState.Blocked -> Column(Modifier.padding(28.dp).testTag("connection-blocked"),
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {

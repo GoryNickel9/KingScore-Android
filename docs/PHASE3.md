@@ -38,7 +38,7 @@ Build debug, 48 test JVM, 10 test Android API 31 e lint sono passati. Il lint ma
 
 I risultati sono registrati in `docs/evidence/phase3-validation.json`. I test usano record e account sintetici; non sostituiscono una verifica con account reale. Due probe HTTP esterne al client Android, con chiave pubblica e `limit=0`, hanno validato sintassi dei join e cursori sul backend senza leggere righe applicative. Queste probe non certificano Auth o RLS di un utente reale.
 
-La pipeline del commit precedente si era fermata prima della build perché `setup-android@v3` richiedeva il pacchetto SDK `tools`, non disponibile. Il workflow ora specifica platform-tools, SDK 36 e build-tools 35.0.0 tramite l'input [packages dell'azione](https://github.com/android-actions/setup-android/blob/v3/action.yml). La correzione è locale e non è ancora stata eseguita su GitHub.
+La pipeline del commit precedente si era fermata prima della build perché `setup-android@v3` richiedeva il pacchetto SDK `tools`, non disponibile. Il workflow ora specifica platform-tools, SDK 36 e build-tools 35.0.0 tramite l'input [packages dell'azione](https://github.com/android-actions/setup-android/blob/v3/action.yml). La correzione è stata verificata su GitHub: [CI del commit 2d14b4f](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38414918651), conclusa con successo.
 
 Durante il primo avvio dell'AVD, System UI ha mostrato un ANR prima dei test. Dopo il riavvio del processo di sistema dell'emulatore, la suite e le acquisizioni delle schermate sono state rieseguite senza quel dialogo. Questo non costituisce un benchmark dell'app.
 

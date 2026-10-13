@@ -42,6 +42,8 @@ Per statistiche che richiedono l'intero intervallo, attraversare tutte le pagine
 
 ELO è solo lettura: nessun insert/update/delete sui rating, nessuna chiamata alla funzione notturna o a `get_play_user_ids`, nessuna lettura di `elo_recalc_runs`. Mostrare `updated_at` del rating quando disponibile; se manca, indicare data non disponibile senza inventare lo stato del job.
 
+La build 0.3.1 legge il collegamento profilo con `players.account_user_id=eq.<account>` e rifiuta collegamenti ambigui. La classifica generale filtra l'archivio del proprietario storico del giocatore (`players.user_id`), oppure dell'account quando non c'è un proprietario collegato. La classifica per gioco usa soltanto `game_id`. Cataloghi e rating vengono attraversati per `id ASC` prima di ordinarli per nome o rating; i valori mancanti non diventano zero. Lo storico rating usa cursori `date DESC,id DESC`, con filtri per player, tipo e archivio generale. Le posizioni 1,1,3 sono una presentazione dei rating pubblicati, non un calcolo ELO.
+
 ## Scritture commenti esistenti
 
 Creazione: `POST /rest/v1/play_comments` con `{play_id,content}`. Modifica: PATCH per `id` e `user_id` della sessione con `{content}`. Eliminazione: DELETE per gli stessi identificatori. Richiedere la rappresentazione della riga modificata o eliminata per distinguere successo da zero righe.

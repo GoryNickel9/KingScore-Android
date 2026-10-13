@@ -66,7 +66,7 @@ La modifica commento non dispone attualmente di un controllo optimistic locking:
 
 ## RPC partite preparate, non deployate
 
-Queste funzioni **non sono deployate**. La migrazione `King-Score/supabase/migrations/20261013000000_atomic_play_writes.sql` ne implementa i contratti; [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md) descrive le prove locali e i requisiti di rollout. Gli input Kotlin in `Commands.kt` ne definiscono i payload, non autorizzano un fallback sulle scritture dirette. Fino a deploy, prove HTTP con JWT reali e adeguamento dei writer web, il client mantiene l'editor partite disabilitato.
+Queste funzioni **non sono deployate**. La migrazione `King-Score/supabase/migrations/20261013000000_atomic_play_writes.sql` ne implementa i contratti; [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md) descrive le prove locali e i requisiti di rollout. I writer web sono ora adeguati dietro un flag esplicito e un cutover dei permessi separato: [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRITERS.md). Gli input Kotlin in `Commands.kt` ne definiscono i payload, senza autorizzare fallback sulle scritture dirette. Fino a deploy, prove Auth/HTTP nell'ambiente isolato e attivazione dei writer web, il client mantiene l'editor partite disabilitato.
 
 | RPC proposta | Argomenti | Risultato |
 | --- | --- | --- |

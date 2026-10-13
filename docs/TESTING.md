@@ -190,10 +190,23 @@ Non sono stati eseguiti benchmark mobili. Home, Statistiche ed ELO sono implemen
 
 La preparazione locale è completata: migrazione delle quattro RPC applicata a un cluster PostgreSQL 17.4 separato, suite SQL superata, tre prove concorrenti superate e 1.616 casi di ranking uguali alla funzione web effettiva con Node 24.19.0 / V8 13.6.233.17-node.51. Anche gli 11 controlli Kotlin dei contratti e i 10 controlli Node dell'audit passano. Il server locale è stato arrestato dal runner. Metodi, limiti e gate di rollout: [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md); risultati e hash dei sorgenti: [evidence/phase41-admin-rpc-validation.json](evidence/phase41-admin-rpc-validation.json).
 
-Queste prove usano claim SQL simulate, non JWT firmati o gateway HTTP. I controlli sotto restano obbligatori nell'ambiente Supabase isolato e dopo l'adeguamento web. Nessun deploy remoto, build APK o benchmark mobile è stato eseguito in questa preparazione. La CI GitHub resta sospesa.
+Le prove della fase 4.1 usano claim SQL simulate. L'incremento 4.2 aggiunge un gateway HTTP e JWT firmati sintetici, con i risultati riportati sotto. Il collaudo con account Supabase reali resta obbligatorio. Nessun deploy remoto, build APK o benchmark mobile è stato eseguito in questa preparazione. La CI GitHub resta sospesa.
 
 1. In un database isolato, creare/modificare/eliminare partite con almeno un partecipante, score null/zero/negativi/decimali, più vincitori, score uguali e cooperative con risultato true/false/null.
 2. Verificare JWT ordinario/admin via HTTP, ownership commenti, rifiuto di ID score di un'altra partita e rollback integrale per payload o FK invalidi.
 3. Simulare timeout dopo commit, retry con stesso request_id, riuso della chiave con payload diverso e aggiornamenti simultanei su revisione vecchia. Verificare receipt e conflitti.
 4. Verificare conservazione di color, role, location, campi importati e owner storico, comportamento del trigger score e cascade dell'eliminazione. Nessun percorso deve avviare ELO.
 5. Eseguire i flussi web dopo l'adozione delle stesse RPC. Misurare tempi e richieste su dispositivo soltanto quando esiste una build Android; nessun benchmark mobile è stato eseguito in fase 1.
+
+## Risultati writer web e HTTP locale, fase 4.2
+
+| Controllo eseguito | Esito | Ambito |
+| --- | --- | --- |
+| Vitest web completo | 96 test superati in sette file | Servizi, import, invalidazione ELO per owner e sette prove di callback React |
+| Typecheck, lint e build web | Superati; lint zero errori e 17 warning | Build con flag predefinito false e con VITE_ATOMIC_PLAY_WRITES=true |
+| Suite SQL e concorrenza | Superate; sei collisioni e 1.616 confronti di ranking | Tre migrazioni, rollback, ricevute, revisioni, BGA, web/Android e cutover locale |
+| HTTP PostgREST 14.1 | 43 verifiche superate | JWT firmati, permessi, 400/404/409, precisione NUMERIC, replay, import e revoche DML |
+
+Il cluster PostgreSQL 17.4 usa schema e account sintetici. Il gateway verifica firma HS256 e scadenza; l'emissione dei token è locale, senza login GoTrue. Le tabelle ELO sentinella restano invariate. PostgreSQL e PostgREST sono arrestati al termine. I callback React non verificano DOM, focus o accessibilità; non sono stati eseguiti test browser reali. L'APK Android resta alla 0.4.0 e l'editor partite resta disabilitato.
+
+Risultati e hash dei sorgenti: [evidence/phase42-web-writers-validation.json](evidence/phase42-web-writers-validation.json). Procedura e limiti: [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRITERS.md). Il rollout remoto e il collaudo con account Supabase reali restano aperti; il database del sito non è stato modificato.

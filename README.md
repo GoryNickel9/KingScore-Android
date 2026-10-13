@@ -29,6 +29,7 @@ App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-
 | [docs/PHASE3_IMAGES.md](docs/PHASE3_IMAGES.md) | Immagini, isolamento per account, limiti e retry |
 | [docs/PHASE4_COMMENTS.md](docs/PHASE4_COMMENTS.md) | Commenti propri, ownership, errori e riconciliazione |
 | [docs/PHASE4_ADMIN_RPC.md](docs/PHASE4_ADMIN_RPC.md) | RPC admin preparate, test locali e requisiti di rollout |
+| [docs/PHASE4_WEB_WRITERS.md](docs/PHASE4_WEB_WRITERS.md) | Writer web e import BGA adeguati, precisione e attivazione controllata |
 
 I modelli in `contracts/v1/Rows.kt` derivano dai tipi SQL e dalla nullabilità del catalogo remoto. `Commands.kt` definisce input e invarianti. Gli adattatori JSON compilati nell'app conservano NUMERIC, date e campi nullable; il client Auth verifica la sessione online.
 

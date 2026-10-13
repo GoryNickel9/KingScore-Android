@@ -1,0 +1,407 @@
+{
+  "version": 1,
+  "date": "2026-10-13",
+  "scope": "atomic-web-writers-and-local-HTTP-contracts",
+  "status": "PASS",
+  "backendRepository": "GoryNickel9/KingScore",
+  "backendCommit": "4146358da2a0212dabad4f8b4e2bd4cd3b8b60bc",
+  "remoteDatabaseModified": false,
+  "deployed": false,
+  "androidEditorEnabled": false,
+  "androidVersion": "0.4.0",
+  "githubCiExecuted": false,
+  "apkBuilt": false,
+  "localDatabase": {
+    "host": "127.0.0.1",
+    "postgres": "PostgreSQL 17.4 on x86_64-windows, compiled by msvc-19.42.34436, 64-bit",
+    "syntheticSchema": true,
+    "syntheticClaims": true,
+    "jwtSignatureVerified": true,
+    "httpGatewayVerified": true,
+    "tokenIssuance": "synthetic-local-HS256",
+    "goTrueLoginTested": false,
+    "cloudProjectTested": false,
+    "serverStopped": true,
+    "startedAtUtc": "2026-10-13T21:09:16.3386287Z",
+    "finishedAtUtc": "2026-10-13T21:09:43.3617668Z",
+    "exitCodes": {
+      "initdb": 0,
+      "start": 0,
+      "fixture": 0,
+      "migration": 0,
+      "sql-tests": 0,
+      "bga-migration": 0,
+      "bga-sql-tests": 0,
+      "web-migration": 0,
+      "web-sql-tests": 0,
+      "cutover": 0,
+      "cutover-tests": 0,
+      "concurrency": 0,
+      "http-tests": 0,
+      "stop": 0
+    }
+  },
+  "http": {
+    "status": "PASS",
+    "host": "127.0.0.1",
+    "gatewayPort": 65061,
+    "pgPort": 64939,
+    "node": "v24.19.0",
+    "postgrestVersion": "PostgREST 14.1",
+    "postgrestBinarySha256": "13e575ad59a05df3f1554164883f5a756c8231e4e4dd495ee48053fb3acfad5c",
+    "postgresVersion": "PostgreSQL 17.4 on x86_64-windows, compiled by msvc-19.42.34436, 64-bit",
+    "eloStateUnchanged": true,
+    "tokenIssuance": "synthetic-local-HS256",
+    "goTrueLoginTested": false,
+    "cloudProjectTested": false,
+    "cases": [
+      {
+        "name": "anonymous create denied",
+        "method": "POST",
+        "status": 401,
+        "code": "42501"
+      },
+      {
+        "name": "ordinary create denied",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "ordinary editor denied",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "ordinary update denied",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "ordinary delete denied",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "user_metadata cannot grant admin",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "wrong HS256 signature rejected",
+        "method": "POST",
+        "status": 401,
+        "code": "PGRST301"
+      },
+      {
+        "name": "expired signed JWT rejected",
+        "method": "POST",
+        "status": 401,
+        "code": "PGRST303"
+      },
+      {
+        "name": "Android numeric create",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Android editor exact numeric JSON",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Android create replay",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "request key content conflict",
+        "method": "POST",
+        "status": 409,
+        "code": "PT409"
+      },
+      {
+        "name": "Android exact numeric atomic update",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Android updated editor keeps exact numeric JSON",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Browser decimal-text create",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Browser editor returns exact decimal text",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Browser admin updates another owner",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Updated numeric editor preserves owner and score metadata",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "optimistic revision conflict is HTTP409",
+        "method": "POST",
+        "status": 409,
+        "code": "PT409"
+      },
+      {
+        "name": "Read cross-owner legacy metadata",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Cross-owner legacy atomic update",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Legacy noneditable fields and IDs preserved",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "cutover blocks direct plays POST",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "cutover blocks direct plays PATCH",
+        "method": "PATCH",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "cutover blocks direct plays DELETE",
+        "method": "DELETE",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "cutover blocks direct play_scores POST",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "cutover blocks direct play_scores PATCH",
+        "method": "PATCH",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "cutover blocks direct play_scores DELETE",
+        "method": "DELETE",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "legacy replace RPC disabled",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "private receipts not in public schema",
+        "method": "GET",
+        "status": 404,
+        "code": "PGRST205"
+      },
+      {
+        "name": "private helper not in public RPC schema",
+        "method": "POST",
+        "status": 404,
+        "code": "PGRST202"
+      },
+      {
+        "name": "private profile selection forbidden",
+        "method": "GET",
+        "status": 406,
+        "code": "PGRST106"
+      },
+      {
+        "name": "BGA atomic import",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "BGA external positions and metadata preserved",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "BGA receipt replay",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "BGA other request deduplicates actor and table",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "BGA dedup leaves existing content intact",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Atomic delete through HTTP",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Delete receipt after target removed",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Missing delete target is HTTP404",
+        "method": "POST",
+        "status": 404,
+        "code": "PT404"
+      },
+      {
+        "name": "Missing editor target is HTTP404",
+        "method": "POST",
+        "status": 404,
+        "code": "PT404"
+      },
+      {
+        "name": "Update receipt after subsequent delete",
+        "method": "POST",
+        "status": 200,
+        "code": null
+      },
+      {
+        "name": "Invalid payload maps to HTTP400",
+        "method": "POST",
+        "status": 400,
+        "code": "22023"
+      }
+    ],
+    "caseCount": 43,
+    "ownGatewayStopped": true,
+    "failureCase": null
+  },
+  "concurrency": {
+    "status": "PASS",
+    "node": "v24.19.0",
+    "v8": "13.6.233.17-node.51",
+    "rankingCases": 1616,
+    "concurrencyChecks": [
+      "same create request: one commit and one replay",
+      "two updates with one revision: one commit and one conflict, no partial rows",
+      "two deletes: one deletion, one missing target; winner retries after deletion",
+      "two BGA requests for one table: one import and one skip, external position preserved",
+      "same BGA request: one commit and one receipt replay",
+      "web and Android updates share the same revision and parent lock: one commit and one conflict"
+    ],
+    "postgres": "PostgreSQL 17.4 on x86_64-windows, compiled by msvc-19.42.34436, 64-bit"
+  },
+  "webChecks": {
+    "vitest": {
+      "command": "npm run test",
+      "passed": 96,
+      "files": 7,
+      "exitCode": 0,
+      "callbackTests": 7,
+      "realDomTested": false
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    "lint": {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 17
+    },
+    "buildDefault": {
+      "command": "npm run build",
+      "atomicPlayWrites": false,
+      "exitCode": 0
+    },
+    "buildAtomic": {
+      "command": "npm run build",
+      "atomicPlayWrites": true,
+      "exitCode": 0
+    }
+  },
+  "auditNodeChecks": {
+    "passed": 10,
+    "command": "node --test scripts/check-evidence.test.mjs",
+    "exitCode": 0
+  },
+  "postgrestArchive": {
+    "url": "https://github.com/PostgREST/postgrest/releases/download/v14.1/postgrest-v14.1-windows-x86-64.zip",
+    "sha256": "7d34ac6d2c9ba8cb5cb7d169454e24f29be002de913bc12683b1c64f5c789d05"
+  },
+  "backendSourceSha256": {
+    "supabase/migrations/20261013000000_atomic_play_writes.sql": "f84e895cb4f65220cc6d93112ee7566beec64ff009f22774c2f23ab7ce69c782",
+    "supabase/migrations/20261013010000_atomic_bga_import.sql": "63f05ee84994283ce133d221922a5fb2e0332b0928b1675f7b84225c63392365",
+    "supabase/migrations/20261013020000_web_play_score_text.sql": "dd987cc0797d737bd5e8e4dba0c76dbba29c9c12289edef65974dd46b8ca281a",
+    "supabase/rollout/atomic_play_cutover.sql": "747994a9cf797aaa7a109c8a1904e48e3d07304abca176bfbad3c287dafa3b69",
+    "supabase/tests/atomic_play_http.mjs": "d93928abcb8dae2853801feb2aec6bca76adbfdd82884a0a3bbb6c31c5fa398a",
+    "supabase/tests/atomic_play_concurrency.mjs": "8151fdb4c7ecc76c3d32c3e65f45636d93c024b1efa7d0516f5775ba865246dc",
+    "supabase/tests/atomic_bga_import.sql": "9c40994c02b712c2edafd2f3ac433451c9116d2ff7d2130b8aa20e8c4b67efb6",
+    "supabase/tests/web_play_score_text.sql": "6643a279b2cf13449ea59ae32cceb3cfd841450f4ef302197741960736588318",
+    "supabase/tests/atomic_play_cutover.sql": "2a388ff322810e4da0e5ed557b0f64363d436fa8a111c17d1d21bd6b25bf67bb",
+    "scripts/test-atomic-plays.ps1": "fe51ce1d5503bb309069a0d157510527e05822130832cc51dc4a3bbc1a5712f6",
+    "src/services/playWrites.ts": "b445683bf7597a51ebbe9ba5cb3ec98d680a12b6ef084900001ef3185f14161a",
+    "src/services/playWrites.test.ts": "c7fbf16821630195e2c6ebbda33d81aec513165214c701d814168061ca56b1e0",
+    "src/services/bgaImport.ts": "52c6972054f6f8026646ffaa67882cbcbb90ebfce2640dbca6422f43b231b24c",
+    "src/services/bgaImport.test.ts": "34e1615b871ef465c053f6077183642f14c1a9ad4fc0564c0bbe998b8b3023dd",
+    "src/pages/AddPlay.tsx": "81df2ed630018475ba46f2f3ceb0610e99d5a4c32d0c9f52763a5dafd2de4930",
+    "src/pages/EditPlay.tsx": "a6930debd16d8952bd4b33bf8ce2a4f31f8746983b4b0abf3e6bb6e6df19a24f",
+    "src/pages/PlayDetail.tsx": "a4644008642cdd5f8c61042bacfb3c923aa128839cc79af4a8d5929d35d1c622",
+    "src/pages/Import.tsx": "5a5750cff57dbcd37728aa704a432b82046ed7359773f2baccea29d5697f5283",
+    "src/pages/atomicPlayFlows.test.ts": "5a15c9b576d67e9be53c00dd9c0e4f88008d69dc753e781a7e4d3258a4a7c752",
+    "src/utils/eloCalculator.ts": "31b7467fdd6c4cc4281861c62ac67ebb45d56bf7cf9c473505b0f018c9d4f225",
+    "src/utils/eloInvalidation.test.ts": "8c7e7eeba285d05c43366e19d2e258e1bef41d4689100381a5c876f69cf0d57f",
+    "src/types/db.ts": "4f0c2ae2ac3349a19a48009732745c5db88e38125fc697ed2781b31467be7194"
+  },
+  "limits": [
+    "JWTs are issued by local test code; real Supabase GoTrue login and cloud configuration are untested.",
+    "React callback tests do not exercise DOM, focus, accessibility or a real browser.",
+    "Manual web pending requests survive only while their page remains mounted; reload or logout can lose the request ID.",
+    "Atomic write enforcement requires deployment, all web writers enabled, and the separate SQL cutover.",
+    "V1 accepts 1..63 participants and payloads up to 1 MiB; ranking equivalence is checked on 1616 cases, not proven for all browser engines.",
+    "No physical-phone validation, new Android APK or mobile benchmark in this increment."
+  ]
+}

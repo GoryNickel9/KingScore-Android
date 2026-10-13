@@ -96,7 +96,7 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                                 }
                             },
                             icon = { Icon(destination.icon, contentDescription = null) },
-                            label = { Text(destination.label, maxLines = 1) },
+                            label = { Text(destination.label, maxLines = 2) },
                         )
                     }
                 }

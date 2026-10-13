@@ -40,6 +40,10 @@ I DTO di trasporto sono distinti dai command: la lettura conserva la nullabilit�
 
 `AppViewModel` controlla l'accesso attraverso Checking, SignedOut, Connected e Blocked. Il login salvato viene verificato online; in primo piano la sessione attiva viene ricontrollata ogni 60 secondi e al ritorno nell'app. Una schermata login già aperta rimane montata durante questi controlli. Il ritorno della rete avvia una nuova verifica; le richieste Auth hanno timeout di 15 secondi. L'assenza di rete validata blocca subito la navigazione; il backend indisponibile viene rilevato alla successiva richiesta.
 
+## Immagini per account
+
+`AccountImages` vive soltanto nel ramo Connected dell'account. Prima del trasporto verifica rete e sessione con `withVerifiedSession`; il caricamento usa poi un client OkHttp separato, senza header SDK, cookie o cache persistente. `ImageAccessGuard` controlla anche il completamento e la lettura dello stream. Alla rimozione del ramo Connected, close invalida il guard prima di cancellare loader e richieste. Una risposta tardiva non può pubblicare pixel né bloccare l'account successivo. Copertine e avatar sono decorativi: il nome resta nel testo e il retry è un comando distinto. Un errore del CDN lascia disponibili i dati, mentre un errore di accesso usa il blocco globale.
+
 ## Compatibilità del sito
 
 Non cambiare SELECT pubbliche, struttura account o processi ELO per imporre i vincoli del client. Le future RPC si aggiungeranno al backend e richiederanno un adeguamento dei flussi web di scrittura per garantire transazioni e concorrenza coerenti. Migrazioni e funzioni backend rimangono nel repository King-Score.

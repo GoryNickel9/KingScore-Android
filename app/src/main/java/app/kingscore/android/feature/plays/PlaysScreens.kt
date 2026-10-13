@@ -27,6 +27,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.kingscore.android.core.auth.AuthProblem
 import app.kingscore.android.data.repository.*
 import app.kingscore.android.ui.modelFactory
+import app.kingscore.android.ui.GameCover
+import app.kingscore.android.ui.PlayerAvatar
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -135,7 +137,10 @@ fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onM
                 val detail = state.detail
                 LazyColumn(Modifier.weight(1f).testTag("detail-content"), contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     item {
-                        Text(detail.game?.name ?: "Gioco non disponibile", style = MaterialTheme.typography.headlineMedium)
+                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                            GameCover(detail.game?.image_url, detail.game?.name ?: "Gioco non disponibile")
+                            Text(detail.game?.name ?: "Gioco non disponibile", modifier = Modifier.weight(1f), style = MaterialTheme.typography.headlineMedium)
+                        }
                         Text(playDateFormat.format(detail.play.played_at), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         detail.play.game_id?.let { gameId ->
                             if (onOpenGame != null) OutlinedButton(onClick = { onOpenGame(gameId) },
@@ -157,7 +162,10 @@ fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onM
                     items(detail.scores.sortedWith(compareBy<ScoreWithPlayer> { it.score.position ?: Int.MAX_VALUE }
                         .thenBy { playerName(it.player) }.thenBy { it.score.id.toString() }), key = { it.score.id.toString() }) { row ->
                         Column(Modifier.fillMaxWidth().testTag("score-${row.score.id}"), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(playerName(row.player), style = MaterialTheme.typography.titleMedium)
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                PlayerAvatar(row.player?.avatar_url, playerName(row.player), 32.dp)
+                                Text(playerName(row.player), modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                            }
                             if (row.player?.account_user_id == accountId) Text("Sei tu", color = MaterialTheme.colorScheme.primary)
                             Text("Posizione: ${row.score.position ?: "—"}")
                             Text(row.score.score?.let { "Punteggio: ${it.toPlainString().replace('.', ',')}" } ?: "Punteggio non registrato")
@@ -230,7 +238,10 @@ internal fun DataError(problem: DataProblem, onRetry: () -> Unit) {
 internal fun PlayHistoryCard(detail: PlayDetail, onOpen: (UUID) -> Unit) {
     Card(onClick = { onOpen(detail.play.id) }, modifier = Modifier.fillMaxWidth().testTag("play-${detail.play.id}")) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(detail.game?.name ?: "Gioco non disponibile", style = MaterialTheme.typography.titleLarge)
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                GameCover(detail.game?.image_url, detail.game?.name ?: "Gioco non disponibile", 56.dp)
+                Text(detail.game?.name ?: "Gioco non disponibile", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleLarge)
+            }
             Text("${playDateFormat.format(detail.play.played_at)} · ${sourceLabel(detail.play.source)}",
                 style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(resultLabel(detail), color = MaterialTheme.colorScheme.primary)

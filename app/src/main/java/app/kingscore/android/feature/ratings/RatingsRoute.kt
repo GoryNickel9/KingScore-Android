@@ -15,6 +15,8 @@ import app.kingscore.android.core.auth.*
 import app.kingscore.android.data.repository.*
 import app.kingscore.android.feature.plays.playerName
 import app.kingscore.android.ui.modelFactory
+import app.kingscore.android.ui.PlayerAvatar
+import app.kingscore.android.ui.GameCover
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -49,7 +51,12 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
                     FilterChip(selected = game == null, onClick = { game = null }, label = { Text("Generale") })
                     OutlinedButton(onClick = { query = ""; chooseGame = true }, enabled = state.games.isNotEmpty()) { Text("Per gioco") }
                 }
-                state.games.firstOrNull { it.id.toString() == game }?.let { Text(it.name, style = MaterialTheme.typography.titleLarge) }
+                state.games.firstOrNull { it.id.toString() == game }?.let { selected ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        GameCover(selected.image_url, selected.name, 56.dp)
+                        Text(selected.name, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleLarge)
+                    }
+                }
             }
         }
         if (state.loading) item { CircularProgressIndicator(); Text("Caricamento classifica…") }
@@ -64,7 +71,11 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
             items(ranking.entries, key = { it.id.toString() }) { rating ->
                 Card(onClick = { model.select(rating) }, enabled = rating.playerId != null, modifier = Modifier.fillMaxWidth().testTag("rating-${rating.id}")) {
                     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("${positions[rating.id]?.let { "$it. " } ?: ""}${playerName(rating.player)}", style = MaterialTheme.typography.titleLarge)
+                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            PlayerAvatar(rating.player?.avatar_url, playerName(rating.player))
+                            Text("${positions[rating.id]?.let { "$it. " } ?: ""}${playerName(rating.player)}",
+                                modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleLarge)
+                        }
                         if (rating.player?.account_user_id == account.id) Text("Sei tu", color = MaterialTheme.colorScheme.primary)
                         Text(rating.rating?.toString() ?: "Rating non disponibile", style = MaterialTheme.typography.headlineMedium,
                             color = MaterialTheme.colorScheme.primary)

@@ -14,6 +14,7 @@ import app.kingscore.android.core.auth.*
 import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.feature.plays.*
 import app.kingscore.android.ui.modelFactory
+import app.kingscore.android.ui.GameCover
 import java.util.UUID
 
 @Composable
@@ -43,7 +44,10 @@ fun DashboardRoute(account: Account, repository: PlaysRepository, onAccessFailur
         items(state.items.take(5), key = { it.play.id.toString() }) { detail ->
             Card(onClick = { onOpen(detail.play.id) }, modifier = Modifier.fillMaxWidth().testTag("recent-${detail.play.id}")) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(detail.game?.name ?: "Gioco non disponibile", style = MaterialTheme.typography.titleLarge)
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        GameCover(detail.game?.image_url, detail.game?.name ?: "Gioco non disponibile", 56.dp)
+                        Text(detail.game?.name ?: "Gioco non disponibile", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleLarge)
+                    }
                     Text(playDateFormat.format(detail.play.played_at), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(resultLabel(detail), color = MaterialTheme.colorScheme.primary)
                 }

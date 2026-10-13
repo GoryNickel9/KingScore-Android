@@ -14,6 +14,7 @@ import app.kingscore.android.data.repository.HistoryFilters
 import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.feature.plays.*
 import app.kingscore.android.ui.modelFactory
+import app.kingscore.android.ui.GameCover
 import java.util.UUID
 import kingscore.contracts.v1.GameRow
 
@@ -47,7 +48,10 @@ fun GameScreen(state: GameState, history: HistoryState, onRefresh: () -> Unit, o
             state.game != null -> LazyColumn(Modifier.weight(1f).testTag("game-content"),
                 contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 item {
-                    Text(state.game.name, style = MaterialTheme.typography.headlineMedium)
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        GameCover(state.game.image_url, state.game.name, 80.dp)
+                        Text(state.game.name, modifier = Modifier.weight(1f), style = MaterialTheme.typography.headlineMedium)
+                    }
                     Text(playerCountLabel(state.game), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     state.game.bga_id?.takeIf(String::isNotBlank)?.let { Text("Riferimento BGA: $it") }
                 }

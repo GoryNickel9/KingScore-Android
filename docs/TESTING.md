@@ -140,11 +140,28 @@ La prima prova orizzontale falliva dopo il tap sul partecipante. Il test scorrev
 
 Risultati, runner, checksum e immagini sono in [evidence/phase34-validation.json](evidence/phase34-validation.json). Fixture sintetiche; nessuna nuova probe o mutazione Supabase. La build locale usa gli stessi workaround ignorati della 0.3.3. La CI verifica Node, test JVM, lint e APK; i test Android sono eseguiti localmente sull'AVD dedicato.
 
+## Risultati immagini e avatar in lettura, build 0.3.5
+
+| Controllo eseguito | Esito | Ambito |
+| --- | --- | --- |
+| Build debug e APK test | Superati in 10 minuti e 34 secondi | Stessa toolchain; Coil 3.1.0 fissata |
+| Test JVM completi | 114 superati, zero errori | Dieci nuovi test URL, Storage, Unicode, rete e isolamento account |
+| Test Android API 31 | 37 superati in 139,738 secondi | Sei nuove prove con decoder PNG reale e HTTP simulato, oltre ai percorsi precedenti |
+| Test evidenze Node | 10 superati | Contratti e limiti del perimetro |
+| Layout con testo al 130% | Due percorsi superati in verticale e orizzontale | Giocatore/paginazione/partita/ritorno/refresh e decodifica immagini; circa 376 dp in verticale, animazioni disattivate |
+| Lint debug | Zero errori, 24 warning | 22 preesistenti e due avvisi di nuove versioni Coil |
+
+Le prove immagini verificano pixel decodificati, URL del bucket player-images, assenza di Authorization/apikey/Cookie e cache memoria/disco disabilitate. Il retry dopo 404 non apre la scheda contenitore. Revoca, perdita rete, logout e cambio account rimuovono le immagini; la risposta tardiva dell'account precedente non sostituisce quella nuova. Immagini corrotte o troppo grandi restano errori facoltativi quando l'accesso è valido.
+
+La cattura verticale conferma che Statistiche compare su due righe senza perdere caratteri; in orizzontale compare su una riga. La divisione della parola in verticale può essere rifinita nel collaudo finale sui telefoni. I risultati non certificano TalkBack o altri dispositivi.
+
+Risultati, runner, checksum APK e cinque catture sono in [evidence/phase35-validation.json](evidence/phase35-validation.json). Le immagini rosa sono PNG sintetici usati per verificare la decodifica, senza dati personali. Nessuna richiesta a CDN reali, nuova probe o mutazione Supabase. La revisione statica del subagent non ha rilevato problemi P1/P2; non sostituisce i controlli runtime. La CI esegue Node, test JVM, lint e APK; le prove Android sono locali.
+
 ## Controlli ancora aperti
 
 1. Login con account reale ordinario/admin, revoca remota effettiva e riavvio del processo con sessione reale. Nessuna credenziale utente è stata usata nei test.
 2. Installazione e aggiornamento su telefono fisico, API minima 26, TalkBack e caratteri grandi. I risultati dell'emulatore API 31 non coprono questi dispositivi.
-3. Nella fase 3: immagini e rifiniture accessibilità. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
+3. Nella fase 4: commenti e scritture isolate secondo i controlli sotto. Nel collaudo finale: CDN reali e rifiniture accessibilità.
 
 Non sono stati eseguiti benchmark mobili. Home, Statistiche ed ELO sono implementate nell'incremento 0.3.1; la verifica con dati reali rimane aperta.
 

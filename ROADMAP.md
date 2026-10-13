@@ -16,7 +16,7 @@ Il login è obbligatorio per tutte le schermate funzionali: l'app non offre acce
 
 ## Analisi dello stato attuale
 
-`KingScore-Android` contiene i contratti verificati della fase 1, login e sessione cifrata della fase 2 e le schermate dati della fase 3. La build 0.3.4 comprende Home, storico con ricerca e filtri, dettagli partita/gioco/giocatore, statistiche essenziali, classifiche e storico ELO. `../King-Score` contiene una web app React, TypeScript e Vite, con Supabase Auth, PostgreSQL, Storage e una funzione per il ricalcolo ELO notturno. L'app Android riusa il backend attraverso letture verificate online.
+`KingScore-Android` contiene i contratti verificati della fase 1, login e sessione cifrata della fase 2 e le schermate dati della fase 3. La build 0.3.5 comprende Home, storico con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, statistiche essenziali, classifiche e storico ELO. `../King-Score` contiene una web app React, TypeScript e Vite, con Supabase Auth, PostgreSQL, Storage e una funzione per il ricalcolo ELO notturno. L'app Android riusa il backend attraverso letture verificate online.
 
 Schema, grant, policy e funzioni sono stati verificati sul progetto Supabase collegato il 13 ottobre 2026, con probe SQL read-only e richieste HTTP senza dati applicativi. Il dettaglio dei risultati e dei controlli ancora necessari è in [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md).
 
@@ -108,7 +108,7 @@ Criterio di uscita: stesso risultato del web sulle fixture, nessun troncamento c
 
 ### Stato dello storico e dettaglio della fase 3
 
-Implementati pagine da 50 con cursori, dettaglio, punteggi e commenti in lettura. La build 0.3.1 aggiunge Home, statistiche essenziali, classifiche generali/per gioco e storico ELO; la 0.3.2 aggiunge ricerca letterale in gioco o note e filtri combinabili per gioco, partecipante, modalità e date. La 0.3.3 aggiunge il dettaglio gioco; la 0.3.4 aggiunge il dettaglio giocatore con identità account e storico del partecipante paginato, conservando tutti i punteggi. Le richieste verificano l'utente online; perdita di accesso e cambio account cancellano ViewModel, filtri e cataloghi. Immagini e rifiniture accessibilità restano da completare. Risultati e limiti: [docs/PHASE3.md](docs/PHASE3.md), [docs/PHASE3_SEARCH.md](docs/PHASE3_SEARCH.md), [docs/PHASE3_GAME.md](docs/PHASE3_GAME.md), [docs/PHASE3_PLAYER.md](docs/PHASE3_PLAYER.md).
+Implementati pagine da 50 con cursori, dettaglio, punteggi e commenti in lettura. La build 0.3.1 aggiunge Home, statistiche essenziali, classifiche generali/per gioco e storico ELO; la 0.3.2 aggiunge ricerca letterale in gioco o note e filtri combinabili per gioco, partecipante, modalità e date. La 0.3.3 aggiunge il dettaglio gioco; la 0.3.4 aggiunge il dettaglio giocatore con identità account e storico del partecipante paginato, conservando tutti i punteggi. La 0.3.5 aggiunge immagini e avatar con fallback e retry, loader limitato all'account connesso e senza cache persistente. Le richieste verificano l'utente online; perdita di accesso e cambio account cancellano ViewModel, filtri, cataloghi e loader immagini. Le prove con TalkBack e telefoni rientrano nel collaudo della fase 5. Risultati e limiti: [docs/PHASE3.md](docs/PHASE3.md), [docs/PHASE3_SEARCH.md](docs/PHASE3_SEARCH.md), [docs/PHASE3_GAME.md](docs/PHASE3_GAME.md), [docs/PHASE3_PLAYER.md](docs/PHASE3_PLAYER.md), [docs/PHASE3_IMAGES.md](docs/PHASE3_IMAGES.md).
 
 ### Fase 4 Commenti e scritture admin
 
@@ -165,17 +165,16 @@ La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Ke
 
 ## Lavoro residuo per la versione 1.0 stabile
 
-Stima aggiornata dopo il dettaglio giocatore, 13 ottobre 2026. La 1.0 comprende il perimetro MVP concordato e distribuzione privata: consultazione, commenti propri, gestione partite admin, login obbligatorio e funzionamento solo con Internet. L'APK attuale è un'anteprima con firma debug; il superamento della CI non sostituisce le verifiche con account reali e telefoni.
+Stima aggiornata dopo immagini e avatar, 13 ottobre 2026. La 1.0 comprende il perimetro MVP concordato e distribuzione privata: consultazione, commenti propri, gestione partite admin, login obbligatorio e funzionamento solo con Internet. L'APK attuale è un'anteprima con firma debug; il superamento della CI non sostituisce le verifiche con account reali e telefoni.
 
 | Lavoro residuo | Stima effettiva | Criterio di completamento |
 | --- | --- | --- |
-| Consultazione: immagini e rifiniture accessibilità | 2–4 ore | Caricamento con errori, accesso e caratteri grandi verificati |
 | Commenti e CRUD partite admin | 28–48 ore | RPC atomiche deployate e testate in ambiente isolato, permessi, conflitti e retry verificati |
 | Verifica e release privata | 20–32 ore | Account reali, telefoni, rete e aggiornamento APK testati; chiave di firma definitiva e procedura di rilascio |
-| Totale con riserva del 20% | **60–101 ore** | Circa 8–13 giornate da 8 ore; stima di lavoro, non scadenza di calendario |
+| Totale con riserva del 20% | **58–96 ore** | Circa 7–12 giornate da 8 ore; stima di lavoro, non scadenza di calendario |
 
 La dipendenza principale è il backend delle scritture: `get_play_editor_v1`, `create_play_v1`, `update_play_v1` e `delete_play_v1` sono ancora contratti proposti. La stima include implementarli e adeguare i flussi web, ma va rivista dopo le prove isolate. Attese per account di prova, disponibilità dei telefoni o ambiente di sviluppo allungano il calendario. Wrapped, import BGA e amministrazione completa dei cataloghi restano estensioni dopo l'MVP.
 
 ## Prossima attività
 
-Completare immagini e avatar in lettura della fase 3, rispettando il blocco senza accesso e verificando caricamenti falliti e caratteri grandi. La build 0.3.4 include il dettaglio giocatore; login e rete rimangono obbligatori. Prima dell'editor della fase 4 serviranno ambiente isolato, deploy e test delle nuove RPC transazionali.
+Implementare creazione, modifica ed eliminazione dei commenti propri secondo RLS e i contratti esistenti, con login obbligatorio e blocco senza rete. Prima dell'editor partite admin serviranno ambiente isolato, deploy e test delle nuove RPC transazionali.

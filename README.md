@@ -1,6 +1,6 @@
 # KingScore Android
 
-App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-Score. La build 0.3.4 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, commenti in lettura, statistiche essenziali e classifiche/storico ELO. Login e Internet rimangono obbligatori. Le scritture saranno aggiunte nella fase 4.
+App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-Score. La build 0.3.5 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti in lettura, statistiche essenziali e classifiche/storico ELO. Login e Internet rimangono obbligatori. Le scritture saranno aggiunte nella fase 4.
 
 ## Perimetro confermato
 
@@ -26,6 +26,7 @@ App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-
 | [docs/PHASE3_SEARCH.md](docs/PHASE3_SEARCH.md) | Ricerca, filtri server, date inclusive e cataloghi paginati |
 | [docs/PHASE3_GAME.md](docs/PHASE3_GAME.md) | Dettaglio gioco, storico dedicato e ritorno dalla partita |
 | [docs/PHASE3_PLAYER.md](docs/PHASE3_PLAYER.md) | Dettaglio giocatore, identità account e storico del partecipante |
+| [docs/PHASE3_IMAGES.md](docs/PHASE3_IMAGES.md) | Immagini, isolamento per account, limiti e retry |
 
 I modelli in `contracts/v1/Rows.kt` derivano dai tipi SQL e dalla nullabilità del catalogo remoto. `Commands.kt` definisce input e invarianti. Gli adattatori JSON compilati nell'app conservano NUMERIC, date e campi nullable; il client Auth verifica la sessione online.
 

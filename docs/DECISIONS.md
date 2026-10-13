@@ -16,13 +16,17 @@ Usare il catalogo reale, non il replay incompleto delle migrazioni, per definire
 
 | Voce | Decisione o verifica |
 | --- | --- |
-| Package ID | `app.kingscore.android` nella build 0.3.4 |
+| Package ID | `app.kingscore.android` nella build 0.3.5 |
 | Android minimo | API 26, per java.time senza desugaring; dispositivo minimo ancora da provare |
 | Target e compile SDK | API 36; build, lint e installazione su emulatore API 31 verificati |
 | Contratti Kotlin | Compilati con Kotlin JVM 1.9.24, Java 21, bytecode target 17; senza dipendenze Android o librerie JSON |
 | Toolchain dell'app | Kotlin/Compose plugin 2.1.20, Compose BOM 2025.04.01, AGP 8.13.2, Gradle 8.13; Supabase 3.1.4 e Ktor 3.1.2 |
 
 La combinazione fissata compila l'APK e i test Android. La verifica su un telefono destinatario rimane da eseguire. Sessione cifrata con Android Keystore AES-256/GCM e preferenze private, escluse da backup e trasferimento; nessuna dipendenza di persistenza aggiuntiva serve per la fase 2.
+
+## Immagini in lettura, build 0.3.5
+
+Coil 3.1.0 aggiunge decodifica e integrazione Compose senza cambiare Kotlin o Compose già fissati. Il loader appartiene all'account connesso; cache memoria/disco disabilitate e client HTTP separato da Auth. Prima di ogni caricamento si verifica la sessione online, senza inoltrare token alle immagini pubbliche. I formati non decodificabili mostrano il fallback e un retry esplicito; non sono aggiunte dipendenze per SVG o GIF animate. Avatar modificabili e upload restano esclusi. Dettagli e fonti: [PHASE3_IMAGES.md](PHASE3_IMAGES.md).
 
 ## Distribuzione
 

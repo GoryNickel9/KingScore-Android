@@ -32,6 +32,10 @@ import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.data.repository.RatingsRepository
 import app.kingscore.android.data.repository.StatisticsRepository
 import java.util.UUID
+import app.kingscore.android.core.images.AccountImages
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.CompositionLocalProvider
 
 @Composable
 fun AppContent(
@@ -44,6 +48,7 @@ fun AppContent(
     onAccessFailure: (AuthProblem) -> Unit = {},
     statisticsFactory: ((UUID) -> StatisticsRepository)? = null,
     ratingsFactory: ((UUID) -> RatingsRepository)? = null,
+    imagesFactory: ((UUID, (AuthProblem) -> Unit) -> AccountImages)? = null,
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     val holder = rememberSaveableStateHolder()
@@ -75,7 +80,11 @@ fun AppContent(
                 }
                 is AccessState.SignedOut -> LoginScreen(email, { email = it }, access.problem, onSignIn)
                 is AccessState.Connected -> holder.SaveableStateProvider(access.account.id.toString()) {
-                    AuthenticatedNavigation(access.account, onSignOut, playsFactory, onAccessFailure, statisticsFactory, ratingsFactory)
+                    val images = remember(access.account.id, imagesFactory) { imagesFactory?.invoke(access.account.id, onAccessFailure) }
+                    DisposableEffect(images) { onDispose { images?.close() } }
+                    CompositionLocalProvider(LocalAccountImages provides images) {
+                        AuthenticatedNavigation(access.account, onSignOut, playsFactory, onAccessFailure, statisticsFactory, ratingsFactory)
+                    }
                 }
                 is AccessState.Blocked -> Column(Modifier.padding(28.dp).testTag("connection-blocked"),
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {

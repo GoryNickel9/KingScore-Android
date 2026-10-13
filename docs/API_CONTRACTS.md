@@ -48,6 +48,12 @@ ELO è solo lettura: nessun insert/update/delete sui rating, nessuna chiamata al
 
 La build 0.3.1 legge il collegamento profilo con `players.account_user_id=eq.<account>` e rifiuta collegamenti ambigui. La classifica generale filtra l'archivio del proprietario storico del giocatore (`players.user_id`), oppure dell'account quando non c'è un proprietario collegato. La classifica per gioco usa soltanto `game_id`. Cataloghi e rating vengono attraversati per `id ASC` prima di ordinarli per nome o rating; i valori mancanti non diventano zero. Lo storico rating usa cursori `date DESC,id DESC`, con filtri per player, tipo e archivio generale. Le posizioni 1,1,3 sono una presentazione dei rating pubblicati, non un calcolo ELO.
 
+## Immagini pubbliche, solo lettura
+
+`games.image_url` contiene un URL HTTPS. `players.avatar_url` può contenere un URL HTTPS completo oppure un percorso relativo nel bucket `player-images`: risolvere ciascun segmento codificato sotto `/storage/v1/object/public/player-images/`. Il percorso non aggiunge richieste al catalogo. Valori null, HTTP, URI locali, userinfo, fragment e segmenti vuoti o di attraversamento mostrano il fallback senza fetch.
+
+Il client immagini verifica la sessione prima del fetch, ma non invia Bearer, apikey o Cookie al CDN. Rifiuta il downgrade HTTPS e payload oltre 8 MiB; il decoder limita la dimensione bitmap richiesta a 1024×1024. Cache persistenti disabilitate; nessun upload o modifica avatar. Errori HTTP/decodifica delle immagini sono facoltativi quando l'accesso resta valido.
+
 ## Scritture commenti esistenti
 
 Creazione: `POST /rest/v1/play_comments` con `{play_id,content}`. Modifica: PATCH per `id` e `user_id` della sessione con `{content}`. Eliminazione: DELETE per gli stessi identificatori. Richiedere la rappresentazione della riga modificata o eliminata per distinguere successo da zero righe.

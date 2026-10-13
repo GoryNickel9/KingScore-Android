@@ -14,6 +14,7 @@ import app.kingscore.android.data.repository.HistoryFilters
 import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.feature.plays.*
 import app.kingscore.android.ui.modelFactory
+import app.kingscore.android.ui.PlayerAvatar
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -51,9 +52,14 @@ fun PlayerScreen(state: PlayerState, history: HistoryState, accountId: UUID, onR
                 item {
                     val player = state.player
                     val displayName = playerName(player)
-                    Text(displayName, style = MaterialTheme.typography.headlineMedium)
-                    if (displayName != player.name) Text(player.name, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    if (player.account_user_id == accountId) Text("Sei tu", color = MaterialTheme.colorScheme.primary)
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        PlayerAvatar(player.avatar_url, displayName, 72.dp)
+                        Column(Modifier.weight(1f)) {
+                            Text(displayName, style = MaterialTheme.typography.headlineMedium)
+                            if (displayName != player.name) Text(player.name, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            if (player.account_user_id == accountId) Text("Sei tu", color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
                     Text("Profilo aggiornato: ${DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm", Locale.ITALIAN)
                         .withZone(ZoneId.systemDefault()).format(player.updated_at)}",
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

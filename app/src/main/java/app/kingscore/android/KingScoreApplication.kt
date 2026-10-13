@@ -18,6 +18,9 @@ import io.github.jan.supabase.logging.LogLevel
 import io.github.jan.supabase.postgrest.Postgrest
 import io.ktor.client.engine.okhttp.OkHttp
 import java.net.URI
+import app.kingscore.android.core.images.AccountImages
+import app.kingscore.android.core.auth.AuthFailure
+import app.kingscore.android.core.auth.AuthProblem
 import kotlin.time.Duration.Companion.seconds
 
 class KingScoreApplication : Application() {
@@ -29,6 +32,11 @@ class KingScoreApplication : Application() {
     fun plays(accountId: UUID): PlaysRepository = SupabasePlaysRepository(SupabaseReader(checkNotNull(auth), network), accountId)
     fun ratings(accountId: UUID): RatingsRepository = SupabaseRatingsRepository(SupabaseReader(checkNotNull(auth), network), accountId)
     fun statistics(accountId: UUID): StatisticsRepository = SupabaseStatisticsRepository(SupabaseReader(checkNotNull(auth), network), accountId, plays(accountId))
+    fun images(accountId: UUID, onAccessFailure: (AuthProblem) -> Unit) = AccountImages(this, BuildConfig.SUPABASE_URL,
+        network, verifyAccount = {
+            if (!network.connected.value) throw AuthFailure(AuthProblem.NETWORK_UNAVAILABLE)
+            checkNotNull(auth).withVerifiedSession(accountId) { _, _ -> Unit }
+        }, onAccessFailure)
 
     override fun onCreate() {
         super.onCreate()

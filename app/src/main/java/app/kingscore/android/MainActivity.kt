@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     AppContent(state, model::signIn, model::retry, model::signOut,
                         onNetworkSettings = { startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS)) },
                         playsFactory = app::plays, onAccessFailure = model::rejectAccess,
-                        statisticsFactory = app::statistics, ratingsFactory = app::ratings)
+                        statisticsFactory = app::statistics, ratingsFactory = app::ratings, imagesFactory = app::images)
                 }
             }
         }

@@ -30,8 +30,8 @@ android {
         applicationId = "app.kingscore.android"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.3.4"
+        versionCode = 7
+        versionName = "0.3.5"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "SUPABASE_URL", quoted(config("SUPABASE_URL")))
         buildConfigField("String", "SUPABASE_PUBLIC_KEY", quoted(publicKey))
@@ -52,6 +52,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling.preview)

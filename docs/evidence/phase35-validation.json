@@ -1,0 +1,262 @@
+{
+  "verified_on": "2026-10-13",
+  "phase": 3,
+  "version": "0.3.5",
+  "version_code": 7,
+  "scope": "Read-only covers and avatars with verified account lifetime; mandatory login and Internet",
+  "build": {
+    "result": "BUILD SUCCESSFUL",
+    "seconds": 634,
+    "tasks": [
+      "testDebugUnitTest",
+      "lintDebug",
+      "assembleDebug",
+      "assembleDebugAndroidTest"
+    ],
+    "local_jvm_workaround": "Ignored tcp-only javaagent and isolated daemon registry; neither is included in APK or CI"
+  },
+  "jvm": {
+    "tests": 114,
+    "failures": 0,
+    "errors": 0,
+    "suites": [
+      {
+        "name": "app.kingscore.android.core.auth.SupabaseAuthRepositoryTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.core.images.ImagePolicyTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.GameRepositoryTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.HistoryFiltersRepositoryTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.PlayerRepositoryTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.RowDecodersTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabasePlaysRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseRatingsRepositoryTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseReaderTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseStatisticsRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.auth.AppViewModelTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.games.GameDetailViewModelTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.players.PlayerDetailViewModelTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.plays.PlaysViewModelTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.ratings.RatingsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.stats.StatisticsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 24,
+    "new_warnings": "Two newer-version notices for Coil; 22 pre-existing warnings"
+  },
+  "instrumentation": {
+    "api": 31,
+    "device": "Dedicated headless read-only AVD sdk_gphone64_x86_64",
+    "tests": 37,
+    "result": "OK (37 tests)",
+    "seconds": 139.738,
+    "animations_disabled": true,
+    "output": "docs/evidence/phase35-instrumentation.txt",
+    "new_checks": [
+      "Real PNG decode for cover and avatar, expected pixels, no credentials or persistent cache",
+      "404 retry does not activate containing card",
+      "Absent or unsafe image does not fetch",
+      "Revoked session blocks before image transport",
+      "Offline/account-switch/logout dispose images and reject late old pixels",
+      "Corrupt and oversized payloads are optional errors while online"
+    ]
+  },
+  "layout": {
+    "large-font": {
+      "result": "OK (2 tests)",
+      "seconds": 10.185,
+      "font_scale": 1.3,
+      "density_dpi": 460,
+      "animations_disabled": true,
+      "checks": [
+        "Player / page / play / return / refresh with image placeholders and bottom-navigation labels",
+        "Real PNG cover and Storage avatar decode, pixel/header/cache assertions"
+      ],
+      "configured_size_px": "1080x2340",
+      "approx_width_dp": 375.65
+    },
+    "landscape": {
+      "result": "OK (2 tests)",
+      "seconds": 19.9,
+      "font_scale": 1.3,
+      "density_dpi": 460,
+      "animations_disabled": true,
+      "checks": [
+        "Player / page / play / return / refresh with image placeholders and bottom-navigation labels",
+        "Real PNG cover and Storage avatar decode, pixel/header/cache assertions"
+      ],
+      "configured_size_px": "2340x1080"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/phase35-images-landscape.png",
+      "width": 472,
+      "height": 812
+    },
+    {
+      "path": "docs/evidence/phase35-images-large-font.png",
+      "width": 472,
+      "height": 889
+    },
+    {
+      "path": "docs/evidence/phase35-images.png",
+      "width": 385,
+      "height": 814
+    },
+    {
+      "path": "docs/evidence/phase35-player-landscape.png",
+      "width": 2160,
+      "height": 812
+    },
+    {
+      "path": "docs/evidence/phase35-player-large-font.png",
+      "width": 1080,
+      "height": 2063
+    }
+  ],
+  "screenshot_method": "Compose root, excluding system bars; synthetic fixtures only. Solid pink PNG tests the decoder, not production artwork.",
+  "image_policy": {
+    "https_only": true,
+    "public_avatar_bucket": "player-images",
+    "max_decoded_payload_bytes": 8388608,
+    "requested_max_bitmap_px": [
+      1024,
+      1024
+    ],
+    "http_call_timeout_seconds": 15,
+    "memory_cache": false,
+    "disk_cache": false,
+    "supabase_auth_headers_forwarded": false,
+    "account_verified_before_fetch": true,
+    "upload_or_avatar_mutation": false
+  },
+  "backend_query_probes": {
+    "performed": false,
+    "reason": "Reads existing audited image_url/avatar_url; transports in UI tests are simulated, no remote images or account credentials used"
+  },
+  "node_evidence_tests": {
+    "tests": 10,
+    "failures": 0
+  },
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 21384525,
+    "sha256": "4394d28f8768101f67c1297604b05fdb98fd5e7547deb54509052b1767e845b6",
+    "signing": "debug key"
+  },
+  "review": {
+    "subagent": "backend_audit",
+    "p1_or_p2_findings_remaining": 0,
+    "method": "Read-only static review of URL resolution, HTTP headers, cache/lifetime, stream and completion guards, limits and tests"
+  },
+  "ci_at_local_evidence_capture": {
+    "previous_verified_commit": "6839c8e54691bf364056680d59a520a938134f99",
+    "previous_result": "success",
+    "previous_run": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38442580103",
+    "current_increment": "Created after commit/push; consult Actions for final result",
+    "workflow": "Node evidence, debug build, JVM tests and lint; no emulator instrumentation"
+  },
+  "remaining_1_0_effort": {
+    "unit": "effective hours; planning estimate, not elapsed calendar time",
+    "comments_admin_atomic_rpc": [
+      28,
+      48
+    ],
+    "validation_release": [
+      20,
+      32
+    ],
+    "with_20_percent_reserve": [
+      58,
+      96
+    ]
+  },
+  "not_verified": [
+    "Real account login and comparison with real group data/CDNs",
+    "Physical phone, API minimum 26, TalkBack and tablet",
+    "Mobile performance benchmarks and transient decoder RAM",
+    "Phase 4 writes and phase 5 signed release"
+  ],
+  "remote_schema_or_data_mutated": false,
+  "emulator_note": "Only dedicated emulator-5582 controlled; settings restored and emulator stopped. Existing emulator-5584 left untouched."
+}

@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.kingscore.android.feature.auth.AppViewModel
+import app.kingscore.android.feature.auth.AccessState
 import app.kingscore.android.ui.AppContent
 import app.kingscore.android.ui.KingScoreTheme
 import kotlinx.coroutines.delay
@@ -42,6 +43,7 @@ class MainActivity : ComponentActivity() {
                         }
                     })
                     val state by model.access.collectAsStateWithLifecycle()
+                    LaunchedEffect(state) { if (state is AccessState.SignedOut) app.clearCommentOutcomes() }
                     val lifecycle = LocalLifecycleOwner.current.lifecycle
                     LaunchedEffect(model, lifecycle) {
                         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -52,7 +54,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-                    AppContent(state, model::signIn, model::retry, model::signOut,
+                    AppContent(state, model::signIn, model::retry, { app.clearCommentOutcomes(); model.signOut() },
                         onNetworkSettings = { startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS)) },
                         playsFactory = app::plays, onAccessFailure = model::rejectAccess,
                         statisticsFactory = app::statistics, ratingsFactory = app::ratings, imagesFactory = app::images)

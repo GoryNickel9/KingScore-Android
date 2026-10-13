@@ -41,6 +41,9 @@ fun main() {
         rejects { CreateComment(playId, "😀".repeat(1001)) }
         rejects { UpdateComment("") }
         rejects { UpdateComment("  text  ") }
+        rejects { UpdateComment("a\u0000b") }
+        rejects { UpdateComment("\uD800") }
+        rejects { UpdateComment("\uDC00") }
     }
     test("duration cannot be negative and unknown duration remains null") {
         check(input().duration_minutes == null)

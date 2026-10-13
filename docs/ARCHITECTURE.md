@@ -34,6 +34,8 @@ Persistono soltanto sessione protetta e preferenze necessarie. Il progetto non r
 
 ## ELO e mutazioni
 
+`PlaysRepository.commentWrites` espone soltanto le tre scritture commenti, senza un writer REST generico. SupabaseCommentWrites applica verifica online, filtri ownership e decodifica della rappresentazione; NoRetryCommentTransport impedisce replay del motore HTTP. PlayDetailViewModel serializza l'invio e conserva editor/errori separati dalle letture. CommentOutcomes è un indicatore in memoria per account/partita, senza payload, condiviso dall'Application per riconciliare un invio interrotto da Checking o ricreazione. Il logout e cambio account lo cancellano. La chiusura del ramo autenticato cancella modelli, richieste e client di scrittura.
+
 Il client non contiene un calcolatore ELO. Legge rating e storico già pubblicati, senza invocare job o scrivere valori derivati. Il salvataggio delle partite userà soltanto RPC transazionali dopo il loro deploy e la verifica isolata. Aggiornare la schermata significa effettuare letture, non richiedere ricalcoli.
 
 I DTO di trasporto sono distinti dai command: la lettura conserva la nullabilità storica; gli input nuovi richiedono identificatori validi, partecipanti distinti e risultati cooperativi coerenti. `data/remote/RowDecoders.kt` implementa la decodifica stretta di otto modelli, con BigDecimal, LocalDate e Instant, verificata da test JVM.

@@ -79,7 +79,7 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
     val statistics = remember(account.id, statisticsFactory) { statisticsFactory?.invoke(account.id) }
     val ratings = remember(account.id, ratingsFactory) { ratingsFactory?.invoke(account.id) }
     val modelOwner = remember(account.id) { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
-    DisposableEffect(modelOwner) { onDispose { modelOwner.viewModelStore.clear() } }
+    DisposableEffect(modelOwner, repository) { onDispose { modelOwner.viewModelStore.clear(); repository?.commentWrites?.close() } }
     CompositionLocalProvider(LocalViewModelStoreOwner provides modelOwner) {
         Scaffold(
             bottomBar = {

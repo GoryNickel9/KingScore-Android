@@ -1,0 +1,307 @@
+{
+  "verified_on": "2026-10-13",
+  "phase": 4,
+  "version": "0.4.0",
+  "version_code": 8,
+  "scope": "Create, edit and delete own comments; mandatory login and Internet; no admin play writes",
+  "build": {
+    "result": "BUILD SUCCESSFUL",
+    "seconds": 386,
+    "tasks": [
+      "testDebugUnitTest",
+      "lintDebug",
+      "assembleDebug",
+      "assembleDebugAndroidTest"
+    ],
+    "local_jvm_workaround": "Ignored tcp-only javaagent and isolated daemon registry; neither is included in APK or CI"
+  },
+  "jvm": {
+    "tests": 138,
+    "failures": 0,
+    "errors": 0,
+    "suites": [
+      {
+        "name": "app.kingscore.android.core.auth.SupabaseAuthRepositoryTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.core.images.ImagePolicyTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.CommentWritesTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.GameRepositoryTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.HistoryFiltersRepositoryTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.PlayerRepositoryTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.RowDecodersTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabasePlaysRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseRatingsRepositoryTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseReaderTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseStatisticsRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.auth.AppViewModelTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.games.GameDetailViewModelTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.players.PlayerDetailViewModelTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.plays.CommentViewModelTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.plays.PlaysViewModelTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.ratings.RatingsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.stats.StatisticsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 24
+  },
+  "contracts": {
+    "checks": 10,
+    "includes": "1000 emoji code points, NUL and isolated surrogate rejection"
+  },
+  "instrumentation": {
+    "api": 31,
+    "device": "Dedicated headless read-only AVD sdk_gphone64_x86_64",
+    "tests": 45,
+    "result": "OK (45 tests)",
+    "seconds": 200.071,
+    "animations_disabled": true,
+    "output": "docs/evidence/phase40-instrumentation.txt",
+    "new_checks": [
+      "Create / edit / cancel and confirm delete with server-author fixture",
+      "Admin cannot modify other authors; no player linking required",
+      "Unicode limit, blank input, no truncation",
+      "Committed POST followed by uncertain response is not repeated",
+      "403 and zero-row deletion never show success",
+      "Inflight controls disabled, offline teardown and late response ignored",
+      "Logout/account switch erase drafts; revoked session blocks",
+      "Checking during dispatch recreates model with all-page outcome reconciliation"
+    ]
+  },
+  "layout": {
+    "large-font": {
+      "result": "OK (2 tests)",
+      "seconds": 22.524,
+      "font_scale": 1.3,
+      "density_dpi": 460,
+      "animations_disabled": true,
+      "checks": [
+        "Create with keyboard / edit / cancel deletion / confirm deletion",
+        "Uncertain committed create / disabled resend / reread / preserved single dispatch"
+      ],
+      "configured_size_px": "1080x2340",
+      "approx_width_dp": 375.65
+    },
+    "landscape": {
+      "result": "OK (2 tests)",
+      "seconds": 27.196,
+      "font_scale": 1.3,
+      "density_dpi": 460,
+      "animations_disabled": true,
+      "checks": [
+        "Create with keyboard / edit / cancel deletion / confirm deletion",
+        "Uncertain committed create / disabled resend / reread / preserved single dispatch"
+      ],
+      "configured_size_px": "2340x1080"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/phase40-comments-landscape.png",
+      "width": 2160,
+      "height": 812
+    },
+    {
+      "path": "docs/evidence/phase40-comments-large-font.png",
+      "width": 1080,
+      "height": 2063
+    },
+    {
+      "path": "docs/evidence/phase40-comments.png",
+      "width": 1080,
+      "height": 2063
+    },
+    {
+      "path": "docs/evidence/phase40-editor-landscape.png",
+      "width": 1610,
+      "height": 719
+    },
+    {
+      "path": "docs/evidence/phase40-editor-large-font.png",
+      "width": 988,
+      "height": 1014
+    },
+    {
+      "path": "docs/evidence/phase40-editor.png",
+      "width": 992,
+      "height": 902
+    },
+    {
+      "path": "docs/evidence/phase40-uncertain-landscape.png",
+      "width": 1610,
+      "height": 719
+    },
+    {
+      "path": "docs/evidence/phase40-uncertain-large-font.png",
+      "width": 988,
+      "height": 1684
+    },
+    {
+      "path": "docs/evidence/phase40-uncertain.png",
+      "width": 992,
+      "height": 1386
+    }
+  ],
+  "screenshot_method": "Compose root for list; dialog column for forms/errors; native captures with synthetic fixtures only",
+  "mutation_policy": {
+    "resource": "play_comments",
+    "methods": [
+      "POST",
+      "PATCH",
+      "DELETE"
+    ],
+    "post_keys": [
+      "play_id",
+      "content"
+    ],
+    "patch_keys": [
+      "content"
+    ],
+    "update_delete_filters": [
+      "id",
+      "user_id",
+      "play_id"
+    ],
+    "prefer": "return=representation",
+    "verified_account_before_each_dispatch": true,
+    "author_only_including_admin": true,
+    "automatic_timeout_or_5xx_replay": false,
+    "explicit_401_refresh_limit": 1,
+    "uncertain_reconciliation": "All server pages before re-enabling writes",
+    "outcome_marker": "Play IDs only, in memory for current account; survives Checking/rotation/Blocked, erased at logout/account switch; no payload or outbox"
+  },
+  "native_transport_regression": {
+    "method": "Local TCP fixture on loopback returns 503 Retry-After: 0; actual OkHttp network-exchange count",
+    "expected_and_observed_requests": 1
+  },
+  "backend_mutation_probes": {
+    "performed": false,
+    "reason": "No real JWT or isolated test backend used; permission/trigger evidence preserved from phase 1"
+  },
+  "node_evidence_tests": {
+    "tests": 10,
+    "failures": 0
+  },
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 21489280,
+    "sha256": "ce203a0c5d5897e99812b9a39cc24b756817a1f71b7ccafb7e1bbe98338d76ad",
+    "signing": "debug key"
+  },
+  "review": {
+    "subagent": "backend_audit",
+    "p1_or_p2_findings_remaining": 0,
+    "method": "Read-only static audit of RLS/trigger contract, ownership, Unicode, no-replay transport and lifecycle",
+    "corrected": [
+      "Refresh, retry and failed detail refresh must preserve uncertain reconciliation through every page",
+      "Account-bound in-memory marker covers canceled dispatch during Checking and recreation; old account references do not affect the next account",
+      "Checking UI regression asserts the restored detail route instead of assuming navigation returns Home; row/viewmodel data are still freshly read",
+      "HTTP regression fixture uses ServerSocket because com.sun HttpServer is absent from the Android unit-test compiler classpath"
+    ]
+  },
+  "ci_at_local_evidence_capture": {
+    "previous_verified_commit": "a48031f2533b9040e422dd114a362babc2397d0f",
+    "previous_result": "success",
+    "previous_run": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38451284519",
+    "current_increment": "Created after commit/push; consult Actions for final result",
+    "workflow": "Node evidence, debug build, JVM tests and lint; no emulator instrumentation"
+  },
+  "not_verified": [
+    "Real ordinary/admin JWT mutations and live RLS in isolated backend",
+    "Physical phone, API minimum 26, TalkBack and tablet",
+    "Mobile performance benchmarks",
+    "Admin play RPC/editor and final signed release",
+    "Exactly-once delivery: current backend has no comment receipt/idempotency; marker does not survive process death and canceled server requests may finish later"
+  ],
+  "remote_schema_or_data_mutated": false,
+  "emulator_note": "Only dedicated emulator-5582 controlled; settings restored and emulator stopped. Other emulator instances left untouched."
+}

@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -86,9 +88,10 @@ fun AppContent(
                         AuthenticatedNavigation(access.account, onSignOut, playsFactory, onAccessFailure, statisticsFactory, ratingsFactory)
                     }
                 }
-                is AccessState.Blocked -> Column(Modifier.padding(28.dp).testTag("connection-blocked"),
+                is AccessState.Blocked -> Column(Modifier.padding(28.dp).verticalScroll(rememberScrollState()).testTag("connection-blocked"),
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(access.problem.message(), style = MaterialTheme.typography.headlineSmall)
+                    if (playsFactory != null) Text("Se avevi inviato una modifica, verifica i commenti prima di ripetere l'operazione.")
                     Button(onClick = onRetry) { Text("Riprova") }
                     TextButton(onClick = onNetworkSettings) { Text("Impostazioni rete") }
                     TextButton(onClick = onSignOut) { Text("Esci dall’account") }

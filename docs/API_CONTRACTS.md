@@ -60,6 +60,8 @@ Creazione: `POST /rest/v1/play_comments` con `{play_id,content}`. Modifica: PATC
 
 Normalizzare il contenuto con trim e accettare da 1 a 1.000 code point Unicode. Il server applica il proprio vincolo SQL e RLS. Non inviare autore, user_id, timestamp o ruolo. Il trigger deriva `author_name` dal JWT e modifica `updated_at`; il nome resta una presentazione, non un'identità autorizzativa. Anche gli admin possono eliminare soltanto i propri commenti.
 
+La 0.4.0 implementa questi endpoint con filtri id/user_id/play_id e return=representation. NUL e surrogate isolate sono rifiutati prima del trasporto. Una risposta 2xx invalida è esito incerto; PATCH/DELETE con zero righe è commento assente o non modificabile. Dopo un successo si rilegge la prima pagina; dopo un esito incerto tutte le pagine prima di riabilitare gli invii. Dettagli e limiti: [PHASE4_COMMENTS.md](PHASE4_COMMENTS.md).
+
 La modifica commento non dispone attualmente di un controllo optimistic locking: prevale l'ultimo salvataggio autorizzato. La creazione commento non è idempotente: dopo un timeout non eseguire retry automatici. Rileggere i commenti e rendere esplicito l'esito incerto all'utente.
 
 ## RPC partite proposte

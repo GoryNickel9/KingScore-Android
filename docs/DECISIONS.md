@@ -16,7 +16,7 @@ Usare il catalogo reale, non il replay incompleto delle migrazioni, per definire
 
 | Voce | Decisione o verifica |
 | --- | --- |
-| Package ID | `app.kingscore.android` nella build 0.3.5 |
+| Package ID | `app.kingscore.android` nella build 0.4.0 |
 | Android minimo | API 26, per java.time senza desugaring; dispositivo minimo ancora da provare |
 | Target e compile SDK | API 36; build, lint e installazione su emulatore API 31 verificati |
 | Contratti Kotlin | Compilati con Kotlin JVM 1.9.24, Java 21, bytecode target 17; senza dipendenze Android o librerie JSON |
@@ -27,6 +27,10 @@ La combinazione fissata compila l'APK e i test Android. La verifica su un telefo
 ## Immagini in lettura, build 0.3.5
 
 Coil 3.1.0 aggiunge decodifica e integrazione Compose senza cambiare Kotlin o Compose già fissati. Il loader appartiene all'account connesso; cache memoria/disco disabilitate e client HTTP separato da Auth. Prima di ogni caricamento si verifica la sessione online, senza inoltrare token alle immagini pubbliche. I formati non decodificabili mostrano il fallback e un retry esplicito; non sono aggiunte dipendenze per SVG o GIF animate. Avatar modificabili e upload restano esclusi. Dettagli e fonti: [PHASE3_IMAGES.md](PHASE3_IMAGES.md).
+
+## Scritture commenti
+
+La 0.4.0 abilita solo i commenti propri con endpoint esistenti. Un client OkHttp distinto evita retry impliciti delle mutazioni; un contatore del singolo exchange impedisce anche follow-up 503 prima di un secondo invio. Gli esiti incerti richiedono una rilettura completa, senza deduplicazione per testo. Un indicatore in memoria copre Checking e ricreazione, ma non la morte del processo. Per garantire idempotenza o risolvere una richiesta dal receipt servirà un contratto backend aggiuntivo. Non viene introdotto per questo incremento.
 
 ## Distribuzione
 

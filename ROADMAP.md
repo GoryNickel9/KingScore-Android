@@ -16,7 +16,7 @@ Il login è obbligatorio per tutte le schermate funzionali: l'app non offre acce
 
 ## Analisi dello stato attuale
 
-`KingScore-Android` contiene i contratti verificati della fase 1, login e sessione cifrata della fase 2 e le schermate dati della fase 3. La build 0.3.5 comprende Home, storico con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, statistiche essenziali, classifiche e storico ELO. `../King-Score` contiene una web app React, TypeScript e Vite, con Supabase Auth, PostgreSQL, Storage e una funzione per il ricalcolo ELO notturno. L'app Android riusa il backend attraverso letture verificate online.
+`KingScore-Android` contiene i contratti verificati della fase 1, login e sessione cifrata della fase 2, le schermate dati della fase 3 e i commenti propri della fase 4. La build 0.4.0 comprende Home, storico con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, creazione/modifica/eliminazione dei commenti propri, statistiche essenziali, classifiche e storico ELO. `../King-Score` contiene una web app React, TypeScript e Vite, con Supabase Auth, PostgreSQL, Storage e una funzione per il ricalcolo ELO notturno. L'app Android riusa il backend attraverso richieste verificate online.
 
 Schema, grant, policy e funzioni sono stati verificati sul progetto Supabase collegato il 13 ottobre 2026, con probe SQL read-only e richieste HTTP senza dati applicativi. Il dettaglio dei risultati e dei controlli ancora necessari è in [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md).
 
@@ -112,6 +112,8 @@ Implementati pagine da 50 con cursori, dettaglio, punteggi e commenti in lettura
 
 ### Fase 4 Commenti e scritture admin
 
+I commenti propri sono implementati nella 0.4.0: ownership anche per admin, conferma eliminazione, Unicode, stato invio, esiti incerti e riconciliazione completa. Le verifiche usano account e dati sintetici; POST/PATCH/DELETE con JWT reali restano da collaudare in ambiente isolato. Le RPC e l'editor partite admin non sono ancora abilitati. Dettagli: [docs/PHASE4_COMMENTS.md](docs/PHASE4_COMMENTS.md).
+
 1. Implementare e testare RPC transazionali per creazione e modifica di partita con punteggi. Usare identificatori di richiesta per retry idempotenti e controlli server su ruolo, partecipanti e valori. Verificare il contratto di `replace_play_scores` rispetto alle nuove RPC.
 2. Implementare aggiunta, modifica ed eliminazione partite per admin, selezione giochi e giocatori esistenti e creazione minima dove necessaria. Conservare i campi del modulo durante una perdita temporanea di rete finché il processo resta attivo; non accodare invii offline o inviare automaticamente dopo la riconnessione.
 3. Mostrare separatamente partita salvata e rating disponibili. Dopo una scrittura rileggere i dati pubblicati senza richiedere il ricalcolo ELO; rispettare i tempi dei processi backend esistenti. Il comando di aggiornamento schermata esegue soltanto letture.
@@ -165,11 +167,11 @@ La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Ke
 
 ## Lavoro residuo per la versione 1.0 stabile
 
-Stima aggiornata dopo immagini e avatar, 13 ottobre 2026. La 1.0 comprende il perimetro MVP concordato e distribuzione privata: consultazione, commenti propri, gestione partite admin, login obbligatorio e funzionamento solo con Internet. L'APK attuale è un'anteprima con firma debug; il superamento della CI non sostituisce le verifiche con account reali e telefoni.
+Stima conservativa dopo i commenti propri, 13 ottobre 2026. Il lavoro sulle scritture admin rimane da valutare con le RPC nell'ambiente isolato; la fascia complessiva resta 58–96 ore fino a quelle prove. La 1.0 comprende il perimetro MVP concordato e distribuzione privata: consultazione, commenti propri, gestione partite admin, login obbligatorio e funzionamento solo con Internet. L'APK attuale è un'anteprima con firma debug; il superamento della CI non sostituisce le verifiche con account reali e telefoni.
 
 | Lavoro residuo | Stima effettiva | Criterio di completamento |
 | --- | --- | --- |
-| Commenti e CRUD partite admin | 28–48 ore | RPC atomiche deployate e testate in ambiente isolato, permessi, conflitti e retry verificati |
+| CRUD partite admin e integrazione backend | 28–48 ore | RPC atomiche deployate e testate in ambiente isolato, permessi, conflitti e retry verificati |
 | Verifica e release privata | 20–32 ore | Account reali, telefoni, rete e aggiornamento APK testati; chiave di firma definitiva e procedura di rilascio |
 | Totale con riserva del 20% | **58–96 ore** | Circa 7–12 giornate da 8 ore; stima di lavoro, non scadenza di calendario |
 
@@ -177,4 +179,4 @@ La dipendenza principale è il backend delle scritture: `get_play_editor_v1`, `c
 
 ## Prossima attività
 
-Implementare creazione, modifica ed eliminazione dei commenti propri secondo RLS e i contratti esistenti, con login obbligatorio e blocco senza rete. Prima dell'editor partite admin serviranno ambiente isolato, deploy e test delle nuove RPC transazionali.
+Preparare le migrazioni e i test isolati delle RPC transazionali per le partite admin, prima di abilitare l'editor Android. Il deploy richiederà l'ambiente di sviluppo corretto; nessuna mutazione di produzione è stata eseguita per i commenti.

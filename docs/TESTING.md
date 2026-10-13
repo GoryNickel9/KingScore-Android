@@ -157,11 +157,32 @@ La cattura verticale conferma che Statistiche compare su due righe senza perdere
 
 Risultati, runner, checksum APK e cinque catture sono in [evidence/phase35-validation.json](evidence/phase35-validation.json). Le immagini rosa sono PNG sintetici usati per verificare la decodifica, senza dati personali. Nessuna richiesta a CDN reali, nuova probe o mutazione Supabase. La revisione statica del subagent non ha rilevato problemi P1/P2; non sostituisce i controlli runtime. La CI esegue Node, test JVM, lint e APK; le prove Android sono locali.
 
+## Risultati commenti propri, build 0.4.0
+
+| Controllo eseguito | Esito | Ambito |
+| --- | --- | --- |
+| Build debug e APK test | Superati in 6 minuti e 26 secondi | Nessuna nuova dipendenza; firma debug |
+| Test JVM completi | 138 superati, zero errori | 24 nuovi casi per payload, bearer, ownership, Unicode, esiti incerti e lifecycle |
+| Test Android API 31 | 45 superati in 200,071 secondi | Otto nuovi percorsi commenti, oltre alle funzionalità precedenti |
+| Contratti Kotlin e test Node | Dieci gruppi Kotlin e dieci test Node superati | Include rifiuto NUL e surrogate isolate |
+| Layout con testo al 130% | Due percorsi superati in verticale e orizzontale | Modulo con tastiera, CRUD e riconciliazione; circa 376 dp in verticale, animazioni disattivate |
+| Lint debug | Zero errori, 24 warning preesistenti | Nessun nuovo warning |
+
+I test del writer verificano rappresentazione di una riga, autore/partita/contenuto attesi, zero righe, 403 senza logout, un solo refresh 401, timeout e 5xx senza replay. Una fixture TCP locale risponde 503 Retry-After: 0: il trasporto OkHttp effettua una sola richiesta. L'esito incerto blocca nuovi invii; la rilettura attraversa tutte le pagine, anche dopo un errore del dettaglio o ricreazione del ViewModel.
+
+La prima compilazione dei test non trovava com.sun HttpServer nel classpath Android; la fixture usa ora ServerSocket. La prima prova Checking cercava la Home al rientro, mentre la navigazione ripristina il dettaglio. Il test corretto verifica quella destinazione, nuove letture su tutte le pagine e un solo invio. La suite completa e i layout sono rieseguiti sull'APK finale.
+
+La revisione statica ha rilevato e fatto correggere la perdita di UNCERTAIN nei percorsi refresh/retry e durante Checking. Il registro per account conserva solo UUID di partite, non testo o command. Logout e cambio account cancellano questo stato; le risposte tardive non ripristinano editor o righe. L'ultima revisione non ha rilevato problemi P1/P2 residui.
+
+Risultati, runner, checksum e nove catture sono in [evidence/phase40-validation.json](evidence/phase40-validation.json). Le immagini mostrano fixture sintetiche. Il backend non è stato modificato e nessuna mutazione con JWT reale è stata eseguita. Prima della stabile servono test isolati con account ordinario/admin e collaudo su telefoni. Il backend commenti non offre receipt o idempotenza: nessuna garanzia exactly-once, e l'indicatore in memoria non sopravvive alla morte del processo. Dettagli: [PHASE4_COMMENTS.md](PHASE4_COMMENTS.md).
+
 ## Controlli ancora aperti
+
+La build 0.4.0 implementa i commenti propri. Le prove simulate non sostituiscono le mutazioni con JWT reali in un database isolato; il server non è stato modificato durante questo incremento.
 
 1. Login con account reale ordinario/admin, revoca remota effettiva e riavvio del processo con sessione reale. Nessuna credenziale utente è stata usata nei test.
 2. Installazione e aggiornamento su telefono fisico, API minima 26, TalkBack e caratteri grandi. I risultati dell'emulatore API 31 non coprono questi dispositivi.
-3. Nella fase 4: commenti e scritture isolate secondo i controlli sotto. Nel collaudo finale: CDN reali e rifiniture accessibilità.
+3. Nella fase 4: RPC e scritture partite admin isolate secondo i controlli sotto. Nel collaudo finale: mutazioni commenti con JWT reali, CDN e rifiniture accessibilità.
 
 Non sono stati eseguiti benchmark mobili. Home, Statistiche ed ELO sono implementate nell'incremento 0.3.1; la verifica con dati reali rimane aperta.
 

@@ -7,7 +7,8 @@ import kingscore.contracts.v1.PlayDetail
 import kingscore.contracts.v1.PlayCommentRow
 import kotlinx.serialization.json.*
 
-class SupabasePlaysRepository(private val reader: AuthenticatedReader, private val accountId: UUID) : PlaysRepository {
+class SupabasePlaysRepository(private val reader: AuthenticatedReader, private val accountId: UUID,
+    override val commentWrites: CommentWrites? = null) : PlaysRepository {
     override suspend fun history(filters: HistoryFilters, after: PlayCursor?): PlayPage {
         val query = filters.query.trim()
         val projection = "*,games(*),play_scores(*,players(*))" +

@@ -22,6 +22,15 @@ private fun validateComment(content: String) {
     require(content == content.trim()) { "Comment must be trimmed" }
     // PostgreSQL char_length counts code points, unlike JVM String.length.
     require(content.codePointCount(0, content.length) in 1..1000) { "Comment must contain 1..1000 code points" }
+    require('\u0000' !in content) { "NUL is not a PostgreSQL text character" }
+    var index = 0
+    while (index < content.length) {
+        val char = content[index++]
+        if (Character.isHighSurrogate(char)) {
+            require(index < content.length && Character.isLowSurrogate(content[index])) { "Unpaired surrogate" }
+            index++
+        } else require(!Character.isLowSurrogate(char)) { "Unpaired surrogate" }
+    }
 }
 
 /** Proposed RPC payload. IDs on update must already belong to that play. */

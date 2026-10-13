@@ -57,10 +57,12 @@ fun HistoryRoute(repository: PlaysRepository, onAccessFailure: (AuthProblem) -> 
 @Composable
 fun DetailRoute(repository: PlaysRepository, accountId: UUID, id: UUID, onAccessFailure: (AuthProblem) -> Unit,
     onOpenGame: (UUID) -> Unit, onOpenPlayer: (UUID) -> Unit, onBack: () -> Unit) {
-    val model: PlayDetailViewModel = viewModel(factory = modelFactory { PlayDetailViewModel(repository, id, onAccessFailure) })
+    val model: PlayDetailViewModel = viewModel(factory = modelFactory { PlayDetailViewModel(repository, id, onAccessFailure, accountId) })
     val state by model.detail.collectAsStateWithLifecycle()
     LaunchedEffect(model) { if (model.detail.value.loading) model.refresh() }
-    DetailScreen(state, accountId, model::refresh, model::moreComments, model::retryComments, onBack, onOpenGame, onOpenPlayer)
+    DetailScreen(state, accountId, model::refresh, model::moreComments, model::retryComments, onBack, onOpenGame, onOpenPlayer,
+        if (repository.commentWrites == null) null else CommentActions(model::composeComment, model::changeComment,
+            model::saveComment, model::requestCommentDeletion, model::deleteComment, model::dismissComment, model::recheckComments))
 }
 
 @Composable
@@ -123,9 +125,9 @@ fun HistoryScreen(state: HistoryState, query: String, onQuery: (String) -> Unit,
 @Composable
 fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onMoreComments: () -> Unit,
     onRetryComments: () -> Unit, onBack: () -> Unit, onOpenGame: ((UUID) -> Unit)? = null,
-    onOpenPlayer: ((UUID) -> Unit)? = null) {
+    onOpenPlayer: ((UUID) -> Unit)? = null, commentActions: CommentActions? = null) {
     Column(Modifier.fillMaxSize().testTag("play-detail")) {
-        ScreenHeader("Dettaglio partita", onBack, onRefresh, state.loading)
+        ScreenHeader("Dettaglio partita", onBack, onRefresh, state.loading || state.commentSaving)
         when {
             state.loading -> Loading("Caricamento partita…")
             state.problem != null -> Box(Modifier.padding(24.dp)) { DataError(state.problem, onRefresh) }
@@ -185,6 +187,9 @@ fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onM
                         Text(detail.play.notes?.takeIf { it.isNotBlank() } ?: "Nessuna nota.", modifier = Modifier.padding(top = 8.dp))
                     }
                     item { Text("Commenti", style = MaterialTheme.typography.titleLarge) }
+                    if (commentActions != null) item {
+                        CommentControls(state, commentActions)
+                    }
                     items(state.comments, key = { it.id.toString() }) { comment ->
                         Card(Modifier.fillMaxWidth()) {
                             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -192,6 +197,16 @@ fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onM
                                 Text(DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm").withZone(ZoneId.systemDefault()).format(comment.created_at),
                                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(comment.content)
+                                if (commentActions != null && comment.user_id == accountId) {
+                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        TextButton(onClick = { commentActions.compose(comment.id) }, enabled = !state.commentSaving &&
+                                            !state.commentsLoading && state.commentWriteProblem != CommentProblem.UNCERTAIN,
+                                            modifier = Modifier.testTag("edit-comment-${comment.id}")) { Text("Modifica") }
+                                        TextButton(onClick = { commentActions.requestDelete(comment.id) }, enabled = !state.commentSaving &&
+                                            !state.commentsLoading && state.commentWriteProblem != CommentProblem.UNCERTAIN,
+                                            modifier = Modifier.testTag("delete-comment-${comment.id}")) { Text("Elimina") }
+                                    }
+                                }
                             }
                         }
                     }
@@ -205,6 +220,7 @@ fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onM
             }
         }
     }
+    if (commentActions != null) CommentDialogs(state, commentActions)
 }
 
 @Composable

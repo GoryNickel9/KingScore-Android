@@ -9,8 +9,10 @@ import app.kingscore.android.data.remote.SupabasePlaysRepository
 import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.data.repository.RatingsRepository
 import app.kingscore.android.data.repository.StatisticsRepository
+import app.kingscore.android.data.repository.AccountCommentOutcomes
 import app.kingscore.android.data.remote.SupabaseRatingsRepository
 import app.kingscore.android.data.remote.SupabaseStatisticsRepository
+import app.kingscore.android.data.remote.SupabaseCommentWrites
 import java.util.UUID
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
@@ -28,8 +30,11 @@ class KingScoreApplication : Application() {
         private set
     var auth: SupabaseAuthRepository? = null
         private set
+    private val commentOutcomes = AccountCommentOutcomes()
+    fun clearCommentOutcomes() { commentOutcomes.clear() }
 
-    fun plays(accountId: UUID): PlaysRepository = SupabasePlaysRepository(SupabaseReader(checkNotNull(auth), network), accountId)
+    fun plays(accountId: UUID): PlaysRepository = SupabasePlaysRepository(SupabaseReader(checkNotNull(auth), network), accountId,
+        SupabaseCommentWrites(checkNotNull(auth), network, accountId, outcomes = commentOutcomes.forAccount(accountId)))
     fun ratings(accountId: UUID): RatingsRepository = SupabaseRatingsRepository(SupabaseReader(checkNotNull(auth), network), accountId)
     fun statistics(accountId: UUID): StatisticsRepository = SupabaseStatisticsRepository(SupabaseReader(checkNotNull(auth), network), accountId, plays(accountId))
     fun images(accountId: UUID, onAccessFailure: (AuthProblem) -> Unit) = AccountImages(this, BuildConfig.SUPABASE_URL,

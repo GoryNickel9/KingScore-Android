@@ -1,0 +1,2891 @@
+{
+  "captured_at_utc": "2026-10-13T10:45:44.0931736Z",
+  "project_ref": "rixivmeipbizoxyvrvaf",
+  "source": "Supabase CLI Management API; catalog metadata only; BEGIN READ ONLY / ROLLBACK",
+  "audit": {
+    "columns": [
+      {
+        "column_default": "gen_random_uuid()",
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 1,
+        "table_name": "elo_history",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "play_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 2,
+        "table_name": "elo_history",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "game_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 3,
+        "table_name": "elo_history",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "player_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 4,
+        "table_name": "elo_history",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "player_name",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 5,
+        "table_name": "elo_history",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "rating",
+        "data_type": "integer",
+        "is_nullable": "NO",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 6,
+        "table_name": "elo_history",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": null,
+        "column_name": "rating_change",
+        "data_type": "integer",
+        "is_nullable": "NO",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 7,
+        "table_name": "elo_history",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": null,
+        "column_name": "date",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 8,
+        "table_name": "elo_history",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "false",
+        "column_name": "is_general",
+        "data_type": "boolean",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 9,
+        "table_name": "elo_history",
+        "udt_name": "bool"
+      },
+      {
+        "column_default": null,
+        "column_name": "games_played",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 10,
+        "table_name": "elo_history",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": null,
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 11,
+        "table_name": "elo_history",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 12,
+        "table_name": "elo_history",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "gen_random_uuid()",
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 1,
+        "table_name": "elo_recalc_runs",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "started_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 2,
+        "table_name": "elo_recalc_runs",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": null,
+        "column_name": "finished_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 3,
+        "table_name": "elo_recalc_runs",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "'running'::text",
+        "column_name": "status",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 4,
+        "table_name": "elo_recalc_runs",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "summary",
+        "data_type": "jsonb",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 5,
+        "table_name": "elo_recalc_runs",
+        "udt_name": "jsonb"
+      },
+      {
+        "column_default": "gen_random_uuid()",
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 1,
+        "table_name": "games",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "name",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 2,
+        "table_name": "games",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "bga_id",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 3,
+        "table_name": "games",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "image_url",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 4,
+        "table_name": "games",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "min_players",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 5,
+        "table_name": "games",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": null,
+        "column_name": "max_players",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 6,
+        "table_name": "games",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 7,
+        "table_name": "games",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "gen_random_uuid()",
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 1,
+        "table_name": "play_comments",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "play_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 2,
+        "table_name": "play_comments",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": "auth.uid()",
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 3,
+        "table_name": "play_comments",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": "'Utente'::text",
+        "column_name": "author_name",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 4,
+        "table_name": "play_comments",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "content",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 5,
+        "table_name": "play_comments",
+        "udt_name": "text"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 6,
+        "table_name": "play_comments",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 7,
+        "table_name": "play_comments",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "gen_random_uuid()",
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 1,
+        "table_name": "play_scores",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "play_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 2,
+        "table_name": "play_scores",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "player_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 3,
+        "table_name": "play_scores",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "score",
+        "data_type": "numeric",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 4,
+        "table_name": "play_scores",
+        "udt_name": "numeric"
+      },
+      {
+        "column_default": "false",
+        "column_name": "winner",
+        "data_type": "boolean",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 5,
+        "table_name": "play_scores",
+        "udt_name": "bool"
+      },
+      {
+        "column_default": null,
+        "column_name": "color",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 6,
+        "table_name": "play_scores",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "role",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 7,
+        "table_name": "play_scores",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "position",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 8,
+        "table_name": "play_scores",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "gen_random_uuid()",
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 1,
+        "table_name": "player_general_ratings",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "player_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 2,
+        "table_name": "player_general_ratings",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 3,
+        "table_name": "player_general_ratings",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": "1000",
+        "column_name": "rating",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 4,
+        "table_name": "player_general_ratings",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "0",
+        "column_name": "games_played",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 5,
+        "table_name": "player_general_ratings",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "0",
+        "column_name": "wins",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 6,
+        "table_name": "player_general_ratings",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "0",
+        "column_name": "losses",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 7,
+        "table_name": "player_general_ratings",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "0",
+        "column_name": "draws",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 8,
+        "table_name": "player_general_ratings",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": null,
+        "column_name": "last_played_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 9,
+        "table_name": "player_general_ratings",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 10,
+        "table_name": "player_general_ratings",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 11,
+        "table_name": "player_general_ratings",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "gen_random_uuid()",
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 1,
+        "table_name": "player_ratings",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "player_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 2,
+        "table_name": "player_ratings",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "game_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 3,
+        "table_name": "player_ratings",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": "1000",
+        "column_name": "rating",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 4,
+        "table_name": "player_ratings",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "0",
+        "column_name": "games_played",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 5,
+        "table_name": "player_ratings",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "0",
+        "column_name": "wins",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 6,
+        "table_name": "player_ratings",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "0",
+        "column_name": "losses",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 7,
+        "table_name": "player_ratings",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "0",
+        "column_name": "draws",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 8,
+        "table_name": "player_ratings",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": null,
+        "column_name": "last_played_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 9,
+        "table_name": "player_ratings",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 10,
+        "table_name": "player_ratings",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 11,
+        "table_name": "player_ratings",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "gen_random_uuid()",
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 1,
+        "table_name": "players",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 2,
+        "table_name": "players",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "name",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 3,
+        "table_name": "players",
+        "udt_name": "text"
+      },
+      {
+        "column_default": "false",
+        "column_name": "is_me",
+        "data_type": "boolean",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 4,
+        "table_name": "players",
+        "udt_name": "bool"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 5,
+        "table_name": "players",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": null,
+        "column_name": "alias",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 6,
+        "table_name": "players",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "avatar_url",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 7,
+        "table_name": "players",
+        "udt_name": "text"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 8,
+        "table_name": "players",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": null,
+        "column_name": "color",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 9,
+        "table_name": "players",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "account_user_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 10,
+        "table_name": "players",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": "gen_random_uuid()",
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 1,
+        "table_name": "plays",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 2,
+        "table_name": "plays",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "game_id",
+        "data_type": "uuid",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 3,
+        "table_name": "plays",
+        "udt_name": "uuid"
+      },
+      {
+        "column_default": null,
+        "column_name": "played_at",
+        "data_type": "date",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 4,
+        "table_name": "plays",
+        "udt_name": "date"
+      },
+      {
+        "column_default": null,
+        "column_name": "location",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 5,
+        "table_name": "plays",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "notes",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 6,
+        "table_name": "plays",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "duration_minutes",
+        "data_type": "integer",
+        "is_nullable": "YES",
+        "numeric_precision": 32,
+        "numeric_scale": 0,
+        "ordinal_position": 7,
+        "table_name": "plays",
+        "udt_name": "int4"
+      },
+      {
+        "column_default": "'manual'::text",
+        "column_name": "source",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 8,
+        "table_name": "plays",
+        "udt_name": "text"
+      },
+      {
+        "column_default": null,
+        "column_name": "bga_table_id",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 9,
+        "table_name": "plays",
+        "udt_name": "text"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 10,
+        "table_name": "plays",
+        "udt_name": "timestamptz"
+      },
+      {
+        "column_default": "false",
+        "column_name": "is_cooperative",
+        "data_type": "boolean",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 11,
+        "table_name": "plays",
+        "udt_name": "bool"
+      },
+      {
+        "column_default": null,
+        "column_name": "team_won",
+        "data_type": "boolean",
+        "is_nullable": "YES",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 12,
+        "table_name": "plays",
+        "udt_name": "bool"
+      },
+      {
+        "column_default": "true",
+        "column_name": "id",
+        "data_type": "boolean",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 1,
+        "table_name": "registration_settings",
+        "udt_name": "bool"
+      },
+      {
+        "column_default": "true",
+        "column_name": "registrations_open",
+        "data_type": "boolean",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 2,
+        "table_name": "registration_settings",
+        "udt_name": "bool"
+      },
+      {
+        "column_default": "now()",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "ordinal_position": 3,
+        "table_name": "registration_settings",
+        "udt_name": "timestamptz"
+      }
+    ],
+    "constraints": [
+      {
+        "definition": "FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE",
+        "name": "elo_history_game_id_fkey",
+        "table_name": "elo_history",
+        "type": "f"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "elo_history_pkey",
+        "table_name": "elo_history",
+        "type": "p"
+      },
+      {
+        "definition": "FOREIGN KEY (play_id) REFERENCES plays(id) ON DELETE CASCADE",
+        "name": "elo_history_play_id_fkey",
+        "table_name": "elo_history",
+        "type": "f"
+      },
+      {
+        "definition": "FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE",
+        "name": "elo_history_player_id_fkey",
+        "table_name": "elo_history",
+        "type": "f"
+      },
+      {
+        "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL",
+        "name": "elo_history_user_id_fkey",
+        "table_name": "elo_history",
+        "type": "f"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "elo_recalc_runs_pkey",
+        "table_name": "elo_recalc_runs",
+        "type": "p"
+      },
+      {
+        "definition": "UNIQUE (bga_id)",
+        "name": "games_bga_id_key",
+        "table_name": "games",
+        "type": "u"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "games_pkey",
+        "table_name": "games",
+        "type": "p"
+      },
+      {
+        "definition": "CHECK (((char_length(btrim(content)) >= 1) AND (char_length(btrim(content)) <= 1000)))",
+        "name": "play_comments_content_check",
+        "table_name": "play_comments",
+        "type": "c"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "play_comments_pkey",
+        "table_name": "play_comments",
+        "type": "p"
+      },
+      {
+        "definition": "FOREIGN KEY (play_id) REFERENCES plays(id) ON DELETE CASCADE",
+        "name": "play_comments_play_id_fkey",
+        "table_name": "play_comments",
+        "type": "f"
+      },
+      {
+        "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "play_comments_user_id_fkey",
+        "table_name": "play_comments",
+        "type": "f"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "play_scores_pkey",
+        "table_name": "play_scores",
+        "type": "p"
+      },
+      {
+        "definition": "FOREIGN KEY (play_id) REFERENCES plays(id) ON DELETE CASCADE",
+        "name": "play_scores_play_id_fkey",
+        "table_name": "play_scores",
+        "type": "f"
+      },
+      {
+        "definition": "FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE",
+        "name": "play_scores_player_id_fkey",
+        "table_name": "play_scores",
+        "type": "f"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "player_general_ratings_pkey",
+        "table_name": "player_general_ratings",
+        "type": "p"
+      },
+      {
+        "definition": "FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE",
+        "name": "player_general_ratings_player_id_fkey",
+        "table_name": "player_general_ratings",
+        "type": "f"
+      },
+      {
+        "definition": "UNIQUE (player_id, user_id)",
+        "name": "player_general_ratings_player_id_user_id_key",
+        "table_name": "player_general_ratings",
+        "type": "u"
+      },
+      {
+        "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "player_general_ratings_user_id_fkey",
+        "table_name": "player_general_ratings",
+        "type": "f"
+      },
+      {
+        "definition": "FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE",
+        "name": "player_ratings_game_id_fkey",
+        "table_name": "player_ratings",
+        "type": "f"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "player_ratings_pkey",
+        "table_name": "player_ratings",
+        "type": "p"
+      },
+      {
+        "definition": "FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE",
+        "name": "player_ratings_player_id_fkey",
+        "table_name": "player_ratings",
+        "type": "f"
+      },
+      {
+        "definition": "UNIQUE (player_id, game_id)",
+        "name": "player_ratings_player_id_game_id_key",
+        "table_name": "player_ratings",
+        "type": "u"
+      },
+      {
+        "definition": "FOREIGN KEY (account_user_id) REFERENCES auth.users(id) ON DELETE SET NULL",
+        "name": "players_account_user_id_fkey",
+        "table_name": "players",
+        "type": "f"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "players_pkey",
+        "table_name": "players",
+        "type": "p"
+      },
+      {
+        "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "players_user_id_fkey",
+        "table_name": "players",
+        "type": "f"
+      },
+      {
+        "definition": "FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE",
+        "name": "plays_game_id_fkey",
+        "table_name": "plays",
+        "type": "f"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "plays_pkey",
+        "table_name": "plays",
+        "type": "p"
+      },
+      {
+        "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "plays_user_id_fkey",
+        "table_name": "plays",
+        "type": "f"
+      },
+      {
+        "definition": "CHECK ((id = true))",
+        "name": "registration_settings_id_check",
+        "table_name": "registration_settings",
+        "type": "c"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "registration_settings_pkey",
+        "table_name": "registration_settings",
+        "type": "p"
+      }
+    ],
+    "database": "postgres",
+    "functions": [
+      {
+        "anon_execute": false,
+        "arguments": "",
+        "authenticated_execute": true,
+        "definition": "CREATE OR REPLACE FUNCTION public.admin_list_registrations()\n RETURNS TABLE(user_id uuid, email text, display_name text, created_at timestamp with time zone, confirmed_at timestamp with time zone, last_sign_in_at timestamp with time zone, total_count bigint)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\n  SELECT\n    users.id,\n    users.email,\n    users.raw_user_meta_data ->> 'name',\n    users.created_at,\n    users.email_confirmed_at,\n    users.last_sign_in_at,\n    COUNT(*) OVER ()\n  FROM auth.users AS users\n  WHERE auth.uid() IS NOT NULL\n    AND auth.jwt() -> 'app_metadata' ->> 'role' = 'admin'\n  ORDER BY users.created_at DESC\n  LIMIT 500;\n$function$\n",
+        "name": "admin_list_registrations",
+        "security_definer": true,
+        "settings": [
+          "search_path=\"\""
+        ],
+        "volatility": "s"
+      },
+      {
+        "anon_execute": false,
+        "arguments": "",
+        "authenticated_execute": false,
+        "definition": "CREATE OR REPLACE FUNCTION public.get_play_user_ids()\n RETURNS TABLE(user_id uuid)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n  SELECT DISTINCT user_id\n  FROM plays\n  WHERE user_id IS NOT NULL\n$function$\n",
+        "name": "get_play_user_ids",
+        "security_definer": true,
+        "settings": [
+          "search_path=public"
+        ],
+        "volatility": "s"
+      },
+      {
+        "anon_execute": true,
+        "arguments": "",
+        "authenticated_execute": true,
+        "definition": "CREATE OR REPLACE FUNCTION public.guard_linked_player_profile_update()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO ''\nAS $function$\nBEGIN\n  IF (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin' THEN\n    RETURN NEW;\n  END IF;\n\n  IF auth.uid() IS NULL OR OLD.account_user_id IS DISTINCT FROM auth.uid() THEN\n    RAISE EXCEPTION 'Permission denied: player account is not linked to the current user'\n      USING ERRCODE = '42501';\n  END IF;\n\n  IF (to_jsonb(NEW) - 'avatar_url' - 'updated_at')\n      IS DISTINCT FROM (to_jsonb(OLD) - 'avatar_url' - 'updated_at') THEN\n    RAISE EXCEPTION 'Players may only update their own profile image'\n      USING ERRCODE = '42501';\n  END IF;\n\n  RETURN NEW;\nEND;\n$function$\n",
+        "name": "guard_linked_player_profile_update",
+        "security_definer": false,
+        "settings": [
+          "search_path=\"\""
+        ],
+        "volatility": "v"
+      },
+      {
+        "anon_execute": false,
+        "arguments": "p_play_id uuid, p_scores jsonb",
+        "authenticated_execute": true,
+        "definition": "CREATE OR REPLACE FUNCTION public.replace_play_scores(p_play_id uuid, p_scores jsonb)\n RETURNS SETOF play_scores\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\nBEGIN\n  IF (auth.jwt() -> 'app_metadata' ->> 'role') IS DISTINCT FROM 'admin' THEN\n    RAISE EXCEPTION 'Permission denied: only admins can edit game scores'\n      USING ERRCODE = '42501';\n  END IF;\n\n  IF NOT EXISTS (SELECT 1 FROM public.plays WHERE id = p_play_id) THEN\n    RAISE EXCEPTION 'Play % not found', p_play_id USING ERRCODE = 'P0002';\n  END IF;\n\n  DELETE FROM public.play_scores WHERE play_id = p_play_id;\n\n  INSERT INTO public.play_scores (play_id, player_id, score, winner, position)\n  SELECT\n    p_play_id,\n    (score_row ->> 'player_id')::UUID,\n    (score_row ->> 'score')::NUMERIC,\n    (score_row ->> 'winner')::BOOLEAN,\n    (score_row ->> 'position')::INTEGER\n  FROM jsonb_array_elements(p_scores) AS score_row;\n\n  RETURN QUERY\n    SELECT * FROM public.play_scores WHERE play_id = p_play_id ORDER BY id;\nEND;\n$function$\n",
+        "name": "replace_play_scores",
+        "security_definer": true,
+        "settings": [
+          "search_path=\"\""
+        ],
+        "volatility": "v"
+      },
+      {
+        "anon_execute": true,
+        "arguments": "",
+        "authenticated_execute": true,
+        "definition": "CREATE OR REPLACE FUNCTION public.set_play_comment_author()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO ''\nAS $function$\nBEGIN\n  NEW.author_name := COALESCE(\n    NULLIF(auth.jwt() -> 'user_metadata' ->> 'name', ''),\n    NULLIF(split_part(COALESCE(auth.jwt() ->> 'email', ''), '@', 1), ''),\n    'Utente'\n  );\n  NEW.updated_at := now();\n  RETURN NEW;\nEND;\n$function$\n",
+        "name": "set_play_comment_author",
+        "security_definer": false,
+        "settings": [
+          "search_path=\"\""
+        ],
+        "volatility": "v"
+      },
+      {
+        "anon_execute": true,
+        "arguments": "",
+        "authenticated_execute": true,
+        "definition": "CREATE OR REPLACE FUNCTION public.update_updated_at_column()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n  NEW.updated_at = TIMEZONE('utc'::text, NOW());\r\n  RETURN NEW;\r\nEND;\r\n$function$\n",
+        "name": "update_updated_at_column",
+        "security_definer": false,
+        "settings": null,
+        "volatility": "v"
+      }
+    ],
+    "indexes": [
+      {
+        "indexdef": "CREATE UNIQUE INDEX elo_history_game_uq ON public.elo_history USING btree (play_id, player_id, game_id) WHERE ((game_id IS NOT NULL) AND (is_general = false))",
+        "indexname": "elo_history_game_uq",
+        "tablename": "elo_history"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX elo_history_general_uq ON public.elo_history USING btree (play_id, player_id) WHERE (is_general = true)",
+        "indexname": "elo_history_general_uq",
+        "tablename": "elo_history"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX elo_history_pkey ON public.elo_history USING btree (id)",
+        "indexname": "elo_history_pkey",
+        "tablename": "elo_history"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_elo_history_game_id ON public.elo_history USING btree (game_id)",
+        "indexname": "idx_elo_history_game_id",
+        "tablename": "elo_history"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_elo_history_is_general ON public.elo_history USING btree (is_general)",
+        "indexname": "idx_elo_history_is_general",
+        "tablename": "elo_history"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_elo_history_play_id ON public.elo_history USING btree (play_id)",
+        "indexname": "idx_elo_history_play_id",
+        "tablename": "elo_history"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_elo_history_player_id ON public.elo_history USING btree (player_id)",
+        "indexname": "idx_elo_history_player_id",
+        "tablename": "elo_history"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_elo_history_user_id ON public.elo_history USING btree (user_id)",
+        "indexname": "idx_elo_history_user_id",
+        "tablename": "elo_history"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX elo_recalc_runs_pkey ON public.elo_recalc_runs USING btree (id)",
+        "indexname": "elo_recalc_runs_pkey",
+        "tablename": "elo_recalc_runs"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_elo_recalc_runs_status_started ON public.elo_recalc_runs USING btree (status, started_at DESC)",
+        "indexname": "idx_elo_recalc_runs_status_started",
+        "tablename": "elo_recalc_runs"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX games_bga_id_key ON public.games USING btree (bga_id)",
+        "indexname": "games_bga_id_key",
+        "tablename": "games"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX games_pkey ON public.games USING btree (id)",
+        "indexname": "games_pkey",
+        "tablename": "games"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX play_comments_pkey ON public.play_comments USING btree (id)",
+        "indexname": "play_comments_pkey",
+        "tablename": "play_comments"
+      },
+      {
+        "indexdef": "CREATE INDEX play_comments_play_id_created_at_idx ON public.play_comments USING btree (play_id, created_at)",
+        "indexname": "play_comments_play_id_created_at_idx",
+        "tablename": "play_comments"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_play_scores_play_id ON public.play_scores USING btree (play_id)",
+        "indexname": "idx_play_scores_play_id",
+        "tablename": "play_scores"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_play_scores_player_id ON public.play_scores USING btree (player_id)",
+        "indexname": "idx_play_scores_player_id",
+        "tablename": "play_scores"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX play_scores_pkey ON public.play_scores USING btree (id)",
+        "indexname": "play_scores_pkey",
+        "tablename": "play_scores"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_player_general_ratings_player_id ON public.player_general_ratings USING btree (player_id)",
+        "indexname": "idx_player_general_ratings_player_id",
+        "tablename": "player_general_ratings"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_player_general_ratings_rating ON public.player_general_ratings USING btree (rating DESC)",
+        "indexname": "idx_player_general_ratings_rating",
+        "tablename": "player_general_ratings"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_player_general_ratings_user_id ON public.player_general_ratings USING btree (user_id)",
+        "indexname": "idx_player_general_ratings_user_id",
+        "tablename": "player_general_ratings"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX player_general_ratings_pkey ON public.player_general_ratings USING btree (id)",
+        "indexname": "player_general_ratings_pkey",
+        "tablename": "player_general_ratings"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX player_general_ratings_player_id_user_id_key ON public.player_general_ratings USING btree (player_id, user_id)",
+        "indexname": "player_general_ratings_player_id_user_id_key",
+        "tablename": "player_general_ratings"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_player_ratings_game_id ON public.player_ratings USING btree (game_id)",
+        "indexname": "idx_player_ratings_game_id",
+        "tablename": "player_ratings"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_player_ratings_player_id ON public.player_ratings USING btree (player_id)",
+        "indexname": "idx_player_ratings_player_id",
+        "tablename": "player_ratings"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_player_ratings_rating ON public.player_ratings USING btree (rating DESC)",
+        "indexname": "idx_player_ratings_rating",
+        "tablename": "player_ratings"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX player_ratings_pkey ON public.player_ratings USING btree (id)",
+        "indexname": "player_ratings_pkey",
+        "tablename": "player_ratings"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX player_ratings_player_id_game_id_key ON public.player_ratings USING btree (player_id, game_id)",
+        "indexname": "player_ratings_player_id_game_id_key",
+        "tablename": "player_ratings"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_players_user_id ON public.players USING btree (user_id)",
+        "indexname": "idx_players_user_id",
+        "tablename": "players"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX players_account_user_id_uq ON public.players USING btree (account_user_id) WHERE (account_user_id IS NOT NULL)",
+        "indexname": "players_account_user_id_uq",
+        "tablename": "players"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX players_pkey ON public.players USING btree (id)",
+        "indexname": "players_pkey",
+        "tablename": "players"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX plays_pkey ON public.plays USING btree (id)",
+        "indexname": "plays_pkey",
+        "tablename": "plays"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX registration_settings_pkey ON public.registration_settings USING btree (id)",
+        "indexname": "registration_settings_pkey",
+        "tablename": "registration_settings"
+      }
+    ],
+    "policies": [
+      {
+        "cmd": "ALL",
+        "permissive": "PERMISSIVE",
+        "policyname": "Admins can manage all elo history",
+        "qual": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "elo_history",
+        "with_check": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)"
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Public can view elo_history",
+        "qual": "true",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "elo_history",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "permissive": "PERMISSIVE",
+        "policyname": "Admins can manage all games",
+        "qual": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "games",
+        "with_check": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)"
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Public can view games",
+        "qual": "true",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "games",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "games_read",
+        "qual": "true",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "games",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Anyone can view play comments",
+        "qual": "true",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "play_comments",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Authenticated users can comment on plays",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "play_comments",
+        "with_check": "(auth.uid() = user_id)"
+      },
+      {
+        "cmd": "DELETE",
+        "permissive": "PERMISSIVE",
+        "policyname": "Authors can delete their own play comments",
+        "qual": "(auth.uid() = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "play_comments",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "permissive": "PERMISSIVE",
+        "policyname": "Authors can update their own play comments",
+        "qual": "(auth.uid() = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "play_comments",
+        "with_check": "(auth.uid() = user_id)"
+      },
+      {
+        "cmd": "ALL",
+        "permissive": "PERMISSIVE",
+        "policyname": "Admins can manage all play scores",
+        "qual": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "play_scores",
+        "with_check": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)"
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Public can view play_scores",
+        "qual": "true",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "play_scores",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Users can view play_scores for their players",
+        "qual": "(EXISTS ( SELECT 1\n   FROM players\n  WHERE ((players.id = play_scores.player_id) AND (players.user_id = auth.uid()))))",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "play_scores",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "permissive": "PERMISSIVE",
+        "policyname": "Admins can manage all general ratings",
+        "qual": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "player_general_ratings",
+        "with_check": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)"
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Public can view player_general_ratings",
+        "qual": "true",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "player_general_ratings",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "permissive": "PERMISSIVE",
+        "policyname": "Admins can manage all player ratings",
+        "qual": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "player_ratings",
+        "with_check": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)"
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Public can view player_ratings",
+        "qual": "true",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "player_ratings",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "permissive": "PERMISSIVE",
+        "policyname": "Admins can manage all players",
+        "qual": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "players",
+        "with_check": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)"
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Public can view players",
+        "qual": "true",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "players",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "permissive": "PERMISSIVE",
+        "policyname": "Users can update linked player avatar",
+        "qual": "(account_user_id = auth.uid())",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "players",
+        "with_check": "(account_user_id = auth.uid())"
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Users can view their own players",
+        "qual": "(auth.uid() = user_id)",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "players",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "permissive": "PERMISSIVE",
+        "policyname": "Admins can manage all plays",
+        "qual": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "plays",
+        "with_check": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)"
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Public can view plays",
+        "qual": "true",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "plays",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "permissive": "PERMISSIVE",
+        "policyname": "Admins can update registration settings",
+        "qual": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "public",
+        "tablename": "registration_settings",
+        "with_check": "(((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)"
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Anyone can read registration settings",
+        "qual": "true",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "public",
+        "tablename": "registration_settings",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "permissive": "PERMISSIVE",
+        "policyname": "Admins can manage game images",
+        "qual": "((bucket_id = 'game-images'::text) AND (((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text))",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "storage",
+        "tablename": "objects",
+        "with_check": "((bucket_id = 'game-images'::text) AND (((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text))"
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Allow authenticated delete hylejo_1",
+        "qual": "((auth.uid())::text = (storage.foldername(name))[1])",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "storage",
+        "tablename": "objects",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Allow public read access hylejo_0",
+        "qual": "true",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "schemaname": "storage",
+        "tablename": "objects",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Authenticated users can delete game images 1r8zoow_1",
+        "qual": "((bucket_id = 'game-images'::text) AND ((auth.uid())::text = (storage.foldername(name))[1]))",
+        "roles": [
+          "public"
+        ],
+        "schemaname": "storage",
+        "tablename": "objects",
+        "with_check": null
+      },
+      {
+        "cmd": "DELETE",
+        "permissive": "PERMISSIVE",
+        "policyname": "Users can delete their own player avatars",
+        "qual": "((bucket_id = 'player-images'::text) AND (((storage.foldername(name))[1] = (auth.uid())::text) OR (((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)))",
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "storage",
+        "tablename": "objects",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "permissive": "PERMISSIVE",
+        "policyname": "Users can upload their own player avatars",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "schemaname": "storage",
+        "tablename": "objects",
+        "with_check": "((bucket_id = 'player-images'::text) AND (((storage.foldername(name))[1] = (auth.uid())::text) OR (((auth.jwt() -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)))"
+      }
+    ],
+    "read_only": "on",
+    "server_version": "17.6",
+    "table_grants": [
+      {
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "table_name": "elo_history"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "table_name": "elo_recalc_runs"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "table_name": "games"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "table_name": "games"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "table_name": "games"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "table_name": "games"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "table_name": "games"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "table_name": "games"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "table_name": "games"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "table_name": "games"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "table_name": "games"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "table_name": "games"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "table_name": "games"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "table_name": "games"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "table_name": "games"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "table_name": "games"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "table_name": "games"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "table_name": "games"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "table_name": "games"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "table_name": "games"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "table_name": "games"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "table_name": "games"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "table_name": "games"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "table_name": "play_comments"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "table_name": "play_scores"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "table_name": "player_ratings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "table_name": "players"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "table_name": "players"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "table_name": "players"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "table_name": "players"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "table_name": "players"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "table_name": "players"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "table_name": "players"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "table_name": "players"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "table_name": "players"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "table_name": "players"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "table_name": "players"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "table_name": "players"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "table_name": "players"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "table_name": "players"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "table_name": "players"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "table_name": "players"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "table_name": "players"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "table_name": "players"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "table_name": "players"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "table_name": "players"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "table_name": "players"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "table_name": "plays"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "table_name": "registration_settings"
+      },
+      {
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "table_name": "registration_settings"
+      }
+    ],
+    "tables": [
+      {
+        "name": "elo_history",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "elo_recalc_runs",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "games",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "play_comments",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "play_scores",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "player_general_ratings",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "player_ratings",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "players",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "plays",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "registration_settings",
+        "rls_enabled": true,
+        "rls_forced": false
+      }
+    ],
+    "triggers": [
+      {
+        "definition": "CREATE TRIGGER set_play_comment_author_before_write BEFORE INSERT OR UPDATE ON public.play_comments FOR EACH ROW EXECUTE FUNCTION set_play_comment_author()",
+        "enabled": "O",
+        "name": "set_play_comment_author_before_write",
+        "table_name": "play_comments"
+      },
+      {
+        "definition": "CREATE TRIGGER update_play_scores_updated_at BEFORE UPDATE ON public.play_scores FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()",
+        "enabled": "O",
+        "name": "update_play_scores_updated_at",
+        "table_name": "play_scores"
+      },
+      {
+        "definition": "CREATE TRIGGER update_player_general_ratings_updated_at BEFORE UPDATE ON public.player_general_ratings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()",
+        "enabled": "O",
+        "name": "update_player_general_ratings_updated_at",
+        "table_name": "player_general_ratings"
+      },
+      {
+        "definition": "CREATE TRIGGER update_player_ratings_updated_at BEFORE UPDATE ON public.player_ratings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()",
+        "enabled": "O",
+        "name": "update_player_ratings_updated_at",
+        "table_name": "player_ratings"
+      },
+      {
+        "definition": "CREATE TRIGGER guard_linked_player_profile_update BEFORE UPDATE ON public.players FOR EACH ROW EXECUTE FUNCTION guard_linked_player_profile_update()",
+        "enabled": "O",
+        "name": "guard_linked_player_profile_update",
+        "table_name": "players"
+      },
+      {
+        "definition": "CREATE TRIGGER update_players_updated_at BEFORE UPDATE ON public.players FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()",
+        "enabled": "O",
+        "name": "update_players_updated_at",
+        "table_name": "players"
+      },
+      {
+        "definition": "CREATE TRIGGER update_registration_settings_updated_at BEFORE UPDATE ON public.registration_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()",
+        "enabled": "O",
+        "name": "update_registration_settings_updated_at",
+        "table_name": "registration_settings"
+      }
+    ]
+  }
+}

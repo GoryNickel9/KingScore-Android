@@ -1,0 +1,114 @@
+{
+  "verified_on": "2026-10-13",
+  "phase": 2,
+  "implementation": "Android native authentication and navigation preview",
+  "toolchain": {
+    "gradle": "8.13",
+    "agp": "8.13.2",
+    "kotlin": "2.1.20",
+    "compose_bom": "2025.04.01",
+    "supabase": "3.1.4",
+    "ktor": "3.1.2",
+    "min_sdk": 26,
+    "compile_sdk": 36,
+    "target_sdk": 36,
+    "jvm_target": 17
+  },
+  "build": {
+    "result": "BUILD SUCCESSFUL",
+    "tasks": [
+      "testDebugUnitTest",
+      "lintDebug",
+      "assembleDebug",
+      "assembleDebugAndroidTest"
+    ],
+    "local_jvm_workaround": "Ignored temporary javaagent forces AF_UNIX fallback to TCP; not part of app"
+  },
+  "jvm": {
+    "tests": 23,
+    "failures": 0,
+    "errors": 0,
+    "suites": [
+      {
+        "name": "app.kingscore.android.core.auth.SupabaseAuthRepositoryTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.RowDecodersTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.auth.AppViewModelTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0
+      }
+    ],
+    "auth_transport": "Ktor MockEngine; synthetic account only"
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 22,
+    "warning_groups": [
+      {
+        "id": "AndroidGradlePluginVersion",
+        "count": 2
+      },
+      {
+        "id": "GradleDependency",
+        "count": 7
+      },
+      {
+        "id": "NewerVersionAvailable",
+        "count": 9
+      },
+      {
+        "id": "UseKtx",
+        "count": 4
+      }
+    ]
+  },
+  "instrumentation": {
+    "device": "Dedicated headless AVD, sdk_gphone64_x86_64",
+    "api": 31,
+    "runner": "androidx.test.runner.AndroidJUnitRunner",
+    "result": "OK (5 tests)",
+    "tests": 5,
+    "seconds": 26.228,
+    "scope": [
+      "3 Compose access/role/forbidden-control checks",
+      "2 Android Keystore persistence/corruption checks"
+    ]
+  },
+  "network_smoke": {
+    "result": "passed",
+    "offline": "Wi-Fi and data disabled, airplane mode enabled: connection-blocked message and no login or tabs",
+    "reconnect": "Airplane mode disabled, Wi-Fi/data restored: login returned",
+    "real_account_used": false
+  },
+  "node_evidence_tests": {
+    "tests": 10,
+    "failures": 0
+  },
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 21155434,
+    "sha256": "ef2314d97300f86385a2026ccb24f73d520061edda57cb645e48febd052b8dde",
+    "version": "0.2.0",
+    "signing": "debug key; private release signing pending phase 5"
+  },
+  "screenshot": "docs/evidence/phase2-login.png",
+  "not_verified": [
+    "Real Supabase account login/admin authorization",
+    "Physical phone and minimum API 26 device",
+    "Remote GitHub CI run",
+    "Process restart with a real account session",
+    "Data screens, pagination and mutations (later phases)",
+    "Mobile performance benchmarks"
+  ],
+  "remote_schema_or_data_mutated": false
+}

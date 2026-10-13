@@ -1,0 +1,514 @@
+{
+  "version": 1,
+  "source": "docs/evidence/supabase-audit.json",
+  "tables": {
+    "games": {
+      "kotlinClass": "GameRow",
+      "columns": [
+        {
+          "name": "id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "name",
+          "sqlType": "text",
+          "nullable": false,
+          "kotlinType": "String"
+        },
+        {
+          "name": "bga_id",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "image_url",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "min_players",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "max_players",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "created_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": true,
+          "kotlinType": "Instant"
+        }
+      ]
+    },
+    "plays": {
+      "kotlinClass": "PlayRow",
+      "columns": [
+        {
+          "name": "id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "user_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "game_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "played_at",
+          "sqlType": "date",
+          "nullable": false,
+          "kotlinType": "LocalDate"
+        },
+        {
+          "name": "location",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "notes",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "duration_minutes",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "source",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "bga_table_id",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "created_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": true,
+          "kotlinType": "Instant"
+        },
+        {
+          "name": "is_cooperative",
+          "sqlType": "boolean",
+          "nullable": true,
+          "kotlinType": "Boolean"
+        },
+        {
+          "name": "team_won",
+          "sqlType": "boolean",
+          "nullable": true,
+          "kotlinType": "Boolean"
+        }
+      ]
+    },
+    "play_scores": {
+      "kotlinClass": "PlayScoreRow",
+      "columns": [
+        {
+          "name": "id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "play_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "player_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "score",
+          "sqlType": "numeric",
+          "nullable": true,
+          "kotlinType": "BigDecimal"
+        },
+        {
+          "name": "winner",
+          "sqlType": "boolean",
+          "nullable": true,
+          "kotlinType": "Boolean"
+        },
+        {
+          "name": "color",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "role",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "position",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        }
+      ]
+    },
+    "players": {
+      "kotlinClass": "PlayerRow",
+      "columns": [
+        {
+          "name": "id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "user_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "name",
+          "sqlType": "text",
+          "nullable": false,
+          "kotlinType": "String"
+        },
+        {
+          "name": "is_me",
+          "sqlType": "boolean",
+          "nullable": true,
+          "kotlinType": "Boolean"
+        },
+        {
+          "name": "created_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": true,
+          "kotlinType": "Instant"
+        },
+        {
+          "name": "alias",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "avatar_url",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "updated_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": false,
+          "kotlinType": "Instant"
+        },
+        {
+          "name": "color",
+          "sqlType": "text",
+          "nullable": true,
+          "kotlinType": "String"
+        },
+        {
+          "name": "account_user_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        }
+      ]
+    },
+    "play_comments": {
+      "kotlinClass": "PlayCommentRow",
+      "columns": [
+        {
+          "name": "id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "play_id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "user_id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "author_name",
+          "sqlType": "text",
+          "nullable": false,
+          "kotlinType": "String"
+        },
+        {
+          "name": "content",
+          "sqlType": "text",
+          "nullable": false,
+          "kotlinType": "String"
+        },
+        {
+          "name": "created_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": false,
+          "kotlinType": "Instant"
+        },
+        {
+          "name": "updated_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": false,
+          "kotlinType": "Instant"
+        }
+      ]
+    },
+    "player_ratings": {
+      "kotlinClass": "GameRatingRow",
+      "columns": [
+        {
+          "name": "id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "player_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "game_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "rating",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "games_played",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "wins",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "losses",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "draws",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "last_played_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": true,
+          "kotlinType": "Instant"
+        },
+        {
+          "name": "created_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": true,
+          "kotlinType": "Instant"
+        },
+        {
+          "name": "updated_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": true,
+          "kotlinType": "Instant"
+        }
+      ]
+    },
+    "player_general_ratings": {
+      "kotlinClass": "GeneralRatingRow",
+      "columns": [
+        {
+          "name": "id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "player_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "user_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "rating",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "games_played",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "wins",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "losses",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "draws",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "last_played_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": true,
+          "kotlinType": "Instant"
+        },
+        {
+          "name": "created_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": true,
+          "kotlinType": "Instant"
+        },
+        {
+          "name": "updated_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": true,
+          "kotlinType": "Instant"
+        }
+      ]
+    },
+    "elo_history": {
+      "kotlinClass": "EloHistoryRow",
+      "columns": [
+        {
+          "name": "id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "play_id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "game_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "player_id",
+          "sqlType": "uuid",
+          "nullable": false,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "player_name",
+          "sqlType": "text",
+          "nullable": false,
+          "kotlinType": "String"
+        },
+        {
+          "name": "rating",
+          "sqlType": "integer",
+          "nullable": false,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "rating_change",
+          "sqlType": "integer",
+          "nullable": false,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "date",
+          "sqlType": "timestamp with time zone",
+          "nullable": false,
+          "kotlinType": "Instant"
+        },
+        {
+          "name": "is_general",
+          "sqlType": "boolean",
+          "nullable": false,
+          "kotlinType": "Boolean"
+        },
+        {
+          "name": "games_played",
+          "sqlType": "integer",
+          "nullable": true,
+          "kotlinType": "Int"
+        },
+        {
+          "name": "user_id",
+          "sqlType": "uuid",
+          "nullable": true,
+          "kotlinType": "UUID"
+        },
+        {
+          "name": "created_at",
+          "sqlType": "timestamp with time zone",
+          "nullable": false,
+          "kotlinType": "Instant"
+        }
+      ]
+    }
+  }
+}

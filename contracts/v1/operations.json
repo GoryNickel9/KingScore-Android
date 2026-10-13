@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "requiresInternet": true,
+  "requiresLoginForData": true,
+  "distribution": "private-signed-apk",
+  "auth": ["password-login", "refresh-session", "validate-current-user", "logout"],
+  "reads": ["games", "plays", "play_scores", "players", "play_comments", "player_ratings", "player_general_ratings", "elo_history"],
+  "commentWrites": {
+    "create": ["play_id", "content"],
+    "update": ["content"],
+    "delete": "own-comment-only-for-all-roles"
+  },
+  "adminPlayWrites": {
+    "scope": "global-admin-as-enforced-by-current-RLS",
+    "status": "blocked-until-transactional-RPCs-are-deployed-and-tested",
+    "proposedRpcs": ["get_play_editor_v1", "create_play_v1", "update_play_v1", "delete_play_v1"]
+  },
+  "forbidden": [
+    "sign-up", "reset-password", "change-email", "change-password", "change-avatar",
+    "write-ratings", "write-elo-history", "recalculate-elo", "invoke-nightly-elo-recalc",
+    "invoke-get-play-user-ids", "read-elo-recalc-runs", "offline-data-access",
+    "offline-write-queue", "admin-delete-other-users-comments"
+  ]
+}

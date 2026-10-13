@@ -1,0 +1,9 @@
+{
+  "scope": "public table Row fields and TS nullability only; not SQL types, RPCs, constraints or RLS",
+  "localSource": "../King-Score/src/types/db.ts",
+  "remoteSource": "docs/evidence/schema.remote.ts",
+  "localSha256": "27c6e9b8cf1790dc1f9de84f9dc10a30258b4198733cb50490b1cbeb70e28080",
+  "remoteSha256": "72ba3edb9a87015f4466de72f5147f82ee2bff9b363c95434e08ab82b08b3409",
+  "tablesCompared": 10,
+  "differences": []
+}

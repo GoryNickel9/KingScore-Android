@@ -1,0 +1,154 @@
+{
+  "probes": [
+    {
+      "mode": "EXPLAIN without ANALYZE",
+      "rows": [
+        {
+          "QUERY PLAN": [
+            {
+              "Plan": {
+                "Alias": "plays",
+                "Async Capable": false,
+                "Node Type": "ModifyTable",
+                "Operation": "Delete",
+                "Parallel Aware": false,
+                "Plans": [
+                  {
+                    "Async Capable": false,
+                    "Node Type": "Result",
+                    "One-Time Filter": "false",
+                    "Parallel Aware": false,
+                    "Parent Relationship": "Outer"
+                  }
+                ],
+                "Relation Name": "plays"
+              }
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "name": "anonymous_delete_plan"
+    },
+    {
+      "mode": "EXPLAIN without ANALYZE",
+      "rows": [
+        {
+          "QUERY PLAN": [
+            {
+              "Plan": {
+                "Alias": "plays",
+                "Async Capable": false,
+                "Node Type": "ModifyTable",
+                "Operation": "Delete",
+                "Parallel Aware": false,
+                "Plans": [
+                  {
+                    "Alias": "plays",
+                    "Async Capable": false,
+                    "Filter": "((((COALESCE(NULLIF(current_setting('request.jwt.claim'::text, true), ''::text), NULLIF(current_setting('request.jwt.claims'::text, true), ''::text)))::jsonb -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)",
+                    "Index Cond": "(id = '00000000-0000-0000-0000-000000000000'::uuid)",
+                    "Index Name": "plays_pkey",
+                    "Node Type": "Index Scan",
+                    "Parallel Aware": false,
+                    "Parent Relationship": "Outer",
+                    "Relation Name": "plays",
+                    "Scan Direction": "Forward"
+                  }
+                ],
+                "Relation Name": "plays"
+              }
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "name": "user_delete_plan"
+    },
+    {
+      "mode": "EXPLAIN without ANALYZE",
+      "rows": [
+        {
+          "QUERY PLAN": [
+            {
+              "Plan": {
+                "Alias": "plays",
+                "Async Capable": false,
+                "Node Type": "ModifyTable",
+                "Operation": "Delete",
+                "Parallel Aware": false,
+                "Plans": [
+                  {
+                    "Alias": "plays",
+                    "Async Capable": false,
+                    "Filter": "((((COALESCE(NULLIF(current_setting('request.jwt.claim'::text, true), ''::text), NULLIF(current_setting('request.jwt.claims'::text, true), ''::text)))::jsonb -> 'app_metadata'::text) ->> 'role'::text) = 'admin'::text)",
+                    "Index Cond": "(id = '00000000-0000-0000-0000-000000000000'::uuid)",
+                    "Index Name": "plays_pkey",
+                    "Node Type": "Index Scan",
+                    "Parallel Aware": false,
+                    "Parent Relationship": "Outer",
+                    "Relation Name": "plays",
+                    "Scan Direction": "Forward"
+                  }
+                ],
+                "Relation Name": "plays"
+              }
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "name": "admin_delete_plan"
+    },
+    {
+      "mode": "EXPLAIN without ANALYZE",
+      "rows": [
+        {
+          "QUERY PLAN": [
+            {
+              "Plan": {
+                "Alias": "play_comments",
+                "Async Capable": false,
+                "Node Type": "ModifyTable",
+                "Operation": "Delete",
+                "Parallel Aware": false,
+                "Plans": [
+                  {
+                    "Alias": "play_comments",
+                    "Async Capable": false,
+                    "Filter": "((COALESCE(NULLIF(current_setting('request.jwt.claim.sub'::text, true), ''::text), ((NULLIF(current_setting('request.jwt.claims'::text, true), ''::text))::jsonb ->> 'sub'::text)))::uuid = user_id)",
+                    "Index Cond": "(id = '00000000-0000-0000-0000-000000000000'::uuid)",
+                    "Index Name": "play_comments_pkey",
+                    "Node Type": "Index Scan",
+                    "Parallel Aware": false,
+                    "Parent Relationship": "Outer",
+                    "Relation Name": "play_comments",
+                    "Scan Direction": "Forward"
+                  }
+                ],
+                "Relation Name": "play_comments"
+              }
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "name": "admin_comment_delete_plan"
+    },
+    {
+      "mode": "READ ONLY; internal denial before DML",
+      "passed": true,
+      "sqlstate": "42501",
+      "name": "anonymous_scores_rpc_denied"
+    },
+    {
+      "mode": "READ ONLY; internal denial before DML",
+      "passed": true,
+      "sqlstate": "42501",
+      "name": "user_scores_rpc_denied"
+    }
+  ],
+  "project_ref": "rixivmeipbizoxyvrvaf",
+  "identity": "Synthetic SQL claims; not a real Auth login or HTTP end-to-end test",
+  "captured_at_utc": "2026-10-13T10:48:37.7818847Z"
+}

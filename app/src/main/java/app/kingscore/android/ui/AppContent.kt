@@ -1,0 +1,81 @@
+package app.kingscore.android.ui
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
+import app.kingscore.android.feature.auth.AccessState
+import app.kingscore.android.feature.auth.LoginScreen
+import app.kingscore.android.feature.auth.message
+import app.kingscore.android.feature.navigation.AuthenticatedNavigation
+
+@Composable
+fun AppContent(
+    access: AccessState,
+    onSignIn: (String, String) -> Unit,
+    onRetry: () -> Unit,
+    onSignOut: () -> Unit,
+    onNetworkSettings: () -> Unit,
+) {
+    var email by rememberSaveable { mutableStateOf("") }
+    val holder = rememberSaveableStateHolder()
+    var previousAccount by rememberSaveable { mutableStateOf<String?>(null) }
+    LaunchedEffect(access) {
+        when (access) {
+            is AccessState.Connected -> {
+                val current = access.account.id.toString()
+                previousAccount?.takeIf { it != current }?.let(holder::removeState)
+                previousAccount = current
+            }
+            is AccessState.SignedOut -> {
+                previousAccount?.let {
+                    holder.removeState(it)
+                    email = ""
+                }
+                previousAccount = null
+            }
+            else -> Unit
+        }
+    }
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        Box(Modifier.fillMaxSize().safeDrawingPadding(), contentAlignment = Alignment.Center) {
+            when (access) {
+                AccessState.Checking -> Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.testTag("checking-session")) {
+                    CircularProgressIndicator()
+                    Text("Verifica accesso…")
+                }
+                is AccessState.SignedOut -> LoginScreen(email, { email = it }, access.problem, onSignIn)
+                is AccessState.Connected -> holder.SaveableStateProvider(access.account.id.toString()) {
+                    AuthenticatedNavigation(access.account, onSignOut)
+                }
+                is AccessState.Blocked -> Column(Modifier.padding(28.dp).testTag("connection-blocked"),
+                    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Text(access.problem.message(), style = MaterialTheme.typography.headlineSmall)
+                    Button(onClick = onRetry) { Text("Riprova") }
+                    TextButton(onClick = onNetworkSettings) { Text("Impostazioni rete") }
+                    TextButton(onClick = onSignOut) { Text("Esci dall’account") }
+                }
+            }
+        }
+    }
+}

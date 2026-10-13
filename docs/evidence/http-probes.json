@@ -1,0 +1,50 @@
+{
+  "captured_at_utc": "2026-10-13T10:53:54.5736101Z",
+  "probes": [
+    {
+      "status": 200,
+      "operation": "GET /rest/v1/games?select=id&limit=0",
+      "rows": 0
+    },
+    {
+      "status": 200,
+      "operation": "GET /rest/v1/plays?select=id&limit=0",
+      "rows": 0
+    },
+    {
+      "status": 200,
+      "operation": "GET /rest/v1/play_scores?select=id&limit=0",
+      "rows": 0
+    },
+    {
+      "status": 200,
+      "operation": "GET /rest/v1/players?select=id&limit=0",
+      "rows": 0
+    },
+    {
+      "status": 200,
+      "operation": "GET /rest/v1/play_comments?select=id&limit=0",
+      "rows": 0
+    },
+    {
+      "status": 200,
+      "operation": "GET /rest/v1/player_ratings?select=id&limit=0",
+      "rows": 0
+    },
+    {
+      "status": 200,
+      "operation": "GET /rest/v1/player_general_ratings?select=id&limit=0",
+      "rows": 0
+    },
+    {
+      "status": 200,
+      "operation": "GET /rest/v1/elo_history?select=id&limit=0",
+      "rows": 0
+    },
+    {
+      "status": 401,
+      "operation": "GET /auth/v1/user without user session"
+    }
+  ],
+  "identity": "Public app key only; no authenticated user token"
+}

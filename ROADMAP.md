@@ -112,7 +112,7 @@ Implementati pagine da 50 con cursori, dettaglio, punteggi e commenti in lettura
 
 ### Fase 4 Commenti e scritture admin
 
-I commenti propri sono implementati nella 0.4.0: ownership anche per admin, conferma eliminazione, Unicode, stato invio, esiti incerti e riconciliazione completa. Le verifiche usano account e dati sintetici; POST/PATCH/DELETE con JWT reali restano da collaudare in ambiente isolato. Le RPC e l'editor partite admin non sono ancora abilitati. Dettagli: [docs/PHASE4_COMMENTS.md](docs/PHASE4_COMMENTS.md).
+I commenti propri sono implementati nella 0.4.0: ownership anche per admin, conferma eliminazione, Unicode, stato invio, esiti incerti e riconciliazione completa. Le verifiche usano account e dati sintetici; POST/PATCH/DELETE con JWT reali restano da collaudare in ambiente isolato. Le quattro RPC partite sono implementate e testate su PostgreSQL locale, con rollback, permessi, ricevute, revisioni e concorrenza verificati. Non sono deployate; i writer web restano da adeguare e l'editor Android è disabilitato. Dettagli: [docs/PHASE4_COMMENTS.md](docs/PHASE4_COMMENTS.md) e [docs/PHASE4_ADMIN_RPC.md](docs/PHASE4_ADMIN_RPC.md).
 
 1. Implementare e testare RPC transazionali per creazione e modifica di partita con punteggi. Usare identificatori di richiesta per retry idempotenti e controlli server su ruolo, partecipanti e valori. Verificare il contratto di `replace_play_scores` rispetto alle nuove RPC.
 2. Implementare aggiunta, modifica ed eliminazione partite per admin, selezione giochi e giocatori esistenti e creazione minima dove necessaria. Conservare i campi del modulo durante una perdita temporanea di rete finché il processo resta attivo; non accodare invii offline o inviare automaticamente dopo la riconnessione.
@@ -175,8 +175,8 @@ Stima conservativa dopo i commenti propri, 13 ottobre 2026. Il lavoro sulle scri
 | Verifica e release privata | 20–32 ore | Account reali, telefoni, rete e aggiornamento APK testati; chiave di firma definitiva e procedura di rilascio |
 | Totale con riserva del 20% | **58–96 ore** | Circa 7–12 giornate da 8 ore; stima di lavoro, non scadenza di calendario |
 
-La dipendenza principale è il backend delle scritture: `get_play_editor_v1`, `create_play_v1`, `update_play_v1` e `delete_play_v1` sono ancora contratti proposti. La stima include implementarli e adeguare i flussi web, ma va rivista dopo le prove isolate. Attese per account di prova, disponibilità dei telefoni o ambiente di sviluppo allungano il calendario. Wrapped, import BGA e amministrazione completa dei cataloghi restano estensioni dopo l'MVP.
+La dipendenza principale è il rollout delle scritture: `get_play_editor_v1`, `create_play_v1`, `update_play_v1` e `delete_play_v1` sono ora implementate e testate localmente, ma restano adeguamento web, deploy isolato, prove HTTP con JWT reali ed editor Android. Manteniamo la fascia conservativa fino alle prove nel Supabase di sviluppo. Attese per account di prova, disponibilità dei telefoni o ambiente di sviluppo allungano il calendario. Wrapped, import BGA nell'app e amministrazione completa dei cataloghi restano estensioni dopo l'MVP; il writer dell'import web esistente deve comunque rispettare le transazioni condivise.
 
 ## Prossima attività
 
-Preparare le migrazioni e i test isolati delle RPC transazionali per le partite admin, prima di abilitare l'editor Android. Il deploy richiederà l'ambiente di sviluppo corretto; nessuna mutazione di produzione è stata eseguita per i commenti.
+Adeguare i writer web alle transazioni e all'ordine dei lock delle RPC, conservando i campi dell'import BGA. Successivamente verificare il deploy nel Supabase isolato prima di abilitare l'editor Android. Nessuna mutazione di produzione è stata eseguita; la CI GitHub rimane sospesa su richiesta dell'utente.

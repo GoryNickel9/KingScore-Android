@@ -35,6 +35,16 @@ fun main() {
     }
     test("played_at is a calendar date with no timezone conversion") {
         check(input().played_at.toString() == "2026-10-13")
+        rejects { input().copy(played_at = LocalDate.of(0, 1, 1)) }
+        rejects { input().copy(played_at = LocalDate.of(10000, 1, 1)) }
+    }
+    test("V1 web ranking limits fail explicitly without rounding stored scores") {
+        score("1e308")
+        rejects { score("1e400") }
+        rejects { score("1e-400") }
+        val participants = (1L..64L).map { score().copy(player_id = UUID(0, it)) }
+        input(participants.take(63))
+        rejects { input(participants) }
     }
     test("comment boundaries follow PostgreSQL Unicode character count") {
         CreateComment(playId, "😀".repeat(1000))

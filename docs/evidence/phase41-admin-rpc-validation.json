@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "date": "2026-10-13",
+  "scope": "atomic-admin-play-RPC-preparation",
+  "status": "PASS",
+  "backendRepository": "GoryNickel9/KingScore",
+  "backendCommit": "678f1bf2483fb3e3cf7780522ccbe3fb0d9533f9",
+  "remoteDatabaseModified": false,
+  "deployed": false,
+  "androidEditorEnabled": false,
+  "githubCiExecuted": false,
+  "apkBuilt": false,
+  "localDatabase": {
+    "host": "127.0.0.1",
+    "postgres": "PostgreSQL 17.4 on x86_64-windows, compiled by msvc-19.42.34436, 64-bit",
+    "syntheticSchema": true,
+    "syntheticClaims": true,
+    "jwtSignatureVerified": false,
+    "httpGatewayVerified": false,
+    "serverStopped": true,
+    "startedAtUtc": "2026-10-13T20:20:00.3069279Z",
+    "finishedAtUtc": "2026-10-13T20:20:17.7693702Z",
+    "exitCodes": {
+      "initdb": 0,
+      "start": 0,
+      "fixture": 0,
+      "migration": 0,
+      "sql-tests": 0,
+      "concurrency": 0,
+      "stop": 0
+    }
+  },
+  "concurrency": {
+    "status": "PASS",
+    "node": "v24.19.0",
+    "v8": "13.6.233.17-node.51",
+    "rankingCases": 1616,
+    "concurrencyChecks": [
+      "same create request: one commit and one replay",
+      "two updates with one revision: one commit and one conflict, no partial rows",
+      "two deletes: one deletion, one missing target; winner retries after deletion"
+    ],
+    "postgres": "PostgreSQL 17.4 on x86_64-windows, compiled by msvc-19.42.34436, 64-bit"
+  },
+  "kotlinContractChecks": {
+    "passed": 11,
+    "command": "scripts/check-contracts.ps1",
+    "exitCode": 0
+  },
+  "auditNodeChecks": {
+    "passed": 10,
+    "command": "node --test scripts/check-evidence.test.mjs",
+    "exitCode": 0
+  },
+  "existingWebPositionTests": {
+    "passed": 7,
+    "command": "npm run test -- src/utils/elo/positions.test.ts",
+    "exitCode": 0
+  },
+  "newNodeLint": {
+    "command": "npx eslint supabase/tests/atomic_play_concurrency.mjs",
+    "exitCode": 0
+  },
+  "backendSourceSha256": {
+    "supabase/migrations/20261013000000_atomic_play_writes.sql": "f84e895cb4f65220cc6d93112ee7566beec64ff009f22774c2f23ab7ce69c782",
+    "supabase/tests/atomic_play_fixture.sql": "8c480170f810a7fafbf4a0eca7be72639ae40731ab6bf72bd4aabe8186bb1fd0",
+    "supabase/tests/atomic_play_writes.sql": "4545c4c4907c4274e75eadca007b8b302bc91ee29aac89c9acdedac3a621d572",
+    "supabase/tests/atomic_play_concurrency.mjs": "0b0908a4707d5c601005d56f95bcaacd0da0f9ce7191dbfd32f4b3bc137a887c",
+    "scripts/test-atomic-plays.ps1": "3ef0eb0f5bf546807d202f9428b2a62d3d25198ae812262ba3aaafdc6cf995f4",
+    "src/utils/elo/positions.ts": "9c5a5533d66f4bd2c23946bc73ef4228fb4f3eea14ff35aea465eacf218092fd"
+  },
+  "localReport": "C:\\Users\\GoryNickel\\Documents\\GitHub\\King-Score\\.work\\atomic-play-tests\\e591951ccb254ec8b08cfdb0f0d89265",
+  "limits": [
+    "V1: 1..63 participants, payload <= 1 MiB, finite Float64 ranking comparisons; NUMERIC stored exactly",
+    "SQL claims are synthetic; no real JWT or Supabase HTTP tests",
+    "Legacy web writers still need compatible transactions and lock order before Android rollout",
+    "No remote deployment, APK build, device tests or benchmark in this increment"
+  ]
+}

@@ -41,7 +41,17 @@ data class ScoreInput(
     val winner: Boolean,
     val color: String?,
     val role: String?,
-)
+) {
+    init {
+        // V1 compares like the web's Number while storing the original NUMERIC.
+        if (score != null) {
+            val webValue = score.toDouble()
+            require(webValue.isFinite() && (webValue != 0.0 || score.signum() == 0)) {
+                "Score outside the finite web ranking range"
+            }
+        }
+    }
+}
 
 /** Proposed create/update payload; position is derived and validated server-side. */
 data class PlayInput(
@@ -57,7 +67,8 @@ data class PlayInput(
     init {
         require(duration_minutes == null || duration_minutes >= 0) { "Negative duration" }
         require(is_cooperative || team_won == null) { "Competitive play cannot contain a team result" }
-        require(scores.isNotEmpty()) { "At least one participant required" }
+        require(played_at.year in 1..9999) { "Date must use a four-digit positive year" }
+        require(scores.size in 1..63) { "V1 requires 1..63 participants" }
         require(scores.map { it.player_id }.distinct().size == scores.size) { "Duplicate participant" }
         val existingIds = scores.mapNotNull { it.id }
         require(existingIds.distinct().size == existingIds.size) { "Duplicate score ID" }

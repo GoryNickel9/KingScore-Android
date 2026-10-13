@@ -64,9 +64,9 @@ La 0.4.0 implementa questi endpoint con filtri id/user_id/play_id e return=repre
 
 La modifica commento non dispone attualmente di un controllo optimistic locking: prevale l'ultimo salvataggio autorizzato. La creazione commento non è idempotente: dopo un timeout non eseguire retry automatici. Rileggere i commenti e rendere esplicito l'esito incerto all'utente.
 
-## RPC partite proposte
+## RPC partite preparate, non deployate
 
-Queste funzioni **non sono deployate**. Gli input Kotlin in `Commands.kt` ne definiscono i payload, non autorizzano un fallback sulle scritture dirette. Fino a deploy e test isolati, il client può implementare la consultazione e i commenti, ma non abilitare l'editor partite.
+Queste funzioni **non sono deployate**. La migrazione `King-Score/supabase/migrations/20261013000000_atomic_play_writes.sql` ne implementa i contratti; [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md) descrive le prove locali e i requisiti di rollout. Gli input Kotlin in `Commands.kt` ne definiscono i payload, non autorizzano un fallback sulle scritture dirette. Fino a deploy, prove HTTP con JWT reali e adeguamento dei writer web, il client mantiene l'editor partite disabilitato.
 
 | RPC proposta | Argomenti | Risultato |
 | --- | --- | --- |
@@ -100,9 +100,9 @@ Esempio di argomenti per creazione, con soli identificatori sintetici:
 ### Invarianti server delle RPC
 
 1. Verificare JWT e ruolo admin prima di qualsiasi mutazione. Il backend corrente ammette admin globale, senza filtro owner: l'editor web applica invece alcuni filtri owner, una differenza UI da considerare quando lo si adegua. Il nuovo contratto segue RLS globale, senza ampliare privilegi sul backend.
-2. Verificare gioco e giocatori esistenti, almeno un partecipante, player_id e score ID non duplicati, duration non negativa, valori numerici finiti e ID appartenenti alla partita. Eventuali limiti del gioco devono essere espliciti; i dati storici in lettura non vengono rifiutati per le nuove regole input.
-3. Per una partita competitiva `team_won` è null. Se cooperativa con risultato noto, tutti i winner coincidono col risultato e le posizioni sono 1 per vittoria, 2 per sconfitta. Per gli altri casi seguire le regole web di `positions.ts`, caratterizzando con fixture anche score nulli, più vincitori e pareggi; non usare soltanto il confronto dei punteggi per determinare i winner.
-4. Salvare metadati e score in un'unica transazione. Conservare user_id storico, location, bga_table_id, created_at e metadati non editabili. Correggere il trigger score incompatibile prima di usare UPDATE; mantenere color e role. Nessun passo invoca ELO.
+2. Verificare gioco e giocatori esistenti, da 1 a 63 partecipanti, player_id e score ID non duplicati, duration non negativa, valori numerici finiti e ID appartenenti alla partita. V1 rifiuta payload oltre 1 MiB, campi estranei, date fuori dal formato YYYY-MM-DD e score non rappresentabili come Float64 finito per il confronto web. NUMERIC conserva il valore originale; la lettura storica non applica questi limiti input.
+3. Per una partita competitiva `team_won` è null. Se cooperativa con risultato noto, tutti i winner coincidono col risultato e le posizioni sono 1 per vittoria, 2 per sconfitta. Per gli altri casi preservare la funzione web `positions.ts`, anche quando un punteggio nullo viene confrontato come uguale a un numero: questa scelta è stata confermata dall'utente. La migrazione riproduce il percorso V8 per piccoli array, verificato contro la funzione web effettiva. Non cambia lo storico o il motore ELO. L'equivalenza con altri motori JavaScript non è garantita per il comparator non transitivo.
+4. Salvare metadati e score in un'unica transazione. Conservare user_id storico, location, bga_table_id, created_at e metadati non editabili. Correggere il trigger score incompatibile prima di usare UPDATE; mantenere color e role. Se ID/player/score/winner, modalità ed esito team sono invariati, conservare le posizioni esistenti anche se cambia l'ordine della lista: modificare note, color o role non ricalcola il ranking. V1 non offre riordino manuale dei pareggi. Negli altri casi derivare le posizioni dal nuovo input. Nessun passo invoca ELO.
 5. Gestire concorrenza e idempotenza: lock della partita e score, revisione server calcolata sull'intero contenuto editabile e receipt privata per `(actor_id,request_id)`. Stessa richiesta e payload restituiscono l'esito precedente; stessa chiave con payload diverso è conflitto. Tutti i flussi web di scrittura devono adottare le stesse regole di lock e transazione.
 
 La revisione è opaca e viene letta dal server; non esiste oggi una colonna su cui basare il controllo. Per delete, receipt ed eliminazione dei figli devono essere nella stessa transazione. I rating possono restare precedenti al dato modificato: la risposta non promette ELO aggiornato.
@@ -114,8 +114,8 @@ La revisione è opaca e viene letta dal server; non esiste oggi una colonna su c
 | Rete assente o timeout | Bloccare invio; distinguere esito sconosciuto da richiesta non inviata |
 | Sessione invalida | Refresh singolo, poi login; non inviare dati anonimamente |
 | `42501`, HTTP 403 | Permesso negato; aggiornare capacità della UI |
-| `P0002`, risorsa assente | Risorsa non trovata; non dichiarare successo su zero righe |
-| Conflitto revisione o chiave riusata, HTTP 409 | Rileggere il dettaglio e chiedere una nuova modifica esplicita |
+| `PT404`, HTTP 404 | Risorsa non trovata; non dichiarare successo su zero righe |
+| `PT409`, HTTP 409 | Revisione diversa o chiave riusata: rileggere il dettaglio e chiedere una nuova modifica esplicita |
 | Payload/FK/vincolo invalido | Errore di validazione, senza modifica parziale |
 
-SQLSTATE specifici dei nuovi conflitti e la mappatura PostgREST saranno fissati nella migrazione delle RPC. Non considerare HTTP 200 prova di aver modificato una riga; controllare il risultato restituito.
+La migrazione fissa `PT404` e `PT409` secondo la [mappatura custom di PostgREST](https://docs.postgrest.org/en/v12/references/errors.html), `22023` per input invalido e `23503` per gioco/giocatore assente. Le prove SQL verificano i codici; la verifica HTTP nel Supabase isolato resta necessaria. Non considerare HTTP 200 prova di aver modificato una riga; controllare il risultato restituito.

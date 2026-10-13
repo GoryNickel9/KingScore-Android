@@ -1,0 +1,363 @@
+{
+  "verified_on": "2026-10-13",
+  "phase": 3,
+  "version": "0.3.2",
+  "version_code": 4,
+  "scope": "Server-side literal game-name OR notes search; combined game/player/source/inclusive-date filters; mandatory online authentication",
+  "build": {
+    "result": "BUILD SUCCESSFUL",
+    "tasks": [
+      "testDebugUnitTest",
+      "lintDebug",
+      "assembleDebug",
+      "assembleDebugAndroidTest"
+    ],
+    "local_jvm_workaround": "Ignored temporary javaagent described in PHASE2.md; not included in app or CI"
+  },
+  "jvm": {
+    "tests": 87,
+    "failures": 0,
+    "errors": 0,
+    "suites": [
+      {
+        "name": "app.kingscore.android.core.auth.SupabaseAuthRepositoryTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.HistoryFiltersRepositoryTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.RowDecodersTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabasePlaysRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseRatingsRepositoryTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseReaderTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseStatisticsRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.auth.AppViewModelTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.plays.PlaysViewModelTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.ratings.RatingsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.stats.StatisticsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 22
+  },
+  "instrumentation": {
+    "api": 31,
+    "device": "Dedicated headless read-only AVD sdk_gphone64_x86_64",
+    "tests": 18,
+    "result": "OK (18 tests)",
+    "seconds": 76.389,
+    "animations_disabled": true,
+    "output": "docs/evidence/phase32-instrumentation.txt",
+    "new_checks": [
+      "Combined search/filter/page/detail/back/reset flow",
+      "Invalid dates, reversed range and cancelled draft do not submit",
+      "Offline removes dialog/catalog/filters; reconnect and account switch start unfiltered",
+      "Restored open selector reloads missing catalog",
+      "Cleared ViewModel store refetches using restored applied inputs"
+    ]
+  },
+  "layout": {
+    "large-font": {
+      "result": "OK (1 test)",
+      "seconds": 11.409,
+      "font_scale": 1.3,
+      "density_dpi": 460,
+      "animations_disabled": true,
+      "configured_size_px": "1080x2340",
+      "approx_width_dp": 375.65
+    },
+    "landscape": {
+      "result": "OK (1 test)",
+      "seconds": 24.505,
+      "font_scale": 1.3,
+      "density_dpi": 460,
+      "animations_disabled": true,
+      "configured_size_px": "2340x1080"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/phase32-filter-dialog-landscape.png",
+      "width": 920,
+      "height": 811
+    },
+    {
+      "path": "docs/evidence/phase32-filter-dialog-large-font.png",
+      "width": 920,
+      "height": 1694
+    },
+    {
+      "path": "docs/evidence/phase32-filter-dialog.png",
+      "width": 880,
+      "height": 1551
+    },
+    {
+      "path": "docs/evidence/phase32-filtered-history-landscape.png",
+      "width": 2160,
+      "height": 812
+    },
+    {
+      "path": "docs/evidence/phase32-filtered-history-large-font.png",
+      "width": 1080,
+      "height": 2063
+    },
+    {
+      "path": "docs/evidence/phase32-filtered-history.png",
+      "width": 1080,
+      "height": 2063
+    }
+  ],
+  "screenshot_method": "Compose root, excluding system bars; dialog tag captures panel bounds; fixtures only",
+  "query_checks": {
+    "literal_pattern_cases": 14,
+    "catalog_fixture_rows_per_resource": 1051,
+    "catalog_page_size": 50,
+    "catalog_requests_per_resource": 22,
+    "history_order": "played_at DESC,unsigned UUID DESC",
+    "catalog_order": "unsigned UUID ASC",
+    "all_score_rows_retained_for_participant_filter": true,
+    "inclusive_dates": true,
+    "not_an_immutable_snapshot": true
+  },
+  "backend_query_probes": [
+    {
+      "name": "search_game_or_notes",
+      "status": 200,
+      "limit": 0,
+      "returned_rows": 0,
+      "parameters": [
+        [
+          "select",
+          "*,games(*),play_scores(*,players(*)),matched_game:games()"
+        ],
+        [
+          "order",
+          "played_at.desc,id.desc"
+        ],
+        [
+          "limit",
+          "0"
+        ],
+        [
+          "matched_game.name",
+          "imatch.\"Azul\""
+        ],
+        [
+          "and",
+          "(or(notes.imatch.\"Azul\",matched_game.not.is.null))"
+        ],
+        [
+          "played_at",
+          "gte.2026-10-01"
+        ],
+        [
+          "played_at",
+          "lte.2026-10-31"
+        ]
+      ],
+      "identity": "public key syntax probe outside Android app; no real user JWT"
+    },
+    {
+      "name": "combined_search_cursor_participant",
+      "status": 200,
+      "limit": 0,
+      "returned_rows": 0,
+      "parameters": [
+        [
+          "select",
+          "*,games(*),play_scores(*,players(*)),matched_game:games(),matching_scores:play_scores!inner(player_id)"
+        ],
+        [
+          "order",
+          "played_at.desc,id.desc"
+        ],
+        [
+          "limit",
+          "0"
+        ],
+        [
+          "matched_game.name",
+          "imatch.\"Azul\""
+        ],
+        [
+          "and",
+          "(or(notes.imatch.\"Azul\",matched_game.not.is.null),or(played_at.lt.2026-10-13,and(played_at.eq.2026-10-13,id.lt.00000000-0000-0000-0000-000000000001)))"
+        ],
+        [
+          "played_at",
+          "gte.2026-10-01"
+        ],
+        [
+          "played_at",
+          "lte.2026-10-31"
+        ],
+        [
+          "matching_scores.player_id",
+          "eq.00000000-0000-0000-0000-000000000001"
+        ],
+        [
+          "game_id",
+          "eq.00000000-0000-0000-0000-000000000001"
+        ],
+        [
+          "source",
+          "eq.offline"
+        ]
+      ],
+      "identity": "public key syntax probe outside Android app; no real user JWT"
+    },
+    {
+      "name": "literal_punctuation",
+      "status": 200,
+      "limit": 0,
+      "returned_rows": 0,
+      "parameters": [
+        [
+          "select",
+          "*,games(*),play_scores(*,players(*)),matched_game:games(),matching_scores:play_scores!inner(player_id)"
+        ],
+        [
+          "order",
+          "played_at.desc,id.desc"
+        ],
+        [
+          "limit",
+          "0"
+        ],
+        [
+          "matched_game.name",
+          "imatch.\"\\\\* % _ \\\\\\\\\\\" , \\\\(a\\\\|b\\\\) \\\\[z\\\\] 😀\""
+        ],
+        [
+          "and",
+          "(or(notes.imatch.\"\\\\* % _ \\\\\\\\\\\" , \\\\(a\\\\|b\\\\) \\\\[z\\\\] 😀\",matched_game.not.is.null),or(played_at.lt.2026-10-13,and(played_at.eq.2026-10-13,id.lt.00000000-0000-0000-0000-000000000001)))"
+        ],
+        [
+          "played_at",
+          "gte.2026-10-01"
+        ],
+        [
+          "played_at",
+          "lte.2026-10-31"
+        ],
+        [
+          "matching_scores.player_id",
+          "eq.00000000-0000-0000-0000-000000000001"
+        ],
+        [
+          "game_id",
+          "eq.00000000-0000-0000-0000-000000000001"
+        ],
+        [
+          "source",
+          "eq.offline"
+        ]
+      ],
+      "identity": "public key syntax probe outside Android app; no real user JWT"
+    }
+  ],
+  "node_evidence_tests": {
+    "tests": 10,
+    "failures": 0
+  },
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 21067506,
+    "sha256": "83bbb99c9c729d0ea4819a5ac598b3cb48b29eedcc8e437cee0eda661deb7424",
+    "signing": "debug key"
+  },
+  "review": {
+    "subagent": "backend_audit",
+    "p1_or_p2_findings_remaining": 0,
+    "corrected": [
+      "Reload restored catalog selector",
+      "Restore applied filter inputs separately from fresh ViewModel rows",
+      "Remove saved UI account state on Blocked"
+    ]
+  },
+  "ci_at_local_evidence_capture": {
+    "previous_verified_commit": "ab9c534de2d3716be53e4083e1be48106af5fe2d",
+    "previous_result": "success",
+    "previous_run": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38422829676",
+    "current_increment": "Created after commit/push; consult Actions for its final result",
+    "workflow": "Node evidence, debug build, JVM tests and lint; no emulator instrumentation"
+  },
+  "remaining_1_0_effort": {
+    "unit": "effective hours; planning estimate, not elapsed calendar time",
+    "consultation": [
+      6,
+      12
+    ],
+    "comments_admin_atomic_rpc": [
+      28,
+      48
+    ],
+    "validation_release": [
+      20,
+      32
+    ],
+    "with_20_percent_reserve": [
+      65,
+      110
+    ]
+  },
+  "not_verified": [
+    "Real account login and comparison with real group data",
+    "Physical phone, API minimum 26, TalkBack and tablet",
+    "Mobile performance benchmarks",
+    "Remaining phase 3 game/player detail and images; phase 4 writes and phase 5 signed release"
+  ],
+  "remote_schema_or_data_mutated": false,
+  "emulator_note": "Only dedicated emulator-5582 was controlled. Size/density/font/motion/stay-on restored and emulator stopped. Existing emulator-5584 was left untouched."
+}

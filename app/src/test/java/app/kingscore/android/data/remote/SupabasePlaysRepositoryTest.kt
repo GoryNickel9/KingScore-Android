@@ -28,8 +28,9 @@ class SupabasePlaysRepositoryTest {
             assertFalse(query.containsKey("offset"))
             assertFalse(query.containsKey("user_id"))
             val cursor = expectedCursor
-            if (cursor == null) assertNull(query["or"])
-            else assertEquals("(played_at.lt.$date,and(played_at.eq.$date,id.lt.$cursor))", query["or"])
+            assertNull(query["or"])
+            if (cursor == null) assertNull(query["and"])
+            else assertEquals("(or(played_at.lt.$date,and(played_at.eq.$date,id.lt.$cursor)))", query["and"])
             val page = ids.filter { cursor == null || it.toString() < cursor.toString() }.take(PAGE_SIZE)
             expectedCursor = page.lastOrNull()
             calls++
@@ -39,7 +40,7 @@ class SupabasePlaysRepositoryTest {
         val found = mutableListOf<UUID>()
         var cursor: PlayCursor? = null
         do {
-            val page = repository.history(null, cursor)
+            val page = repository.history(HistoryFilters(), cursor)
             found += page.items.map { it.play.id }
             cursor = page.next
         } while (cursor != null)
@@ -52,8 +53,8 @@ class SupabasePlaysRepositoryTest {
         val high = UUID.fromString("80000000-0000-0000-0000-000000000001")
         val low = UUID.fromString("7fffffff-ffff-ffff-ffff-ffffffffffff")
         val repository = repository("[${play(high)},${play(low)}]")
-        assertEquals(listOf(high, low), repository.history(null).items.map { it.play.id })
-        val tail = repository("[${play(low)}]").history(null, PlayCursor(date, high))
+        assertEquals(listOf(high, low), repository.history().items.map { it.play.id })
+        val tail = repository("[${play(low)}]").history(HistoryFilters(), PlayCursor(date, high))
         assertEquals(low, tail.items.single().play.id)
     }
 
@@ -63,7 +64,7 @@ class SupabasePlaysRepositoryTest {
             assertEquals("eq.online", parameters.toMap()["source"])
             "[${play(id, "online", scores = "[${score(id, "0")},${score(uuid(2), "-9007199254740993.125")}]")} ]"
         }
-        val item = SupabasePlaysRepository(reader, account).history(PlaySource.ONLINE).items.single()
+        val item = SupabasePlaysRepository(reader, account).history(HistoryFilters(source = PlaySource.ONLINE)).items.single()
         assertNull(item.game)
         assertNull(item.scores.first().player)
         assertEquals(BigDecimal.ZERO, item.scores.first().score.score)
@@ -80,9 +81,9 @@ class SupabasePlaysRepositoryTest {
             "[${play(first)},${play(first)}]",
             (1..51).reversed().joinToString(prefix = "[", postfix = "]") { play(uuid(it)) },
         )
-        for (body in invalid) expectInvalid { repository(body).history(null) }
-        expectInvalid { repository("[${play(first, "offline")}]").history(PlaySource.ONLINE) }
-        expectInvalid { repository("[${play(first)}]").history(null, PlayCursor(date, first)) }
+        for (body in invalid) expectInvalid { repository(body).history() }
+        expectInvalid { repository("[${play(first, "offline")}]").history(HistoryFilters(source = PlaySource.ONLINE)) }
+        expectInvalid { repository("[${play(first)}]").history(HistoryFilters(), PlayCursor(date, first)) }
     }
 
     @Test fun `detail distinguishes missing record forbidden response and malformed record`() = runBlocking {

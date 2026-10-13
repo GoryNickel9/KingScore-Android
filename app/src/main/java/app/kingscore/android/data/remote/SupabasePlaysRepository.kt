@@ -8,22 +8,54 @@ import kingscore.contracts.v1.PlayCommentRow
 import kotlinx.serialization.json.*
 
 class SupabasePlaysRepository(private val reader: AuthenticatedReader, private val accountId: UUID) : PlaysRepository {
-    override suspend fun history(source: PlaySource?, after: PlayCursor?): PlayPage {
+    override suspend fun history(filters: HistoryFilters, after: PlayCursor?): PlayPage {
+        val query = filters.query.trim()
+        val projection = "*,games(*),play_scores(*,players(*))" +
+            (if (query.isNotEmpty()) ",matched_game:games()" else "") +
+            (if (filters.playerId != null) ",matching_scores:play_scores!inner(player_id)" else "")
         val parameters = mutableListOf(
-            "select" to "*,games(*),play_scores(*,players(*))",
+            "select" to projection,
             "order" to "played_at.desc,id.desc", "limit" to PAGE_SIZE.toString(),
         )
-        source?.let { parameters += "source" to "eq.${it.wireValue}" }
-        after?.let { parameters += "or" to "(played_at.lt.${it.date},and(played_at.eq.${it.date},id.lt.${it.id}))" }
+        filters.source?.let { parameters += "source" to "eq.${it.wireValue}" }
+        filters.gameId?.let { parameters += "game_id" to "eq.$it" }
+        filters.playerId?.let { parameters += "matching_scores.player_id" to "eq.$it" }
+        filters.from?.let { parameters += "played_at" to "gte.$it" }
+        filters.to?.let { parameters += "played_at" to "lte.$it" }
+        val conditions = mutableListOf<String>()
+        if (query.isNotEmpty()) {
+            val pattern = literalPattern(query)
+            parameters += "matched_game.name" to "imatch.$pattern"
+            conditions += "or(notes.imatch.$pattern,matched_game.not.is.null)"
+        }
+        after?.let { conditions += "or(played_at.lt.${it.date},and(played_at.eq.${it.date},id.lt.${it.id}))" }
+        if (conditions.isNotEmpty()) parameters += "and" to conditions.joinToString(prefix = "(", postfix = ")", separator = ",")
         val rows = decode(reader.get(accountId, "plays", parameters)) { RowDecoders.playDetail(it) }
         validate {
             require(rows.size <= PAGE_SIZE)
             val cursors = rows.map { PlayCursor(it.play.played_at, it.play.id) }
-            require(rows.all { source == null || it.play.source == source.wireValue })
+            require(rows.all { (filters.source == null || it.play.source == filters.source.wireValue) &&
+                (filters.gameId == null || it.play.game_id == filters.gameId) &&
+                (filters.playerId == null || it.scores.any { score -> score.score.player_id == filters.playerId }) &&
+                (filters.from == null || it.play.played_at >= filters.from) &&
+                (filters.to == null || it.play.played_at <= filters.to) })
             require(cursors.zipWithNext().all { (a, b) -> compare(a, b) > 0 })
             require(after == null || cursors.all { compare(it, after) < 0 })
         }
         return PlayPage(rows, rows.lastOrNull()?.takeIf { rows.size == PAGE_SIZE }?.let { PlayCursor(it.play.played_at, it.play.id) })
+    }
+
+    override suspend fun filterOptions(): HistoryOptions {
+        val games = reader.readAllById(accountId, "games", listOf("select" to "*"), RowDecoders::game) { it.id }
+        val players = reader.readAllById(accountId, "players", listOf("select" to "*"), RowDecoders::player) { it.id }
+        return HistoryOptions(games.sortedWith(compareBy<kingscore.contracts.v1.GameRow> { it.name.lowercase() }.thenBy { it.id.toString() }),
+            players.sortedWith(compareBy<kingscore.contracts.v1.PlayerRow> { (it.alias?.takeIf(String::isNotBlank) ?: it.name).lowercase() }.thenBy { it.id.toString() }))
+    }
+
+    private fun literalPattern(query: String): String {
+        // imatch avoids ILIKE's '*' alias; escaping prevents user input becoming executable regex.
+        val regex = buildString { for (char in query) { if (char in "\\.^$|?*+()[]{}") append('\\'); append(char) } }
+        return "\"${regex.replace("\\", "\\\\").replace("\"", "\\\"")}\""
     }
 
     override suspend fun detail(id: UUID): PlayDetail? {

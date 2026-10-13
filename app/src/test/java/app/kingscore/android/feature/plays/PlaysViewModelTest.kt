@@ -28,7 +28,7 @@ class PlaysViewModelTest {
         repository.page = { _, after -> if (after == null) PlayPage(listOf(first), cursor)
             else throw DataFailure(DataProblem.INVALID_RESPONSE) }
         val model = HistoryViewModel(repository, accessProblems::add)
-        model.show(null)
+        model.show()
         advanceUntilIdle()
         model.loadMore()
         advanceUntilIdle()
@@ -48,9 +48,9 @@ class PlaysViewModelTest {
         repository.page = { source, _ -> if (source == null) withContext(NonCancellable) { stale.await() }
             else PlayPage(listOf(play(2)), null) }
         val model = HistoryViewModel(repository, accessProblems::add)
-        model.show(null)
+        model.show()
         runCurrent()
-        model.show(PlaySource.ONLINE)
+        model.show(HistoryFilters(source = PlaySource.ONLINE))
         runCurrent()
         stale.complete(PlayPage(listOf(play(1)), null))
         advanceUntilIdle()
@@ -64,9 +64,9 @@ class PlaysViewModelTest {
         var calls = 0
         repository.page = { _, _ -> calls++; PlayPage(listOf(play(1)), null) }
         val model = HistoryViewModel(repository, accessProblems::add)
-        model.show(null)
+        model.show()
         advanceUntilIdle()
-        model.show(null)
+        model.show()
         advanceUntilIdle()
         assertEquals(1, calls)
         model.refresh()
@@ -79,7 +79,7 @@ class PlaysViewModelTest {
         repository.page = { _, _ -> PlayPage(listOf(play(1)), PlayCursor(LocalDate.now(), id(1))) }
         lateinit var model: HistoryViewModel
         model = HistoryViewModel(repository) { assertTrue(model.history.value.items.isEmpty()); accessProblems += it }
-        model.show(null)
+        model.show()
         advanceUntilIdle()
         repository.page = { _, _ -> throw AuthFailure(AuthProblem.NETWORK_UNAVAILABLE) }
         model.loadMore()
@@ -150,13 +150,115 @@ class PlaysViewModelTest {
         assertEquals("Sconfitta della squadra", resultLabel(detail.copy(play = detail.play.copy(is_cooperative = true, team_won = false))))
     }
 
+    @Test fun `all applied filters survive pagination retry and back while changes start at first page`() = runTest(dispatcher) {
+        val applied = HistoryFilters(query = "Finale", source = PlaySource.IRL, gameId = id(8), playerId = id(9),
+            from = LocalDate.parse("2026-10-01"), to = LocalDate.parse("2026-10-31"))
+        val cursor = PlayCursor(LocalDate.parse("2026-10-13"), id(1))
+        val requests = mutableListOf<Pair<HistoryFilters, PlayCursor?>>()
+        var failNext = true
+        repository.filteredPage = { filters, after ->
+            requests += filters to after
+            if (after != null && failNext) throw DataFailure(DataProblem.INVALID_RESPONSE)
+            PlayPage(listOf(play(if (after == null) 1 else 2)), if (after == null) cursor else null)
+        }
+        val model = HistoryViewModel(repository, accessProblems::add)
+        model.show(applied)
+        advanceUntilIdle()
+        model.loadMore()
+        advanceUntilIdle()
+        assertEquals(applied, model.history.value.filters)
+        assertEquals(cursor, model.history.value.next)
+        failNext = false
+        model.retry()
+        advanceUntilIdle()
+        model.show()
+        advanceUntilIdle()
+        assertEquals(listOf(applied to null, applied to cursor, applied to cursor), requests)
+        assertEquals(2, model.history.value.items.size)
+        val changed = applied.copy(query = "Caffè", from = LocalDate.parse("2026-10-05"))
+        model.refresh(changed)
+        assertTrue(model.history.value.items.isEmpty())
+        assertNull(model.history.value.next)
+        advanceUntilIdle()
+        assertEquals(changed to null, requests.last())
+    }
+
+    @Test fun `a late query response cannot restore a different query or erased filters`() = runTest(dispatcher) {
+        val stale = CompletableDeferred<PlayPage>()
+        repository.filteredPage = { filters, _ -> if (filters.query == "old") withContext(NonCancellable) { stale.await() }
+            else PlayPage(listOf(play(2)), null) }
+        val model = HistoryViewModel(repository, accessProblems::add)
+        model.show(HistoryFilters(query = "old"))
+        runCurrent()
+        model.refresh(HistoryFilters(query = "new", to = LocalDate.parse("2026-10-13")))
+        runCurrent()
+        stale.complete(PlayPage(listOf(play(1)), null))
+        advanceUntilIdle()
+        assertEquals("new", model.history.value.filters.query)
+        assertEquals(listOf(play(2)), model.history.value.items)
+        model.clearMemory()
+        assertFalse(model.history.value.filters.active)
+        assertNull(model.history.value.options)
+    }
+
+    @Test fun `catalog error stays distinct from history and retry retains catalogs across filter changes`() = runTest(dispatcher) {
+        repository.page = { _, _ -> PlayPage(listOf(play(1)), null) }
+        var calls = 0
+        repository.options = { calls++; if (calls == 1) throw DataFailure(DataProblem.FORBIDDEN) else HistoryOptions() }
+        val model = HistoryViewModel(repository, accessProblems::add)
+        model.show()
+        model.loadOptions()
+        advanceUntilIdle()
+        assertEquals(DataProblem.FORBIDDEN, model.history.value.optionsProblem)
+        assertEquals(1, model.history.value.items.size)
+        assertNull(model.history.value.problem)
+        assertTrue(accessProblems.isEmpty())
+        model.loadOptions()
+        advanceUntilIdle()
+        assertNotNull(model.history.value.options)
+        model.refresh(HistoryFilters(query = "test"))
+        model.loadOptions()
+        advanceUntilIdle()
+        assertEquals(2, calls)
+    }
+
+    @Test fun `cleared or offline catalogs cannot restore private options or filters`() = runTest(dispatcher) {
+        val stale = CompletableDeferred<HistoryOptions>()
+        repository.options = { withContext(NonCancellable) { stale.await() } }
+        val model = HistoryViewModel(repository, accessProblems::add)
+        model.show(HistoryFilters(query = "private"))
+        model.loadOptions()
+        runCurrent()
+        model.clearMemory()
+        stale.complete(HistoryOptions())
+        advanceUntilIdle()
+        assertNull(model.history.value.options)
+        assertFalse(model.history.value.filters.active)
+        repository.options = { throw AuthFailure(AuthProblem.NETWORK_UNAVAILABLE) }
+        model.loadOptions()
+        advanceUntilIdle()
+        assertEquals(listOf(AuthProblem.NETWORK_UNAVAILABLE), accessProblems)
+        assertNull(model.history.value.options)
+    }
+
+    @Test fun `filter dates reject invalid leap days accept blank and preserve date without timezone`() {
+        assertNull(historyFilterDate("  "))
+        assertEquals(LocalDate.parse("2024-02-29"), historyFilterDate("29/02/2024"))
+        assertEquals(LocalDate.parse("2026-10-13"), historyFilterDate("13/10/2026"))
+        assertThrows(java.time.format.DateTimeParseException::class.java) { historyFilterDate("29/02/2026") }
+        assertThrows(java.time.format.DateTimeParseException::class.java) { historyFilterDate("31/04/2026") }
+    }
+
     private class FakePlays : PlaysRepository {
         var page: suspend (PlaySource?, PlayCursor?) -> PlayPage = { _, _ -> PlayPage(emptyList(), null) }
+        var filteredPage: (suspend (HistoryFilters, PlayCursor?) -> PlayPage)? = null
+        var options: suspend () -> HistoryOptions = { HistoryOptions() }
         var commentPage: suspend (CommentCursor?) -> CommentPage = { CommentPage(emptyList(), null) }
         var play: PlayDetail? = play(1)
         var detailWait: CompletableDeferred<PlayDetail?>? = null
         var commentCalls = 0
-        override suspend fun history(source: PlaySource?, after: PlayCursor?) = page(source, after)
+        override suspend fun history(filters: HistoryFilters, after: PlayCursor?) = filteredPage?.invoke(filters, after) ?: page(filters.source, after)
+        override suspend fun filterOptions() = options()
         override suspend fun detail(id: UUID): PlayDetail? = detailWait?.let { withContext(NonCancellable) { it.await() } } ?: play
         override suspend fun comments(id: UUID, after: CommentCursor?): CommentPage { commentCalls++; return commentPage(after) }
     }

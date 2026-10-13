@@ -3,6 +3,7 @@ package app.kingscore.android.data.remote
 import app.kingscore.android.data.repository.DataFailure
 import app.kingscore.android.data.repository.DataProblem
 import app.kingscore.android.data.repository.GameStatistic
+import app.kingscore.android.data.repository.HistoryFilters
 import app.kingscore.android.data.repository.PlayCursor
 import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.data.repository.StatisticsRepository
@@ -38,7 +39,7 @@ class SupabaseStatisticsRepository(
 
         do {
             currentCoroutineContext().ensureActive()
-            val page = plays.history(null, cursor)
+            val page = plays.history(HistoryFilters(), cursor)
             // A malformed/non-advancing cursor must not create an endless scan.
             val previous = cursor
             if (page.next != null && (page.items.isEmpty() || previous != null && compare(page.next, previous) >= 0)) {

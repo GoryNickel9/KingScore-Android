@@ -70,6 +70,8 @@ class PlaysUiTest {
         repo.pendingDetail = pending
         val calls = repo.detailCalls
         compose.runOnIdle { access.value = AccessState.Connected(account) }
+        compose.onNodeWithTag("dashboard-content").assertIsDisplayed()
+        compose.onNodeWithTag("recent-${id(1)}").performClick()
         compose.waitUntil { repo.detailCalls > calls }
         compose.onNodeWithText("Caricamento partita…").assertIsDisplayed()
         compose.onNodeWithText("Azul").assertDoesNotExist()
@@ -131,7 +133,8 @@ class PlaysUiTest {
         var detailCalls = 0
         var pendingDetail: CompletableDeferred<PlayDetail?>? = null
         var nextHistory: PlayPage? = null
-        override suspend fun history(source: PlaySource?, after: PlayCursor?): PlayPage {
+        override suspend fun filterOptions() = HistoryOptions()
+        override suspend fun history(filters: HistoryFilters, after: PlayCursor?): PlayPage {
             historyCalls++
             nextHistory?.let { return it }
             return if (after == null) PlayPage(listOf(first, second), PlayCursor(second.play.played_at, second.play.id))

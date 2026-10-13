@@ -90,13 +90,28 @@ I test Ktor verificano GET utente prima di ogni GET dati, Bearer utente, nessuna
 
 Checksum APK, suite, runner Android e screenshot sono in [evidence/phase31-validation.json](evidence/phase31-validation.json). Le catture usano la radice Compose per mostrare l'app, senza dipendere dalla cattura delle barre di sistema. I dati dei test sono sintetici. Home carica soltanto la prima pagina; Statistiche pubblica i totali dopo una scansione completa. Le classifiche leggono valori backend, senza ricalcolo ELO.
 
-La CI esegue i controlli Node, build, test JVM e lint. Non esegue i test Android su emulatore. Il commit 2d14b4f ha superato la [pipeline](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38414918651); il run dell'incremento 0.3.1 viene creato al push e può essere verificato nella [pagina Actions](https://github.com/GoryNickel9/KingScore-Android/actions).
+La CI esegue i controlli Node, build, test JVM e lint. Non esegue i test Android su emulatore. I commit [2d14b4f](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38414918651) e [ab9c534](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38422829676) hanno superato la pipeline.
+
+## Risultati ricerca e filtri, build 0.3.2
+
+| Controllo eseguito | Esito | Ambito |
+| --- | --- | --- |
+| Test JVM completi | 87 superati, zero errori | Include combinazioni di filtri, 14 casi di escaping, date inclusive, cataloghi oltre 1.000 righe e risposte obsolete |
+| Test Android API 31 | 18 superati | Ricerca, filtri, cataloghi, paginazione, ritorno dal dettaglio, reset, date errate, cambio account e ripristino dopo ricreazione del ViewModel |
+| Layout con testo al 130% | Percorso completo superato in verticale e orizzontale | Larghezza verticale circa 376 dp, cataloghi scorrevoli, tastiera e dialogo date; animazioni disattivate |
+| Test evidenze Node | 10 superati | Contratti e limiti del perimetro |
+| Probe Supabase limit=0 | Tre HTTP 200, zero righe | Ricerca OR gioco/note, AND con cursore/filtri e punteggiatura letterale |
+| Lint debug | Zero errori, 22 warning preesistenti | Nessun warning aggiunto dal nuovo layout |
+
+Il test di ripristino svuota lo store dei ViewModel e verifica una nuova lettura con query, modalità e data applicate. Il blocco di accesso elimina anche lo stato UI salvato dell'account: dialoghi e bozze non riappaiono alla riconnessione. Il test di annullamento aspetta il caricamento iniziale prima di verificare l'assenza di nuove richieste.
+
+Risultati del runner, checksum APK e screenshot sono in [evidence/phase32-validation.json](evidence/phase32-validation.json). Sono fixture sintetiche; le probe remote certificano la sintassi, senza un JWT utente reale. La CI del nuovo commit viene creata al push: il suo esito è disponibile nella [pagina Actions](https://github.com/GoryNickel9/KingScore-Android/actions).
 
 ## Controlli ancora aperti
 
 1. Login con account reale ordinario/admin, revoca remota effettiva e riavvio del processo con sessione reale. Nessuna credenziale utente è stata usata nei test.
 2. Installazione e aggiornamento su telefono fisico, API minima 26, TalkBack e caratteri grandi. I risultati dell'emulatore API 31 non coprono questi dispositivi.
-3. Nella fase 3: filtri aggiuntivi, dettagli dedicati gioco/giocatore e immagini. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
+3. Nella fase 3: dettagli dedicati gioco/giocatore e immagini. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
 
 Non sono stati eseguiti benchmark mobili. Home, Statistiche ed ELO sono implementate nell'incremento 0.3.1; la verifica con dati reali rimane aperta.
 

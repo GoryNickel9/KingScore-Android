@@ -18,6 +18,8 @@ La UI presenta dati e raccoglie azioni. Il ViewModel mantiene lo stato della sch
 
 Home legge soltanto la prima pagina e mostra le cinque partite più recenti. Statistiche attraversa l'archivio su richiesta, conserva aggregati e ID e pubblica un risultato soltanto dopo la lettura completa. Classifiche e cataloghi usano cursori ID; lo storico ELO usa data e ID. Le viste condividono SupabaseReader e la stessa barriera di accesso, senza nuove dipendenze.
 
+`HistoryFilters` viene applicato sul server prima della paginazione. Ricerca e cursore condividono il gruppo AND; il partecipante usa un alias di selezione separato dai punteggi restituiti. `ReadAllById` riusa la traversata dei cataloghi e rating. Lo stato UI salva soltanto gli input dei filtri per il ripristino della schermata, senza righe o cataloghi; `Blocked` rimuove anche questo stato dell'account.
+
 ## Stati dell'app
 
 Senza sessione mostrare il login. Una sessione salvata deve essere verificata online prima di mostrare dati. Una perdita di rete o un backend irraggiungibile mostra lo stato di connessione e sospende l'uso delle schermate funzionali. Mantenere separati errore di rete, permesso negato, risorsa assente e insieme vuoto.

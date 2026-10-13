@@ -55,7 +55,7 @@ fun AppContent(
                 previousAccount?.takeIf { it != current }?.let(holder::removeState)
                 previousAccount = current
             }
-            is AccessState.SignedOut -> {
+            is AccessState.SignedOut, is AccessState.Blocked -> {
                 previousAccount?.let {
                     holder.removeState(it)
                     email = ""

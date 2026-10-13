@@ -3,12 +3,10 @@ package app.kingscore.android.data.remote
 import app.kingscore.android.data.repository.*
 import java.util.UUID
 import kingscore.contracts.v1.*
-import kotlinx.coroutines.ensureActive
-import kotlin.coroutines.coroutineContext
 import kotlinx.serialization.json.*
 
 class SupabaseRatingsRepository(private val reader: AuthenticatedReader, private val accountId: UUID) : RatingsRepository {
-    override suspend fun games(): List<GameRow> = all("games", listOf("select" to "*"), RowDecoders::game) { it.id }
+    override suspend fun games(): List<GameRow> = reader.readAllById(accountId, "games", listOf("select" to "*"), RowDecoders::game) { it.id }
         .sortedWith(compareBy<GameRow> { it.name.lowercase() }.thenBy { it.id.toString() })
 
     override suspend fun ranking(gameId: UUID?): Ranking {
@@ -19,7 +17,7 @@ class SupabaseRatingsRepository(private val reader: AuthenticatedReader, private
         val owner = profile?.user_id ?: accountId
         val parameters = listOf("select" to "*,players(*)") + if (gameId == null) listOf("user_id" to "eq.$owner") else listOf("game_id" to "eq.$gameId")
         val resource = if (gameId == null) "player_general_ratings" else "player_ratings"
-        val entries = all(resource, parameters, { row ->
+        val entries = reader.readAllById(accountId, resource, parameters, { row ->
             val player = row.getValue("players").let { if (it == JsonNull) null else RowDecoders.player(it.jsonObject) }
             if (gameId == null) {
                 val rating = RowDecoders.generalRating(row)
@@ -61,23 +59,6 @@ class SupabaseRatingsRepository(private val reader: AuthenticatedReader, private
     }
 
     private fun compare(a: RatingHistoryCursor, b: RatingHistoryCursor) = a.date.compareTo(b.date).takeIf { it != 0 } ?: a.id.toString().compareTo(b.id.toString())
-    private suspend fun <T> all(resource: String, parameters: List<Pair<String, String>>, decode: (JsonObject) -> T, id: (T) -> UUID): List<T> {
-        val items = mutableListOf<T>()
-        var after: UUID? = null
-        do {
-            coroutineContext.ensureActive()
-            val query = parameters + listOf("order" to "id.asc", "limit" to PAGE_SIZE.toString()) + after?.let { listOf("id" to "gt.$it") }.orEmpty()
-            val page = decode(reader.get(accountId, resource, query), decode)
-            validate {
-                require(page.size <= PAGE_SIZE)
-                require(page.zipWithNext().all { (a, b) -> id(a).toString() < id(b).toString() })
-                require(after == null || page.all { id(it).toString() > after.toString() })
-            }
-            items += page
-            after = page.lastOrNull()?.takeIf { page.size == PAGE_SIZE }?.let(id)
-        } while (after != null)
-        return items
-    }
     private fun <T> decode(body: String, decoder: (JsonObject) -> T): List<T> = validate { Json.parseToJsonElement(body).jsonArray.map { decoder(it.jsonObject) } }
     private inline fun <T> validate(block: () -> T): T = try { block() } catch (_: Exception) { throw DataFailure(DataProblem.INVALID_RESPONSE) }
 }

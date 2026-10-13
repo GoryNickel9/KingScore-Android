@@ -21,7 +21,7 @@ fun DashboardRoute(account: Account, repository: PlaysRepository, onAccessFailur
     onOpen: (UUID) -> Unit, onHistory: () -> Unit, onRatings: () -> Unit) {
     val model: HistoryViewModel = viewModel(factory = modelFactory { HistoryViewModel(repository, onAccessFailure) })
     val state by model.history.collectAsStateWithLifecycle()
-    LaunchedEffect(model) { model.show(null) }
+    LaunchedEffect(model) { model.show() }
     LazyColumn(Modifier.fillMaxSize().testTag("dashboard-content"), contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Text("Ciao, ${account.name}", style = MaterialTheme.typography.headlineLarge)

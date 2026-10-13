@@ -13,10 +13,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.kingscore.android.core.auth.AuthProblem
@@ -31,10 +34,20 @@ import kingscore.contracts.v1.*
 fun HistoryRoute(repository: PlaysRepository, onAccessFailure: (AuthProblem) -> Unit, onOpen: (UUID) -> Unit) {
     val model: HistoryViewModel = viewModel(factory = modelFactory { HistoryViewModel(repository, onAccessFailure) })
     val state by model.history.collectAsStateWithLifecycle()
-    var filter by rememberSaveable { mutableStateOf("ALL") }
-    val source = PlaySource.entries.firstOrNull { it.name == filter }
-    LaunchedEffect(model, filter) { model.show(source) }
-    HistoryScreen(state, source, { filter = it?.name ?: "ALL" }, { model.refresh(source) }, model::loadMore, model::retry, onOpen)
+    var applied by rememberSaveable(stateSaver = historyFiltersSaver) { mutableStateOf(HistoryFilters()) }
+    var query by rememberSaveable { mutableStateOf(applied.query) }
+    var filtersOpen by rememberSaveable { mutableStateOf(false) }
+    val keyboard = LocalSoftwareKeyboardController.current
+    val focus = LocalFocusManager.current
+    LaunchedEffect(model) { model.show(applied) }
+    val apply: (HistoryFilters) -> Unit = { applied = it.copy(query = it.query.trim()); model.refresh(applied) }
+    val validQuery = query.length <= MAX_HISTORY_QUERY && query.none { it.isISOControl() }
+    val search = { if (validQuery) { focus.clearFocus(); keyboard?.hide(); query = query.trim(); apply(applied.copy(query = query)) }; Unit }
+    HistoryScreen(state, query, { query = it }, validQuery, search,
+        { apply(applied.copy(source = it)) }, { focus.clearFocus(); keyboard?.hide(); filtersOpen = true },
+        { query = ""; apply(HistoryFilters()) }, { model.refresh() }, model::loadMore, model::retry, onOpen)
+    if (filtersOpen) HistoryFiltersDialog(state, model::loadOptions,
+        { filtersOpen = false; focus.clearFocus(); keyboard?.hide(); apply(it) }, { filtersOpen = false })
 }
 
 @Composable
@@ -46,47 +59,67 @@ fun DetailRoute(repository: PlaysRepository, accountId: UUID, id: UUID, onAccess
 }
 
 @Composable
-fun HistoryScreen(state: HistoryState, source: PlaySource?, onSource: (PlaySource?) -> Unit,
+fun HistoryScreen(state: HistoryState, query: String, onQuery: (String) -> Unit, validQuery: Boolean, onSearch: () -> Unit,
+    onSource: (PlaySource?) -> Unit, onFilters: () -> Unit, onReset: () -> Unit,
     onRefresh: () -> Unit, onMore: () -> Unit, onRetry: () -> Unit, onOpen: (UUID) -> Unit) {
     Column(Modifier.fillMaxSize().testTag("plays-history")) {
         ScreenHeader("Partite", onRefresh = onRefresh, refreshing = state.loading)
-        LazyRow(contentPadding = PaddingValues(horizontal = 24.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(listOf(null, PlaySource.IRL, PlaySource.ONLINE)) { option ->
-                FilterChip(selected = source == option, onClick = { onSource(option) },
-                    label = { Text(when (option) { null -> "Tutte"; PlaySource.IRL -> "Dal vivo"; PlaySource.ONLINE -> "Online" }) })
-            }
-        }
-        if (state.loading) {
-            Loading("Caricamento partite…")
-        } else {
+        key(state.filters) {
             LazyColumn(Modifier.weight(1f).testTag("history-content"), contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                state.updatedAt?.let { instant -> item {
-                    val time = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault()).format(instant)
-                    Text("${state.items.size} partite caricate · Aggiornato alle $time", style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                } }
-                if (state.items.isEmpty() && state.problem == null) item {
-                    Text("Nessuna partita", style = MaterialTheme.typography.titleLarge)
-                    Text("Non ci sono partite per questa modalità.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                item {
+                    OutlinedTextField(value = query, onValueChange = onQuery, singleLine = true, isError = !validQuery,
+                        label = { Text("Cerca gioco o note") }, modifier = Modifier.fillMaxWidth().testTag("history-query"),
+                        supportingText = { if (!validQuery) Text("Usa una riga di massimo $MAX_HISTORY_QUERY caratteri.") },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = { onSearch() }))
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = onSearch, enabled = validQuery) { Text("Cerca") }
+                        OutlinedButton(onClick = onFilters) { Text("Filtri") }
+                    }
                 }
-                items(state.items, key = { it.play.id.toString() }) { detail ->
-                    Card(onClick = { onOpen(detail.play.id) }, modifier = Modifier.fillMaxWidth().testTag("play-${detail.play.id}")) {
-                        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(detail.game?.name ?: "Gioco non disponibile", style = MaterialTheme.typography.titleLarge)
-                            Text("${playDateFormat.format(detail.play.played_at)} · ${sourceLabel(detail.play.source)}",
-                                style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text(resultLabel(detail), color = MaterialTheme.colorScheme.primary)
-                            Text("${detail.scores.size} partecipanti", style = MaterialTheme.typography.bodySmall)
-                            detail.play.notes?.takeIf { it.isNotBlank() }?.let {
-                                Text(it, maxLines = 2, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                item {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(listOf(null, PlaySource.IRL, PlaySource.ONLINE)) { option ->
+                            FilterChip(selected = state.filters.source == option, onClick = { onSource(option) },
+                                label = { Text(when (option) { null -> "Tutte"; PlaySource.IRL -> "Dal vivo"; PlaySource.ONLINE -> "Online" }) })
+                        }
+                    }
+                    if (state.filters.active) {
+                        Text(historyFilterSummary(state), style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.testTag("active-history-filters"))
+                        TextButton(onClick = onReset) { Text("Rimuovi filtri") }
+                    }
+                }
+                if (state.loading) item { Loading("Caricamento partite…") }
+                else {
+                    state.updatedAt?.let { instant -> item {
+                        val time = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault()).format(instant)
+                        Text("${state.items.size} partite caricate · Aggiornato alle $time", style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    } }
+                    if (state.items.isEmpty() && state.problem == null) item {
+                        Text("Nessuna partita", style = MaterialTheme.typography.titleLarge)
+                        Text(if (state.filters.active) "Nessuna partita corrisponde alla ricerca e ai filtri." else "Non ci sono partite registrate.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    items(state.items, key = { it.play.id.toString() }) { detail ->
+                        Card(onClick = { onOpen(detail.play.id) }, modifier = Modifier.fillMaxWidth().testTag("play-${detail.play.id}")) {
+                            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(detail.game?.name ?: "Gioco non disponibile", style = MaterialTheme.typography.titleLarge)
+                                Text("${playDateFormat.format(detail.play.played_at)} · ${sourceLabel(detail.play.source)}",
+                                    style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(resultLabel(detail), color = MaterialTheme.colorScheme.primary)
+                                Text("${detail.scores.size} partecipanti", style = MaterialTheme.typography.bodySmall)
+                                detail.play.notes?.takeIf { it.isNotBlank() }?.let {
+                                    Text(it, maxLines = 2, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
                             }
                         }
                     }
-                }
-                state.problem?.let { item { DataError(it, onRetry) } }
-                if (state.loadingMore) item { Loading("Caricamento altre partite…") }
-                else if (state.next != null && state.problem == null) item {
-                    OutlinedButton(onClick = onMore, modifier = Modifier.fillMaxWidth().testTag("more-plays")) { Text("Carica altre partite") }
+                    state.problem?.let { item { DataError(it, onRetry) } }
+                    if (state.loadingMore) item { Loading("Caricamento altre partite…") }
+                    else if (state.next != null && state.problem == null) item {
+                        OutlinedButton(onClick = onMore, modifier = Modifier.fillMaxWidth().testTag("more-plays")) { Text("Carica altre partite") }
+                    }
                 }
             }
         }

@@ -250,6 +250,7 @@ class PlaysViewModelTest {
     }
 
     private class FakePlays : PlaysRepository {
+        override suspend fun game(id: UUID): GameRow? = error("Unused game detail")
         var page: suspend (PlaySource?, PlayCursor?) -> PlayPage = { _, _ -> PlayPage(emptyList(), null) }
         var filteredPage: (suspend (HistoryFilters, PlayCursor?) -> PlayPage)? = null
         var options: suspend () -> HistoryOptions = { HistoryOptions() }

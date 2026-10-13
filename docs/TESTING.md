@@ -107,11 +107,27 @@ Il test di ripristino svuota lo store dei ViewModel e verifica una nuova lettura
 
 Risultati del runner, checksum APK e screenshot sono in [evidence/phase32-validation.json](evidence/phase32-validation.json). Sono fixture sintetiche; le probe remote certificano la sintassi, senza un JWT utente reale. La CI del nuovo commit viene creata al push: il suo esito è disponibile nella [pagina Actions](https://github.com/GoryNickel9/KingScore-Android/actions).
 
+## Risultati dettaglio gioco, build 0.3.3
+
+| Controllo eseguito | Esito | Ambito |
+| --- | --- | --- |
+| Test JVM completi | 95 superati, zero errori | Otto nuovi test per query gioco, nullabilità, errori, refresh identico e risposte obsolete |
+| Test Android API 31 | 23 superati | Cinque nuove prove per gioco/pagina/partita/ritorno, refresh, retry, dati mancanti, perdita rete e logout |
+| Layout con testo al 130% | Percorso gioco/pagina/partita/ritorno/refresh superato in verticale e orizzontale | Finestra verticale circa 376 dp, animazioni disattivate; stesso APK |
+| Test evidenze Node | 10 superati | Contratti e limiti del perimetro |
+| Lint debug | Zero errori, 22 warning preesistenti | Nessun nuovo warning |
+
+La prima build locale è stata interrotta da un comando di stop ricevuto dal daemon Gradle condiviso. La verifica finale usa un registro daemon isolato in `.work`, riutilizzando le cache esistenti, insieme al workaround JVM già documentato. Entrambi restano fuori da APK e CI. La revisione statica del subagent non ha trovato regressioni P1/P2; non sostituisce i test eseguiti.
+
+Risultati, runner, checksum e immagini sono in [evidence/phase33-validation.json](evidence/phase33-validation.json). Sono fixture sintetiche; non sono state eseguite mutazioni o nuove probe remote. La lettura usa i campi games già verificati e il filtro game_id dello storico esistente.
+
+Nella cattura verticale al 130%, l'etichetta Statistiche della barra inferiore esistente risulta troncata. Il percorso resta utilizzabile; correggere e verificare le etichette della navigazione con caratteri grandi prima della release stabile. Il corpo del dettaglio gioco è scorrevole anche in orizzontale.
+
 ## Controlli ancora aperti
 
 1. Login con account reale ordinario/admin, revoca remota effettiva e riavvio del processo con sessione reale. Nessuna credenziale utente è stata usata nei test.
 2. Installazione e aggiornamento su telefono fisico, API minima 26, TalkBack e caratteri grandi. I risultati dell'emulatore API 31 non coprono questi dispositivi.
-3. Nella fase 3: dettagli dedicati gioco/giocatore e immagini. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
+3. Nella fase 3: dettaglio giocatore e immagini. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
 
 Non sono stati eseguiti benchmark mobili. Home, Statistiche ed ELO sono implementate nell'incremento 0.3.1; la verifica con dati reali rimane aperta.
 

@@ -32,6 +32,7 @@ La fase 2 implementa `data/remote/RowDecoders.kt`, generato dal catalogo insieme
 | --- | --- |
 | Storico partite | `GET /rest/v1/plays`; ordine `played_at.desc,id.desc`; filtri tipizzati per gioco, date e source |
 | Dettaglio | `plays?id=eq.<uuid>` con join gioco, score e giocatori; array vuoto significa risorsa assente, non successo di una modifica |
+| Dettaglio gioco | `games?select=*&id=eq.<uuid>&limit=1`; validare UUID e cardinalità della risposta; storico con `game_id=eq.<uuid>` e cursore delle partite |
 | Cataloghi e profilo | `games`, `players`; il collegamento account usa `account_user_id=eq.<session-user-id>` |
 | Commenti | `play_comments?play_id=eq.<uuid>`; ordine `created_at.asc,id.asc` |
 | ELO | `player_ratings`, `player_general_ratings`, `elo_history`; filtri player/game, ordine deterministico anche per pari rating |

@@ -49,6 +49,7 @@ import app.kingscore.android.feature.stats.StatisticsRoute
 import app.kingscore.android.feature.ratings.RatingsRoute
 import app.kingscore.android.feature.plays.HistoryRoute
 import app.kingscore.android.feature.plays.DetailRoute
+import app.kingscore.android.feature.games.GameRoute
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import java.util.UUID
@@ -84,7 +85,8 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                 NavigationBar {
                     destinations.forEach { destination ->
                         NavigationBarItem(
-                            selected = entry?.destination?.route == destination.route || (destination.route == "plays" && entry?.destination?.route == "play/{id}"),
+                            selected = entry?.destination?.route == destination.route ||
+                                (destination.route == "plays" && entry?.destination?.route in listOf("play/{id}", "game/{id}")),
                             onClick = {
                                 navigation.navigate(destination.route) {
                                     popUpTo(navigation.graph.findStartDestination().id) { saveState = true }
@@ -144,8 +146,18 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                 }
                 composable("play/{id}", arguments = listOf(navArgument("id") { type = NavType.StringType })) { detailEntry ->
                     val id = runCatching { UUID.fromString(detailEntry.arguments?.getString("id")) }.getOrNull()
-                    if (repository != null && id != null) DetailRoute(repository, account.id, id, onAccessFailure) { navigation.popBackStack() }
+                    if (repository != null && id != null) DetailRoute(repository, account.id, id, onAccessFailure,
+                        onOpenGame = { gameId ->
+                            // Reopening the parent game returns to its existing pages instead of stacking duplicates.
+                            if (!navigation.popBackStack("game/$gameId", false)) navigation.navigate("game/$gameId")
+                        }) { navigation.popBackStack() }
                     else Text("Partita non disponibile.", modifier = Modifier.padding(24.dp))
+                }
+                composable("game/{id}", arguments = listOf(navArgument("id") { type = NavType.StringType })) { gameEntry ->
+                    val id = runCatching { UUID.fromString(gameEntry.arguments?.getString("id")) }.getOrNull()
+                    if (repository != null && id != null) GameRoute(repository, id, onAccessFailure,
+                        onOpenPlay = { navigation.navigate("play/$it") }) { navigation.popBackStack() }
+                    else Text("Gioco non disponibile.", modifier = Modifier.padding(24.dp))
                 }
             }
         }

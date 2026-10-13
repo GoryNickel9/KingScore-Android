@@ -16,7 +16,7 @@ Il login è obbligatorio per tutte le schermate funzionali: l'app non offre acce
 
 ## Analisi dello stato attuale
 
-`KingScore-Android` contiene i contratti verificati della fase 1, login e sessione cifrata della fase 2 e le prime schermate dati della fase 3. La build 0.3.2 comprende Home, storico con ricerca e filtri, dettaglio partita, statistiche essenziali, classifiche e storico ELO. `../King-Score` contiene una web app React, TypeScript e Vite, con Supabase Auth, PostgreSQL, Storage e una funzione per il ricalcolo ELO notturno. L'app Android riusa il backend attraverso letture verificate online.
+`KingScore-Android` contiene i contratti verificati della fase 1, login e sessione cifrata della fase 2 e le prime schermate dati della fase 3. La build 0.3.3 comprende Home, storico con ricerca e filtri, dettagli partita e gioco, statistiche essenziali, classifiche e storico ELO. `../King-Score` contiene una web app React, TypeScript e Vite, con Supabase Auth, PostgreSQL, Storage e una funzione per il ricalcolo ELO notturno. L'app Android riusa il backend attraverso letture verificate online.
 
 Schema, grant, policy e funzioni sono stati verificati sul progetto Supabase collegato il 13 ottobre 2026, con probe SQL read-only e richieste HTTP senza dati applicativi. Il dettaglio dei risultati e dei controlli ancora necessari è in [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md).
 
@@ -108,7 +108,7 @@ Criterio di uscita: stesso risultato del web sulle fixture, nessun troncamento c
 
 ### Stato dello storico e dettaglio della fase 3
 
-Implementati pagine da 50 con cursori, dettaglio, punteggi e commenti in lettura. La build 0.3.1 aggiunge Home, statistiche essenziali, classifiche generali/per gioco e storico ELO; la 0.3.2 aggiunge ricerca letterale in gioco o note e filtri combinabili per gioco, partecipante, modalità e date. Le richieste verificano l'utente online; perdita di accesso e cambio account cancellano ViewModel, filtri e cataloghi. Dettagli dedicati gioco/giocatore e immagini restano da implementare. Risultati e limiti: [docs/PHASE3.md](docs/PHASE3.md), [docs/PHASE3_SEARCH.md](docs/PHASE3_SEARCH.md).
+Implementati pagine da 50 con cursori, dettaglio, punteggi e commenti in lettura. La build 0.3.1 aggiunge Home, statistiche essenziali, classifiche generali/per gioco e storico ELO; la 0.3.2 aggiunge ricerca letterale in gioco o note e filtri combinabili per gioco, partecipante, modalità e date. La 0.3.3 aggiunge il dettaglio gioco con metadati e storico dedicato paginato. Le richieste verificano l'utente online; perdita di accesso e cambio account cancellano ViewModel, filtri e cataloghi. Dettaglio giocatore e immagini restano da implementare. Risultati e limiti: [docs/PHASE3.md](docs/PHASE3.md), [docs/PHASE3_SEARCH.md](docs/PHASE3_SEARCH.md), [docs/PHASE3_GAME.md](docs/PHASE3_GAME.md).
 
 ### Fase 4 Commenti e scritture admin
 
@@ -165,17 +165,17 @@ La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Ke
 
 ## Lavoro residuo per la versione 1.0 stabile
 
-Stima aggiornata dopo ricerca e filtri, 13 ottobre 2026. La 1.0 comprende il perimetro MVP concordato e distribuzione privata: consultazione, commenti propri, gestione partite admin, login obbligatorio e funzionamento solo con Internet. L'APK attuale è un'anteprima con firma debug; il superamento della CI non sostituisce le verifiche con account reali e telefoni.
+Stima aggiornata dopo il dettaglio gioco, 13 ottobre 2026. La 1.0 comprende il perimetro MVP concordato e distribuzione privata: consultazione, commenti propri, gestione partite admin, login obbligatorio e funzionamento solo con Internet. L'APK attuale è un'anteprima con firma debug; il superamento della CI non sostituisce le verifiche con account reali e telefoni.
 
 | Lavoro residuo | Stima effettiva | Criterio di completamento |
 | --- | --- | --- |
-| Consultazione: dettagli gioco/giocatore e immagini | 6–12 ore | Percorsi, dati mancanti e accessibilità verificati |
+| Consultazione: dettaglio giocatore e immagini | 4–8 ore | Percorsi, dati mancanti e accessibilità verificati |
 | Commenti e CRUD partite admin | 28–48 ore | RPC atomiche deployate e testate in ambiente isolato, permessi, conflitti e retry verificati |
 | Verifica e release privata | 20–32 ore | Account reali, telefoni, rete e aggiornamento APK testati; chiave di firma definitiva e procedura di rilascio |
-| Totale con riserva del 20% | **65–110 ore** | Circa 8–14 giornate da 8 ore; stima di lavoro, non scadenza di calendario |
+| Totale con riserva del 20% | **63–106 ore** | Circa 8–14 giornate da 8 ore; stima di lavoro, non scadenza di calendario |
 
 La dipendenza principale è il backend delle scritture: `get_play_editor_v1`, `create_play_v1`, `update_play_v1` e `delete_play_v1` sono ancora contratti proposti. La stima include implementarli e adeguare i flussi web, ma va rivista dopo le prove isolate. Attese per account di prova, disponibilità dei telefoni o ambiente di sviluppo allungano il calendario. Wrapped, import BGA e amministrazione completa dei cataloghi restano estensioni dopo l'MVP.
 
 ## Prossima attività
 
-Implementare il dettaglio gioco della fase 3. La build 0.3.2 include ricerca e filtri nello storico; login e rete rimangono obbligatori. Prima dell'editor della fase 4 serviranno ambiente isolato, deploy e test delle nuove RPC transazionali.
+Implementare il dettaglio giocatore della fase 3. La build 0.3.3 include il dettaglio gioco con storico paginato; login e rete rimangono obbligatori. Prima dell'editor della fase 4 serviranno ambiente isolato, deploy e test delle nuove RPC transazionali.

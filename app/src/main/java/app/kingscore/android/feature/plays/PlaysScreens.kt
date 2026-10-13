@@ -51,11 +51,12 @@ fun HistoryRoute(repository: PlaysRepository, onAccessFailure: (AuthProblem) -> 
 }
 
 @Composable
-fun DetailRoute(repository: PlaysRepository, accountId: UUID, id: UUID, onAccessFailure: (AuthProblem) -> Unit, onBack: () -> Unit) {
+fun DetailRoute(repository: PlaysRepository, accountId: UUID, id: UUID, onAccessFailure: (AuthProblem) -> Unit,
+    onOpenGame: (UUID) -> Unit, onBack: () -> Unit) {
     val model: PlayDetailViewModel = viewModel(factory = modelFactory { PlayDetailViewModel(repository, id, onAccessFailure) })
     val state by model.detail.collectAsStateWithLifecycle()
     LaunchedEffect(model) { if (model.detail.value.loading) model.refresh() }
-    DetailScreen(state, accountId, model::refresh, model::moreComments, model::retryComments, onBack)
+    DetailScreen(state, accountId, model::refresh, model::moreComments, model::retryComments, onBack, onOpenGame)
 }
 
 @Composable
@@ -102,18 +103,7 @@ fun HistoryScreen(state: HistoryState, query: String, onQuery: (String) -> Unit,
                         Text(if (state.filters.active) "Nessuna partita corrisponde alla ricerca e ai filtri." else "Non ci sono partite registrate.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     items(state.items, key = { it.play.id.toString() }) { detail ->
-                        Card(onClick = { onOpen(detail.play.id) }, modifier = Modifier.fillMaxWidth().testTag("play-${detail.play.id}")) {
-                            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(detail.game?.name ?: "Gioco non disponibile", style = MaterialTheme.typography.titleLarge)
-                                Text("${playDateFormat.format(detail.play.played_at)} · ${sourceLabel(detail.play.source)}",
-                                    style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text(resultLabel(detail), color = MaterialTheme.colorScheme.primary)
-                                Text("${detail.scores.size} partecipanti", style = MaterialTheme.typography.bodySmall)
-                                detail.play.notes?.takeIf { it.isNotBlank() }?.let {
-                                    Text(it, maxLines = 2, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            }
-                        }
+                        PlayHistoryCard(detail, onOpen)
                     }
                     state.problem?.let { item { DataError(it, onRetry) } }
                     if (state.loadingMore) item { Loading("Caricamento altre partite…") }
@@ -128,7 +118,7 @@ fun HistoryScreen(state: HistoryState, query: String, onQuery: (String) -> Unit,
 
 @Composable
 fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onMoreComments: () -> Unit,
-    onRetryComments: () -> Unit, onBack: () -> Unit) {
+    onRetryComments: () -> Unit, onBack: () -> Unit, onOpenGame: ((UUID) -> Unit)? = null) {
     Column(Modifier.fillMaxSize().testTag("play-detail")) {
         ScreenHeader("Dettaglio partita", onBack, onRefresh, state.loading)
         when {
@@ -144,6 +134,10 @@ fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onM
                     item {
                         Text(detail.game?.name ?: "Gioco non disponibile", style = MaterialTheme.typography.headlineMedium)
                         Text(playDateFormat.format(detail.play.played_at), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        detail.play.game_id?.let { gameId ->
+                            if (onOpenGame != null) OutlinedButton(onClick = { onOpenGame(gameId) },
+                                modifier = Modifier.testTag("open-game")) { Text("Apri gioco") }
+                        }
                     }
                     item {
                         Card(Modifier.fillMaxWidth()) {
@@ -197,27 +191,44 @@ fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onM
 }
 
 @Composable
-private fun ScreenHeader(title: String, onBack: (() -> Unit)? = null, onRefresh: () -> Unit, refreshing: Boolean) {
+internal fun ScreenHeader(title: String, onBack: (() -> Unit)? = null, onRefresh: () -> Unit, refreshing: Boolean,
+    backLabel: String = "Torna allo storico") {
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        onBack?.let { IconButton(onClick = it) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Torna allo storico") } }
+        onBack?.let { IconButton(onClick = it) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, backLabel) } }
         Text(title, Modifier.weight(1f).padding(8.dp), style = MaterialTheme.typography.headlineSmall)
         IconButton(onClick = onRefresh, enabled = !refreshing) { Icon(Icons.Outlined.Refresh, "Aggiorna") }
     }
 }
 
 @Composable
-private fun Loading(label: String) {
+internal fun Loading(label: String) {
     Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)) { CircularProgressIndicator(); Text(label) }
 }
 
 @Composable
-private fun DataError(problem: DataProblem, onRetry: () -> Unit) {
+internal fun DataError(problem: DataProblem, onRetry: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(when (problem) {
             DataProblem.FORBIDDEN -> "Non hai il permesso di leggere questi dati."
             DataProblem.INVALID_RESPONSE -> "Non è stato possibile leggere i risultati. Riprova."
         }, color = MaterialTheme.colorScheme.error)
         Button(onClick = onRetry) { Text("Riprova") }
+    }
+}
+
+@Composable
+internal fun PlayHistoryCard(detail: PlayDetail, onOpen: (UUID) -> Unit) {
+    Card(onClick = { onOpen(detail.play.id) }, modifier = Modifier.fillMaxWidth().testTag("play-${detail.play.id}")) {
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(detail.game?.name ?: "Gioco non disponibile", style = MaterialTheme.typography.titleLarge)
+            Text("${playDateFormat.format(detail.play.played_at)} · ${sourceLabel(detail.play.source)}",
+                style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(resultLabel(detail), color = MaterialTheme.colorScheme.primary)
+            Text("${detail.scores.size} partecipanti", style = MaterialTheme.typography.bodySmall)
+            detail.play.notes?.takeIf { it.isNotBlank() }?.let {
+                Text(it, maxLines = 2, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
     }
 }

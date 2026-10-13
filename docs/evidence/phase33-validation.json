@@ -1,0 +1,222 @@
+{
+  "verified_on": "2026-10-13",
+  "phase": 3,
+  "version": "0.3.3",
+  "version_code": 5,
+  "scope": "Game metadata detail and server-paginated game history; mandatory login and Internet",
+  "build": {
+    "result": "BUILD SUCCESSFUL",
+    "tasks": [
+      "testDebugUnitTest",
+      "lintDebug",
+      "assembleDebug",
+      "assembleDebugAndroidTest"
+    ],
+    "local_jvm_workaround": "Ignored tcp-only javaagent described in PHASE2.md; isolated Gradle daemon registry after shared daemon received a stop command; neither workaround is included in APK or CI"
+  },
+  "jvm": {
+    "tests": 95,
+    "failures": 0,
+    "errors": 0,
+    "suites": [
+      {
+        "name": "app.kingscore.android.core.auth.SupabaseAuthRepositoryTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.GameRepositoryTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.HistoryFiltersRepositoryTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.RowDecodersTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabasePlaysRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseRatingsRepositoryTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseReaderTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseStatisticsRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.auth.AppViewModelTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.games.GameDetailViewModelTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.plays.PlaysViewModelTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.ratings.RatingsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.stats.StatisticsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 22
+  },
+  "instrumentation": {
+    "api": 31,
+    "device": "Dedicated headless read-only AVD sdk_gphone64_x86_64",
+    "tests": 23,
+    "result": "OK (23 tests)",
+    "seconds": 171.316,
+    "animations_disabled": true,
+    "output": "docs/evidence/phase33-instrumentation.txt",
+    "new_checks": [
+      "Game page / play / existing game / back preserves pages",
+      "Refresh identical metadata rereads the first page",
+      "Missing and forbidden metadata never fetch game history",
+      "Failed next page retains rows and cursor for retry",
+      "Offline and logout remove the game; reconnect reads fresh metadata",
+      "Existing game with empty history is distinct from a missing game"
+    ]
+  },
+  "layout": {
+    "large-font": {
+      "result": "OK (1 test)",
+      "seconds": 16.355,
+      "font_scale": 1.3,
+      "density_dpi": 460,
+      "animations_disabled": true,
+      "configured_size_px": "1080x2340",
+      "approx_width_dp": 375.65
+    },
+    "landscape": {
+      "result": "OK (1 test)",
+      "seconds": 25.205,
+      "font_scale": 1.3,
+      "density_dpi": 460,
+      "animations_disabled": true,
+      "configured_size_px": "2340x1080"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/phase33-game-landscape.png",
+      "width": 2160,
+      "height": 812
+    },
+    {
+      "path": "docs/evidence/phase33-game-large-font.png",
+      "width": 1080,
+      "height": 2063
+    },
+    {
+      "path": "docs/evidence/phase33-game.png",
+      "width": 1080,
+      "height": 2063
+    }
+  ],
+  "screenshot_method": "Compose root, excluding system bars; synthetic fixtures only",
+  "query_checks": {
+    "game": "games?select=*&id=eq.<uuid>&limit=1",
+    "history": "Existing HistoryFilters(gameId=id) before limit=50 with played_at DESC,unsigned UUID DESC",
+    "game_response_validation": "Zero or one row, same UUID, strict generated decoder",
+    "no_partial_page_aggregate_presented_as_total": true
+  },
+  "backend_query_probes": {
+    "performed": false,
+    "reason": "Uses existing audited games fields and previously validated game_id history filtering; no new query operators or remote schema changes"
+  },
+  "node_evidence_tests": {
+    "tests": 10,
+    "failures": 0
+  },
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 20966158,
+    "sha256": "d04c426da67a18b91ecde68ea5ad0e1aa3fcbf3638063d91c6cc3c0679bd1793",
+    "signing": "debug key"
+  },
+  "review": {
+    "subagent": "backend_audit",
+    "p1_or_p2_findings_remaining": 0,
+    "method": "Read-only static review of navigation, lifecycle, readers and test coverage"
+  },
+  "ci_at_local_evidence_capture": {
+    "previous_verified_commit": "a10844b5443050613946e27fc6861eb9f3986ae1",
+    "previous_result": "success",
+    "previous_run": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38432797887",
+    "current_increment": "Created after commit/push; consult Actions for its final result",
+    "workflow": "Node evidence, debug build, JVM tests and lint; no emulator instrumentation"
+  },
+  "remaining_1_0_effort": {
+    "unit": "effective hours; planning estimate, not elapsed calendar time",
+    "consultation": [
+      4,
+      8
+    ],
+    "comments_admin_atomic_rpc": [
+      28,
+      48
+    ],
+    "validation_release": [
+      20,
+      32
+    ],
+    "with_20_percent_reserve": [
+      63,
+      106
+    ]
+  },
+  "known_ui_limitations": [
+    "Existing bottom-navigation label Statistiche is clipped in portrait at about 376 dp and 130% font scale; refine large-font navigation labels before stable release"
+  ],
+  "not_verified": [
+    "Real account login and comparison with real group data",
+    "Physical phone, API minimum 26, TalkBack and tablet",
+    "Mobile performance benchmarks",
+    "Player detail and images; phase 4 writes and phase 5 signed release"
+  ],
+  "remote_schema_or_data_mutated": false,
+  "emulator_note": "Only dedicated emulator-5582 controlled; settings restored and emulator stopped. Existing emulator-5584 and emulator-5586 left untouched."
+}

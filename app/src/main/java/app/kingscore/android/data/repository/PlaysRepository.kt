@@ -30,6 +30,7 @@ enum class DataProblem { FORBIDDEN, INVALID_RESPONSE }
 class DataFailure(val problem: DataProblem) : Exception(problem.name)
 
 interface PlaysRepository {
+    suspend fun game(id: UUID): GameRow?
     suspend fun history(filters: HistoryFilters = HistoryFilters(), after: PlayCursor? = null): PlayPage
     suspend fun filterOptions(): HistoryOptions
     suspend fun detail(id: UUID): PlayDetail?

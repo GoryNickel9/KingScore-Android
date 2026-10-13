@@ -4,6 +4,8 @@ Avviare un'app Android nativa in Kotlin e Jetpack Compose, mantenendo Supabase e
 
 Data: 13 ottobre 2026. Scelta nativa confermata dall'utente. Questa roadmap riguarda KingScore, l'app per giochi da tavolo.
 
+Vincolo aggiornato: lavorare soltanto in KingScore-Android. Le preparazioni backend e web delle fasi 4.1 e 4.2 sono state annullate; il codice di King-Score e il sito sono ripristinati. Le verifiche documentate restano storiche. Nessuna nuova migrazione era stata applicata a Supabase e le RPC proposte non sono disponibili.
+
 ## Vincoli confermati
 
 1. L'app richiede una connessione Internet funzionante. In assenza di connessione mostra uno stato dedicato e blocca la consultazione e l'invio delle operazioni; non dispone di una modalità offline.
@@ -31,7 +33,7 @@ Il ruolo proviene da `app_metadata.role`; `players.account_user_id` collega acco
 ### Dipendenze da risolvere
 
 1. Schema e tipi web coincidono per campi Row e nullabilità delle dieci tabelle pubbliche. Resta da allineare lo storico migrazioni e alcuni servizi che usano `games.user_id`, assente anche sul database reale. Il README descrive funzioni BGA non presenti nel catalogo locale.
-2. Attivare i salvataggi atomici preparati: AddPlay, EditPlay, delete e import BGA usano le nuove RPC quando `VITE_ATOMIC_PLAY_WRITES=true`. Il flag resta false sul percorso predefinito; deploy e cutover dei permessi restano da eseguire.
+2. Le scritture complete partite richiedono un contratto atomico non disponibile nel backend corrente. La preparazione esterna è stata annullata; il lavoro consentito in questa repo non comprende modifiche al sito o al database.
 3. Documentare quando il backend aggiorna i rating e come mostrare dati ELO non ancora aggiornati dopo una modifica. Riutilizzare i processi server esistenti, senza portare in Android il ricalcolo avviato dal browser. Un eventuale intervento sul motore ELO è un'attività backend separata.
 4. Login, logout e rinnovo sono implementati nella fase 2. Verificare con account reali e aggiungere nella fase 3 la gestione dell'account non collegato a un giocatore, senza introdurre registrazione o modifica credenziali.
 5. Definire il comportamento quando Internet o Supabase non sono raggiungibili: blocco delle operazioni, messaggio chiaro e ripresa dopo il ritorno della connessione. Non basta verificare che il Wi-Fi sia acceso.
@@ -112,7 +114,7 @@ Implementati pagine da 50 con cursori, dettaglio, punteggi e commenti in lettura
 
 ### Fase 4 Commenti e scritture admin
 
-I commenti propri sono implementati nella 0.4.0: ownership anche per admin, conferma eliminazione, Unicode, stato invio, esiti incerti e riconciliazione completa. Le verifiche usano account e dati sintetici; POST/PATCH/DELETE con account Supabase reali restano da collaudare in ambiente isolato. Le RPC partite, l'import BGA e i writer web sono preparati e testati localmente: 96 test web, sei prove concorrenti, 1.616 confronti di ranking e 43 verifiche HTTP con JWT firmati sintetici. Non sono deployati; il flag web resta false e l'editor Android è disabilitato. Dettagli: [docs/PHASE4_COMMENTS.md](docs/PHASE4_COMMENTS.md), [docs/PHASE4_ADMIN_RPC.md](docs/PHASE4_ADMIN_RPC.md) e [docs/PHASE4_WEB_WRITERS.md](docs/PHASE4_WEB_WRITERS.md).
+I commenti propri sono implementati nella 0.4.0: ownership anche per admin, conferma eliminazione, Unicode, stato invio, esiti incerti e riconciliazione completa. Le verifiche usano account e dati sintetici. Le preparazioni delle RPC partite e dei writer web sono state annullate; l'editor Android è disabilitato. I test precedenti restano registrati nei documenti storici [docs/PHASE4_ADMIN_RPC.md](docs/PHASE4_ADMIN_RPC.md) e [docs/PHASE4_WEB_WRITERS.md](docs/PHASE4_WEB_WRITERS.md). I commenti Android restano invariati: [docs/PHASE4_COMMENTS.md](docs/PHASE4_COMMENTS.md).
 
 1. Implementare e testare RPC transazionali per creazione e modifica di partita con punteggi. Usare identificatori di richiesta per retry idempotenti e controlli server su ruolo, partecipanti e valori. Verificare il contratto di `replace_play_scores` rispetto alle nuove RPC.
 2. Implementare aggiunta, modifica ed eliminazione partite per admin, selezione giochi e giocatori esistenti e creazione minima dove necessaria. Conservare i campi del modulo durante una perdita temporanea di rete finché il processo resta attivo; non accodare invii offline o inviare automaticamente dopo la riconnessione.
@@ -175,8 +177,8 @@ Stima conservativa dopo i commenti propri, 13 ottobre 2026. Il lavoro sulle scri
 | Verifica e release privata | 20–32 ore | Account reali, telefoni, rete e aggiornamento APK testati; chiave di firma definitiva e procedura di rilascio |
 | Totale con riserva del 20% | **58–96 ore** | Circa 7–12 giornate da 8 ore; stima di lavoro, non scadenza di calendario |
 
-La dipendenza principale è il rollout delle scritture: RPC e writer web, compreso BGA, sono implementati e testati via HTTP locale. Restano deploy isolato, prove con account Supabase reali ed editor Android. Manteniamo la fascia conservativa fino alle prove nel Supabase di sviluppo. Attese per account di prova, disponibilità dei telefoni o ambiente di sviluppo allungano il calendario. Wrapped, import BGA nell'app e amministrazione completa dei cataloghi restano estensioni dopo l'MVP.
+La dipendenza delle scritture admin resta irrisolta: le RPC proposte e i writer web sono stati ritirati. La stima sopra precede il nuovo vincolo di lavorare soltanto nella repo Android e va riesaminata prima di promettere il CRUD completo. Wrapped, import BGA nell'app e amministrazione completa dei cataloghi restano estensioni dopo l'MVP.
 
 ## Prossima attività
 
-Definire il rollout remoto controllato e il collaudo con account Supabase reali prima di abilitare l'editor Android. L'utente non dispone di un progetto di prova; il collaudo HTTP è stato completato sul PC con PostgreSQL e PostgREST separati. Nessuna mutazione di produzione è stata eseguita; la CI GitHub rimane sospesa su richiesta dell'utente.
+Proseguire soltanto nel codice Android, mantenendo le scritture partite disabilitate finché non esiste un contratto server disponibile. Nessun rollout web o database è autorizzato. La CI GitHub rimane sospesa su richiesta dell'utente.

@@ -1,0 +1,20 @@
+{
+  "capturedAtUtc": "2026-10-13T21:33:20.6014582Z",
+  "status": "PASS",
+  "backendRevertCommit": "a5e5dd65f10db4e52a3e13c34a6388cfae3b6fb5",
+  "backendTreeMatchesBaseline": true,
+  "preExistingFilesPreserved": true,
+  "production": {
+    "url": "king-score-lkeq8mnya-gorynickel9s-projects.vercel.app",
+    "aliases": [
+      "kingscore.baldeddu.cc",
+      "king-score-gorynickel9s-projects.vercel.app",
+      "king-score-git-main-gorynickel9s-projects.vercel.app"
+    ],
+    "gitCommit": "a5e5dd65f10db4e52a3e13c34a6388cfae3b6fb5",
+    "readyState": "READY"
+  },
+  "preparationDeploymentsRemaining": 0,
+  "supabaseApplicationMigrationsApplied": false,
+  "temporaryFilesMovedIntoAndroidRepository": true
+}

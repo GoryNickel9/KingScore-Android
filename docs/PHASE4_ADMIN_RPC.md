@@ -1,5 +1,7 @@
 # Preparazione RPC partite admin
 
+**Preparazione annullata il 13 ottobre 2026.** I tre commit backend delle fasi 4.1 e 4.2 sono stati annullati con `a5e5dd6`; codice e sito sono ripristinati. Le RPC e i file backend citati sotto non sono più presenti nello stato corrente. Nessuna migrazione era stata applicata al Supabase remoto. Questo documento conserva le verifiche storiche; non autorizza un rollout.
+
 Il backend locale contiene `get_play_editor_v1`, `create_play_v1`, `update_play_v1` e `delete_play_v1`, con test SQL e sessioni concorrenti. Nessuna migrazione è stata applicata a Supabase remoto. L'app resta alla 0.4.0: l'editor partite è disabilitato, login e Internet restano obbligatori. La CI GitHub rimane sospesa su richiesta dell'utente.
 
 ## File e responsabilità

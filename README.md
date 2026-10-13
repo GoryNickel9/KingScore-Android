@@ -2,6 +2,8 @@
 
 App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-Score. La build 0.4.0 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, creazione/modifica/eliminazione dei commenti propri, statistiche essenziali e classifiche/storico ELO. Login e Internet rimangono obbligatori. L'editor partite admin richiede ancora le RPC atomiche della fase 4.
 
+Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Score sono state annullate con il commit `a5e5dd6`; Vercel pubblica il codice ripristinato. Nessuna delle nuove migrazioni è stata applicata a Supabase. I documenti delle fasi 4.1 e 4.2 conservano risultati storici, non descrivono funzioni backend attualmente disponibili.
+
 ## Perimetro confermato
 
 1. Login con account esistente e connessione Internet obbligatori.
@@ -28,8 +30,8 @@ App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-
 | [docs/PHASE3_PLAYER.md](docs/PHASE3_PLAYER.md) | Dettaglio giocatore, identità account e storico del partecipante |
 | [docs/PHASE3_IMAGES.md](docs/PHASE3_IMAGES.md) | Immagini, isolamento per account, limiti e retry |
 | [docs/PHASE4_COMMENTS.md](docs/PHASE4_COMMENTS.md) | Commenti propri, ownership, errori e riconciliazione |
-| [docs/PHASE4_ADMIN_RPC.md](docs/PHASE4_ADMIN_RPC.md) | RPC admin preparate, test locali e requisiti di rollout |
-| [docs/PHASE4_WEB_WRITERS.md](docs/PHASE4_WEB_WRITERS.md) | Writer web e import BGA adeguati, precisione e attivazione controllata |
+| [docs/PHASE4_ADMIN_RPC.md](docs/PHASE4_ADMIN_RPC.md) | Preparazione RPC annullata: risultati storici |
+| [docs/PHASE4_WEB_WRITERS.md](docs/PHASE4_WEB_WRITERS.md) | Adeguamento web annullato: risultati storici |
 
 I modelli in `contracts/v1/Rows.kt` derivano dai tipi SQL e dalla nullabilità del catalogo remoto. `Commands.kt` definisce input e invarianti. Gli adattatori JSON compilati nell'app conservano NUMERIC, date e campi nullable; il client Auth verifica la sessione online.
 

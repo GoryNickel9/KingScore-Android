@@ -188,6 +188,8 @@ Non sono stati eseguiti benchmark mobili. Home, Statistiche ed ELO sono implemen
 
 ## Controlli prima delle scritture partite
 
+Le preparazioni backend delle fasi 4.1 e 4.2 sono state annullate il 13 ottobre 2026. I risultati sotto sono storici: non certificano funzioni disponibili sul backend attuale. Le scritture partite Android restano disabilitate; sono escluse ulteriori modifiche alle altre repo, Vercel e Supabase.
+
 La preparazione locale è completata: migrazione delle quattro RPC applicata a un cluster PostgreSQL 17.4 separato, suite SQL superata, tre prove concorrenti superate e 1.616 casi di ranking uguali alla funzione web effettiva con Node 24.19.0 / V8 13.6.233.17-node.51. Anche gli 11 controlli Kotlin dei contratti e i 10 controlli Node dell'audit passano. Il server locale è stato arrestato dal runner. Metodi, limiti e gate di rollout: [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md); risultati e hash dei sorgenti: [evidence/phase41-admin-rpc-validation.json](evidence/phase41-admin-rpc-validation.json).
 
 Le prove della fase 4.1 usano claim SQL simulate. L'incremento 4.2 aggiunge un gateway HTTP e JWT firmati sintetici, con i risultati riportati sotto. Il collaudo con account Supabase reali resta obbligatorio. Nessun deploy remoto, build APK o benchmark mobile è stato eseguito in questa preparazione. La CI GitHub resta sospesa.

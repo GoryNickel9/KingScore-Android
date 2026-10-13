@@ -1,5 +1,7 @@
 # Writer web e import atomico
 
+**Adeguamento annullato il 13 ottobre 2026.** Il commit backend `a5e5dd6` ripristina il codice precedente al lavoro Android; Vercel pubblica quel codice e i tre deploy preparatori sono stati eliminati. Nessuna migrazione era stata applicata al Supabase remoto. Questo documento conserva le verifiche storiche; il lavoro futuro è limitato alla repo Android.
+
 Creazione, modifica, eliminazione e import BGA del sito sono adeguati ai contratti transazionali. Il flusso è pronto ma non attivo: `VITE_ATOMIC_PLAY_WRITES` resta false fino al collaudo e al deploy. Android resta alla 0.4.0, con editor partite disabilitato, login obbligatorio e blocco senza Internet. Nessuna migrazione è stata applicata al Supabase remoto; la CI GitHub rimane sospesa.
 
 ## Comportamento preparato

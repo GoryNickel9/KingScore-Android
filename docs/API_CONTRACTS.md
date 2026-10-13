@@ -64,9 +64,9 @@ La 0.4.0 implementa questi endpoint con filtri id/user_id/play_id e return=repre
 
 La modifica commento non dispone attualmente di un controllo optimistic locking: prevale l'ultimo salvataggio autorizzato. La creazione commento non è idempotente: dopo un timeout non eseguire retry automatici. Rileggere i commenti e rendere esplicito l'esito incerto all'utente.
 
-## RPC partite preparate, non deployate
+## RPC partite proposte, preparazione backend annullata
 
-Queste funzioni **non sono deployate**. La migrazione `King-Score/supabase/migrations/20261013000000_atomic_play_writes.sql` ne implementa i contratti; [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md) descrive le prove locali e i requisiti di rollout. I writer web sono ora adeguati dietro un flag esplicito e un cutover dei permessi separato: [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRITERS.md). Gli input Kotlin in `Commands.kt` ne definiscono i payload, senza autorizzare fallback sulle scritture dirette. Fino a deploy, prove Auth/HTTP nell'ambiente isolato e attivazione dei writer web, il client mantiene l'editor partite disabilitato.
+Queste funzioni **non sono disponibili**. Le migrazioni e le modifiche web preparate nelle fasi 4.1 e 4.2 sono state annullate su richiesta dell'utente; nessuna migrazione era stata deployata. I documenti [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md) e [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRITERS.md) restano registri storici. Gli input Kotlin in `Commands.kt` descrivono una proposta, senza autorizzare fallback sulle scritture dirette. Il lavoro è limitato alla repo Android e l'editor partite mantiene le scritture disabilitate.
 
 | RPC proposta | Argomenti | Risultato |
 | --- | --- | --- |

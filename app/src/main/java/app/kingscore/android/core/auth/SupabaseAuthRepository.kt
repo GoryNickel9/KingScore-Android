@@ -52,12 +52,44 @@ class SupabaseAuthRepository(private val client: SupabaseClient) : AuthRepositor
         }
     }
 
-    private suspend fun verifyCurrentSession(): Account? {
+    suspend fun <T> withVerifiedSession(expectedAccount: UUID, request: suspend (SupabaseClient, String) -> T): T = mutex.withLock {
+        translateFailures {
+            var refreshed = false
+            val account = verifyCurrentSession { refreshed = true } ?: throw AuthFailure(AuthProblem.INVALID_CREDENTIALS)
+            if (account.id != expectedAccount) throw AuthFailure(AuthProblem.INVALID_CREDENTIALS)
+            try {
+                request(client, client.auth.currentAccessTokenOrNull() ?: throw AuthFailure(AuthProblem.INVALID_CREDENTIALS))
+            } catch (failure: AuthFailure) {
+                if (failure.problem != AuthProblem.INVALID_CREDENTIALS) throw failure
+                if (refreshed) {
+                    withContext(NonCancellable) { client.auth.clearSession() }
+                    throw failure
+                }
+                try {
+                    client.auth.refreshCurrentSession()
+                    client.auth.stopAutoRefreshForCurrentSession()
+                    val verified = client.auth.retrieveUserForCurrentSession(updateSession = true).toAccount()
+                    if (verified.id != expectedAccount) throw AuthFailure(AuthProblem.INVALID_CREDENTIALS)
+                    request(client, client.auth.currentAccessTokenOrNull() ?: throw AuthFailure(AuthProblem.INVALID_CREDENTIALS))
+                } catch (rejected: RestException) {
+                    if (rejected.statusCode !in listOf(400, 401, 403)) throw rejected
+                    withContext(NonCancellable) { client.auth.clearSession() }
+                    throw AuthFailure(AuthProblem.INVALID_CREDENTIALS)
+                } catch (rejected: AuthFailure) {
+                    if (rejected.problem == AuthProblem.INVALID_CREDENTIALS) withContext(NonCancellable) { client.auth.clearSession() }
+                    throw rejected
+                }
+            }
+        }
+    }
+
+    private suspend fun verifyCurrentSession(onRefresh: () -> Unit = {}): Account? {
         val session = client.auth.currentSessionOrNull() ?: return null
         var refreshed = false
         try {
             if (session.expiresAt.epochSeconds <= System.currentTimeMillis() / 1000 + 30) {
                 refreshed = true
+                onRefresh()
                 client.auth.refreshCurrentSession()
                 client.auth.stopAutoRefreshForCurrentSession()
             }
@@ -70,6 +102,7 @@ class SupabaseAuthRepository(private val client: SupabaseClient) : AuthRepositor
             }
             // A revoked/expired access token gets one refresh attempt, never a loop.
             try {
+                onRefresh()
                 client.auth.refreshCurrentSession()
                 client.auth.stopAutoRefreshForCurrentSession()
                 return client.auth.retrieveUserForCurrentSession(updateSession = true).toAccount()

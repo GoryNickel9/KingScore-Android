@@ -1,6 +1,6 @@
 # Architettura KingScore Android
 
-Il client è un'app Kotlin con Jetpack Compose, in un solo modulo Gradle `app`, organizzato per funzionalità. Supabase resta il backend condiviso con il sito. La fase 2 implementa Auth, connessione e navigazione; i repository di consultazione saranno aggiunti nella fase 3. I contratti di fase 1 sono indipendenti da Android e vengono compilati anche nell'app.
+Il client è un'app Kotlin con Jetpack Compose, in un solo modulo Gradle `app`, organizzato per funzionalità. Supabase resta il backend condiviso con il sito. La fase 2 implementa Auth, connessione e navigazione; la fase 3 aggiunge repository di storico, dettaglio e commenti in lettura. I contratti di fase 1 sono indipendenti da Android e vengono compilati anche nell'app.
 
 ## Flusso dati
 
@@ -20,7 +20,7 @@ La UI presenta dati e raccoglie azioni. Il ViewModel mantiene lo stato della sch
 
 Senza sessione mostrare il login. Una sessione salvata deve essere verificata online prima di mostrare dati. Una perdita di rete o un backend irraggiungibile mostra lo stato di connessione e sospende l'uso delle schermate funzionali. Mantenere separati errore di rete, permesso negato, risorsa assente e insieme vuoto.
 
-I dati già caricati possono restare nello stato in memoria durante un'interruzione, ma non costituiscono una modalità di consultazione offline. Il modulo può mantenere i valori in memoria fino alla chiusura del processo; non esistono outbox, invii differiti o salvataggi automatici alla riconnessione. Logout e cambio account eliminano lo stato privato.
+Nell'incremento storico/dettaglio, la perdita di accesso elimina lo store dei ViewModel e cancella richieste e righe in memoria. Alla riconnessione si rilegge il server. Il modulo può mantenere i valori in memoria fino alla chiusura del processo; non esistono outbox, invii differiti o salvataggi automatici alla riconnessione. Logout e cambio account eliminano lo stato privato.
 
 Persistono soltanto sessione protetta e preferenze necessarie. Il progetto non richiede Room, WorkManager, un database locale o un server Android separato. I token non devono comparire in log, backup ordinari o fixture; la password non viene memorizzata.
 

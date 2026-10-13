@@ -1,0 +1,177 @@
+{
+  "verified_on": "2026-10-13",
+  "phase": 3,
+  "scope": "Online authenticated paginated history, play detail and read-only comments",
+  "version": "0.3.0",
+  "version_code": 2,
+  "build": {
+    "result": "BUILD SUCCESSFUL",
+    "tasks": [
+      "testDebugUnitTest",
+      "lintDebug",
+      "assembleDebug",
+      "assembleDebugAndroidTest"
+    ],
+    "local_jvm_workaround": "Ignored temporary javaagent described in PHASE2.md; not included in app"
+  },
+  "jvm": {
+    "tests": 48,
+    "failures": 0,
+    "errors": 0,
+    "suites": [
+      {
+        "name": "app.kingscore.android.core.auth.SupabaseAuthRepositoryTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.RowDecodersTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabasePlaysRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseReaderTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.auth.AppViewModelTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.plays.PlaysViewModelTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  },
+  "pagination": {
+    "fixture_rows": 1051,
+    "page_size": 50,
+    "requests": 22,
+    "lost_rows": 0,
+    "duplicates": 0,
+    "ordering": "played_at DESC, unsigned UUID DESC",
+    "method": "keyset; not an immutable snapshot"
+  },
+  "instrumentation": {
+    "api": 31,
+    "device": "Dedicated AVD sdk_gphone64_x86_64",
+    "tests": 10,
+    "result": "OK (10 tests)",
+    "seconds": 26.519,
+    "scope": [
+      "Login and mandatory access",
+      "History pagination, detail and back preserving pages",
+      "Zero/null scores and stored cooperative positions",
+      "Comments in read-only UI",
+      "Disconnect/reconnect removes private rows and refetches",
+      "Logout/account switch removes previous data",
+      "Keystore encryption/persistence/corruption"
+    ]
+  },
+  "layout": {
+    "small_phone": {
+      "configured_width_px": 1080,
+      "configured_density_dpi": 460,
+      "approx_width_dp": 375.65,
+      "font_scale": 1.3,
+      "route_test": "passed"
+    },
+    "wide_window": {
+      "configured_size_px": "2340x1080",
+      "captured_size_px": "2160x1080",
+      "configured_density_dpi": 460,
+      "font_scale": 1.3,
+      "route_test": "OK (1 test)",
+      "seconds": 8.179
+    },
+    "fixtures_only": true
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 22,
+    "warning_groups": [
+      {
+        "id": "AndroidGradlePluginVersion",
+        "count": 2
+      },
+      {
+        "id": "GradleDependency",
+        "count": 7
+      },
+      {
+        "id": "NewerVersionAvailable",
+        "count": 9
+      },
+      {
+        "id": "UseKtx",
+        "count": 4
+      }
+    ]
+  },
+  "backend_query_probes": [
+    {
+      "name": "history_join_keyset",
+      "status": 200,
+      "limit": 0,
+      "returned_rows": 0,
+      "identity": "public anon key; query syntax probe outside Android client"
+    },
+    {
+      "name": "comments_keyset",
+      "status": 200,
+      "limit": 0,
+      "returned_rows": 0,
+      "identity": "public anon key; query syntax probe outside Android client"
+    }
+  ],
+  "node_evidence_tests": {
+    "tests": 10,
+    "failures": 0
+  },
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 20862826,
+    "sha256": "8918ef109e41772f144bd289095f7108f1d738531f8d5dc98bcb5cb00b526d34",
+    "signing": "debug key"
+  },
+  "screenshots": [
+    "docs/evidence/phase3-history.png",
+    "docs/evidence/phase3-detail.png",
+    "docs/evidence/phase3-history-landscape.png",
+    "docs/evidence/phase3-detail-landscape.png"
+  ],
+  "review": {
+    "subagent": "backend_audit",
+    "p1_or_p2_findings": 0
+  },
+  "ci": {
+    "previous_run": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38395305715",
+    "previous_commit": "5cdbb78",
+    "previous_result": "failure before build: SDK package tools unavailable",
+    "local_fix": "Explicit packages: platform-tools platforms;android-36 build-tools;35.0.0",
+    "fixed_remote_run": "not executed"
+  },
+  "not_verified": [
+    "Real account login/admin authorization and real group data comparison",
+    "Physical phone, API minimum 26 and TalkBack",
+    "Fresh remote GitHub CI with local fix",
+    "Mobile performance benchmarks",
+    "Home/statistics/ELO screens and writes (outside this increment)"
+  ],
+  "emulator_note": "Boot System UI ANR preceded tests; restarted system process, reran UI suite and screenshots without dialog. Own emulator stopped after checks.",
+  "remote_schema_or_data_mutated": false
+}

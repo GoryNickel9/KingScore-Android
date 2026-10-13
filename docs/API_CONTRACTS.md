@@ -20,7 +20,7 @@ Alla perdita di connessione mostrare lo stato dedicato e sospendere consultazion
 | numeric | `BigDecimal` | Token JSON numerico decodificato senza passare da Double |
 | integer, boolean, text | `Int`, `Boolean`, `String` | Conservare il tipo e la nullabilità del catalogo |
 
-La fase 2 implementa `data/remote/RowDecoders.kt`, generato dal catalogo insieme ai DTO e testato per gli otto modelli. Il client Auth è operativo; le query di consultazione appartengono alla fase 3. Campi nullable storici non diventano automaticamente zero, false o stringa vuota. Un valore NUMERIC non finito o non decodificabile produce un errore esplicito. I join mancanti non vengono sostituiti con oggetti inventati.
+La fase 2 implementa `data/remote/RowDecoders.kt`, generato dal catalogo insieme ai DTO e testato per gli otto modelli. Il client Auth è operativo; la fase 3 implementa storico, dettaglio e commenti in lettura tramite SupabasePlaysRepository e SupabaseReader. Campi nullable storici non diventano automaticamente zero, false o stringa vuota. Un valore NUMERIC non finito o non decodificabile produce un errore esplicito. I join mancanti non vengono sostituiti con oggetti inventati.
 
 `PlayDetail` compone una `PlayRow`, il gioco nullable e gli score con giocatore nullable. Per il dettaglio, usare la proiezione PostgREST `*,games(*),play_scores(*,players(*))`; l'adattatore scompone i campi annidati nei DTO. Il nome visualizzato del giocatore usa alias, poi name. `user_id` e `account_user_id` non sono intercambiabili.
 

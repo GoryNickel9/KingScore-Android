@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.*
@@ -103,6 +104,32 @@ class AppViewModelTest {
         assertEquals(AccessState.Blocked(AuthProblem.BACKEND_UNAVAILABLE), model.access.value)
     }
 
+    @Test fun `periodic verification keeps navigation mounted until rejection`() = runTest(dispatcher) {
+        repository.account = account()
+        val model = AppViewModel(repository, network)
+        advanceUntilIdle()
+        val pending = CompletableDeferred<Account?>()
+        repository.restoreWait = pending
+        model.verifyActiveSession()
+        runCurrent()
+        assertTrue(model.access.value is AccessState.Connected)
+        pending.complete(null)
+        advanceUntilIdle()
+        assertEquals(AccessState.SignedOut(), model.access.value)
+    }
+
+    @Test fun `data request failure cancels pending verification and blocks access`() = runTest(dispatcher) {
+        repository.account = account()
+        val model = AppViewModel(repository, network)
+        advanceUntilIdle()
+        repository.restoreWait = CompletableDeferred()
+        model.verifyActiveSession()
+        runCurrent()
+        model.rejectAccess(AuthProblem.BACKEND_UNAVAILABLE)
+        advanceUntilIdle()
+        assertEquals(AccessState.Blocked(AuthProblem.BACKEND_UNAVAILABLE), model.access.value)
+    }
+
     @Test fun `logout is not cancelled by network loss and cannot restore an old account`() = runTest(dispatcher) {
         repository.account = account()
         repository.logoutWait = CompletableDeferred()
@@ -158,7 +185,8 @@ class AppViewModelTest {
         override suspend fun restoreVerifiedAccount(): Account? {
             restores++
             failure?.let { throw AuthFailure(it) }
-            return restoreWait?.await() ?: account
+            val pending = restoreWait
+            return if (pending != null) pending.await() else account
         }
         override suspend fun signIn(email: String, password: String): Account {
             failure?.let { throw AuthFailure(it) }

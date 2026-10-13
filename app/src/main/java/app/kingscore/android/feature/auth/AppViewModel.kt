@@ -49,9 +49,9 @@ class AppViewModel(
         }
     }
 
-    fun recheck() {
+    fun recheck(hideContent: Boolean = true) {
         if (!network.connected.value || operation?.isActive == true || logout?.isActive == true || logoutFailed) return
-        runOperation {
+        runOperation(hideContent) {
             val account = auth.restoreVerifiedAccount()
             state.value = account?.let(AccessState::Connected) ?: AccessState.SignedOut()
         }
@@ -63,7 +63,13 @@ class AppViewModel(
     }
 
     fun verifyActiveSession() {
-        if (state.value is AccessState.Connected) recheck()
+        if (state.value is AccessState.Connected) recheck(hideContent = false)
+    }
+
+    fun rejectAccess(problem: AuthProblem) {
+        operation?.cancel()
+        state.value = if (problem == AuthProblem.INVALID_CREDENTIALS) AccessState.SignedOut(problem)
+            else AccessState.Blocked(problem)
     }
 
     fun signIn(email: String, password: String) {
@@ -106,9 +112,9 @@ class AppViewModel(
         if (logoutFailed) signOut() else recheck()
     }
 
-    private fun runOperation(action: suspend () -> Unit) {
+    private fun runOperation(hideContent: Boolean = true, action: suspend () -> Unit) {
         operation = viewModelScope.launch {
-            state.value = AccessState.Checking
+            if (hideContent) state.value = AccessState.Checking
             try {
                 action()
                 if (!network.connected.value) state.value = AccessState.Blocked(AuthProblem.NETWORK_UNAVAILABLE)

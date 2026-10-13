@@ -52,9 +52,9 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-                    AppContent(state, model::signIn, model::retry, model::signOut) {
-                        startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
-                    }
+                    AppContent(state, model::signIn, model::retry, model::signOut,
+                        onNetworkSettings = { startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS)) },
+                        playsFactory = app::plays, onAccessFailure = model::rejectAccess)
                 }
             }
         }

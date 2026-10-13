@@ -4,6 +4,10 @@ import android.app.Application
 import app.kingscore.android.core.auth.EncryptedSessionManager
 import app.kingscore.android.core.auth.SupabaseAuthRepository
 import app.kingscore.android.core.network.AndroidNetworkMonitor
+import app.kingscore.android.data.remote.SupabaseReader
+import app.kingscore.android.data.remote.SupabasePlaysRepository
+import app.kingscore.android.data.repository.PlaysRepository
+import java.util.UUID
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.logging.LogLevel
@@ -17,6 +21,8 @@ class KingScoreApplication : Application() {
         private set
     var auth: SupabaseAuthRepository? = null
         private set
+
+    fun plays(accountId: UUID): PlaysRepository = SupabasePlaysRepository(SupabaseReader(checkNotNull(auth), network), accountId)
 
     override fun onCreate() {
         super.onCreate()

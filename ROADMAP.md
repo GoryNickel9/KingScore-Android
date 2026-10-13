@@ -106,6 +106,10 @@ Percorsi principali: `data/remote/`, `data/repository/`, `feature/dashboard/`, `
 
 Criterio di uscita: stesso risultato del web sulle fixture, nessun troncamento con oltre 1.000 partite, blocco della consultazione in modalità aereo e ripresa dopo riconnessione. Rating e storico sono esclusivamente quelli restituiti dal server.
 
+### Stato dello storico e dettaglio della fase 3
+
+Implementati pagine da 50 con cursori, filtro modalità, dettaglio, punteggi e commenti in lettura. Le richieste verificano l'utente online; perdita di accesso e cambio account cancellano ViewModel e righe. Home, Statistiche, ELO, ricerca e filtri aggiuntivi restano da implementare. Risultati e limiti: [docs/PHASE3.md](docs/PHASE3.md).
+
 ### Fase 4 Commenti e scritture admin
 
 1. Implementare e testare RPC transazionali per creazione e modifica di partita con punteggi. Usare identificatori di richiesta per retry idempotenti e controlli server su ruolo, partecipanti e valori. Verificare il contratto di `replace_play_scores` rispetto alle nuove RPC.
@@ -161,4 +165,4 @@ La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Ke
 
 ## Prossima attività
 
-Avviare la fase 3: implementare storico paginato e dettaglio partita con i contratti verificati, mantenendo il blocco sessione/connessione della fase 2. Prima dell'editor della fase 4 serviranno ambiente isolato, deploy e test delle nuove RPC transazionali.
+Proseguire la fase 3 con dashboard e letture ELO. Storico paginato, dettaglio partita e commenti in lettura sono implementati nella build 0.3.0, con login e rete obbligatori. Prima dell'editor della fase 4 serviranno ambiente isolato, deploy e test delle nuove RPC transazionali.

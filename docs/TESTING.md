@@ -62,14 +62,29 @@ I decoder verificano gli otto DTO, join nullable, data senza fuso, timestamp con
 
 In questa sessione i cinque test Android sono stati eseguiti con il runner direttamente via ADB, su un AVD dedicato API 31. I report JVM/lint si trovano in `app/build/reports`; risultati, checksum APK e limiti sono salvati in [evidence/phase2-validation.json](evidence/phase2-validation.json). La build locale ha richiesto il workaround JVM descritto in [PHASE2.md](PHASE2.md).
 
+## Risultati di storico e dettaglio, fase 3
+
+| Controllo eseguito | Esito | Ambito |
+| --- | --- | --- |
+| Test JVM completi | 48 superati | Include i 23 casi iniziali e 25 verifiche aggiuntive per accesso, cursori e stato |
+| Paginazione sintetica | 1.051 righe in 22 richieste | Pagine da 50, data uguale e UUID oltre il confine signed/unsigned, nessuna perdita o duplicato |
+| Test Android API 31 | 10 superati | Include storico/dettaglio/ritorno, cooperative, zero/null, logout/cambio account e riconnessione con dati rimossi |
+| Layout con testo al 130% | Percorso storico/dettaglio/ritorno verificato | Finestra di circa 376 dp in verticale e finestra catturata 2160×1080 pixel con densità 460 in orizzontale |
+| Probe Supabase limit=0 | Due HTTP 200, zero righe | Sintassi join e cursori; chiave pubblica, fuori dal client Android, nessun login reale |
+| Lint debug | Zero errori, 22 warning | Versioni fissate e suggerimenti KTX |
+
+Il test di pagina successiva fallita verifica che il cursore resti quello precedente; le risposte tardive vengono scartate dopo cambio filtro o rimozione dello stato. Il dettaglio distingue partita assente, permesso negato e risposta invalida. Commenti e dettaglio conservano stati di errore separati.
+
+I test Ktor verificano GET utente prima di ogni GET dati, Bearer utente, nessuna richiesta anonima o offline, account differente rifiutato, un solo refresh 401 e 403 senza logout. I risultati della suite e il checksum dell'APK 0.3.0 sono in [evidence/phase3-validation.json](evidence/phase3-validation.json). Le immagini salvate mostrano esclusivamente fixture sintetiche.
+
 ## Controlli ancora aperti
 
 1. Login con account reale ordinario/admin, revoca remota effettiva e riavvio del processo con sessione reale. Nessuna credenziale utente è stata usata nei test.
 2. Installazione e aggiornamento su telefono fisico, API minima 26, TalkBack e caratteri grandi. I risultati dell'emulatore API 31 non coprono questi dispositivi.
-3. Esecuzione CI su GitHub. Il workflow è presente ma non è stato avviato remotamente.
-4. Nella fase 3: paginazione oltre 1.000 fixture, risultati coerenti col web, dettaglio ed ELO in sola lettura. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
+3. Rieseguire la CI dopo la correzione SDK locale: la prima esecuzione del commit 5cdbb78 si è fermata nel setup sul pacchetto `tools` non disponibile, prima di compilare il codice.
+4. Nella fase 3: dashboard, statistiche, ELO in sola lettura e filtri aggiuntivi. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
 
-Non sono stati eseguiti benchmark mobili. Le schermate dati rimangono segnaposto nella fase 2; i test UI non certificano funzioni ancora assenti.
+Non sono stati eseguiti benchmark mobili. Home, Statistiche ed ELO rimangono segnaposto nella build 0.3.0; i test UI non certificano funzioni ancora assenti.
 
 ## Controlli prima delle scritture partite
 

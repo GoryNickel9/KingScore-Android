@@ -129,6 +129,7 @@ class PlaysUiTest {
     }
 
     private class FakePlays : PlaysRepository {
+        override suspend fun player(id: UUID) = first.scores.first().player
         override suspend fun game(id: UUID) = first.game
         var historyCalls = 0
         var detailCalls = 0

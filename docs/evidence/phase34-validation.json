@@ -1,0 +1,243 @@
+{
+  "verified_on": "2026-10-13",
+  "phase": 3,
+  "version": "0.3.4",
+  "version_code": 6,
+  "scope": "Player detail, account identity and server-paginated participant history; mandatory login and Internet",
+  "build": {
+    "result": "BUILD SUCCESSFUL",
+    "tasks": [
+      "testDebugUnitTest",
+      "lintDebug",
+      "assembleDebug",
+      "assembleDebugAndroidTest"
+    ],
+    "local_jvm_workaround": "Ignored tcp-only javaagent and isolated daemon registry; neither is included in APK or CI"
+  },
+  "jvm": {
+    "tests": 104,
+    "failures": 0,
+    "errors": 0,
+    "suites": [
+      {
+        "name": "app.kingscore.android.core.auth.SupabaseAuthRepositoryTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.GameRepositoryTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.HistoryFiltersRepositoryTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.PlayerRepositoryTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.RowDecodersTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabasePlaysRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseRatingsRepositoryTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseReaderTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseStatisticsRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.auth.AppViewModelTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.games.GameDetailViewModelTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.players.PlayerDetailViewModelTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.plays.PlaysViewModelTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.ratings.RatingsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.stats.StatisticsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 22
+  },
+  "instrumentation": {
+    "api": 31,
+    "device": "Dedicated headless read-only AVD sdk_gphone64_x86_64",
+    "tests": 31,
+    "result": "OK (31 tests)",
+    "seconds": 184.316,
+    "animations_disabled": true,
+    "output": "docs/evidence/phase34-instrumentation.txt",
+    "new_checks": [
+      "Player page / play / parent player / back preserves pages and full score list",
+      "Identical metadata refresh rereads first player page",
+      "Null joined player still allows fresh metadata read",
+      "Missing/403 metadata does not scan history",
+      "Page retry preserves scope and cursor",
+      "Offline/logout/account switch clear player pages; reconnect reads fresh metadata",
+      "Alias fallback and account_user_id identity, independent of historical is_me",
+      "Empty history distinct from absent player",
+      "Null score.player_id hides navigation"
+    ]
+  },
+  "layout": {
+    "large-font": {
+      "result": "OK (1 test)",
+      "seconds": 17.707,
+      "font_scale": 1.3,
+      "density_dpi": 460,
+      "animations_disabled": true,
+      "configured_size_px": "1080x2340",
+      "approx_width_dp": 375.65
+    },
+    "landscape": {
+      "result": "OK (1 test)",
+      "seconds": 17.188,
+      "font_scale": 1.3,
+      "density_dpi": 460,
+      "animations_disabled": true,
+      "configured_size_px": "2340x1080"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/phase34-player-landscape.png",
+      "width": 2160,
+      "height": 812
+    },
+    {
+      "path": "docs/evidence/phase34-player-large-font.png",
+      "width": 1080,
+      "height": 2063
+    },
+    {
+      "path": "docs/evidence/phase34-player.png",
+      "width": 1080,
+      "height": 2063
+    }
+  ],
+  "screenshot_method": "Compose root, excluding system bars; synthetic fixtures only",
+  "query_checks": {
+    "player": "players?select=*&id=eq.<uuid>&limit=1",
+    "history": "HistoryFilters(playerId=id) with matching_scores:play_scores!inner(player_id), full play_scores(*,players(*)) and keyset cursor",
+    "fixture_rows": 1051,
+    "requests": 22,
+    "page_size": 50,
+    "all_participants_retained": true,
+    "no_partial_page_total_or_win_rate": true
+  },
+  "backend_query_probes": {
+    "performed": false,
+    "reason": "Uses audited players fields and existing verified participant history filter; no new remote query operators"
+  },
+  "node_evidence_tests": {
+    "tests": 10,
+    "failures": 0
+  },
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 20982542,
+    "sha256": "64e2d3ba4ecb1c1811bb23f76682d8a6661bd3b4d79e1113a33c1817aa1e5a7c",
+    "signing": "debug key"
+  },
+  "review": {
+    "subagent": "backend_audit",
+    "p1_or_p2_findings_remaining": 0,
+    "method": "Read-only static review of query, navigation, shared history, lifecycle and tests",
+    "corrected": [
+      "Landscape test helper now scrolls to the actual participant button and asserts visibility before tapping; a LazyColumn item can exceed the viewport. Same production APK passed after test correction; complete Android suite rerun."
+    ]
+  },
+  "ci_at_local_evidence_capture": {
+    "previous_verified_commit": "03de6665ffc78fc42ea09600397c087bf03d996c",
+    "previous_result": "success",
+    "previous_run": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38437734063",
+    "current_increment": "Created after commit/push; consult Actions for final result",
+    "workflow": "Node evidence, debug build, JVM tests and lint; no emulator instrumentation"
+  },
+  "remaining_1_0_effort": {
+    "unit": "effective hours; planning estimate, not elapsed calendar time",
+    "consultation": [
+      2,
+      4
+    ],
+    "comments_admin_atomic_rpc": [
+      28,
+      48
+    ],
+    "validation_release": [
+      20,
+      32
+    ],
+    "with_20_percent_reserve": [
+      60,
+      101
+    ]
+  },
+  "known_ui_limitations": [
+    "Existing bottom-navigation label Statistiche may be clipped in portrait at about 376 dp and 130% font scale; refine labels before stable release"
+  ],
+  "not_verified": [
+    "Real account login and comparison with real group data",
+    "Physical phone, API minimum 26, TalkBack and tablet",
+    "Mobile performance benchmarks",
+    "Images; phase 4 writes and phase 5 signed release"
+  ],
+  "remote_schema_or_data_mutated": false,
+  "emulator_note": "Only dedicated emulator-5582 controlled; settings restored and emulator stopped. Existing emulator-5584 left untouched."
+}

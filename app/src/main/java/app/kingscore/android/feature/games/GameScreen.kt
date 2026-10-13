@@ -2,7 +2,6 @@ package app.kingscore.android.feature.games
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -15,8 +14,6 @@ import app.kingscore.android.data.repository.HistoryFilters
 import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.feature.plays.*
 import app.kingscore.android.ui.modelFactory
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kingscore.contracts.v1.GameRow
 
@@ -55,25 +52,8 @@ fun GameScreen(state: GameState, history: HistoryState, onRefresh: () -> Unit, o
                     state.game.bga_id?.takeIf(String::isNotBlank)?.let { Text("Riferimento BGA: $it") }
                 }
                 item { Text("Partite del gioco", style = MaterialTheme.typography.titleLarge) }
-                if (history.loading) item { Loading("Caricamento partite…") }
-                else {
-                    history.updatedAt?.let { instant -> item {
-                        val time = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault()).format(instant)
-                        Text("${history.items.size} partite caricate · Aggiornato alle $time",
-                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    } }
-                    if (history.items.isEmpty() && history.problem == null) item {
-                        Text("Nessuna partita registrata per questo gioco.")
-                    }
-                    items(history.items, key = { it.play.id.toString() }) { PlayHistoryCard(it, onOpenPlay) }
-                    history.problem?.let { item { DataError(it, onRetry) } }
-                    if (history.loadingMore) item { Loading("Caricamento altre partite…") }
-                    else if (history.next != null && history.problem == null) item {
-                        OutlinedButton(onClick = onMore, modifier = Modifier.fillMaxWidth().testTag("more-game-plays")) {
-                            Text("Carica altre partite")
-                        }
-                    }
-                }
+                detailHistory(history, "Nessuna partita registrata per questo gioco.", "more-game-plays",
+                    onMore, onRetry, onOpenPlay)
             }
         }
     }

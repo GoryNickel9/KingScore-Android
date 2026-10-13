@@ -13,7 +13,7 @@ La UI presenta dati e raccoglie azioni. Il ViewModel mantiene lo stato della sch
 | `core/auth`, `core/network` | Sessione protetta, rinnovo, raggiungibilità ed errori condivisi; implementati |
 | `data/remote`, `data/repository` | Supabase, adattatori JSON e repository per risorsa |
 | `feature/auth`, `feature/navigation` | Login obbligatorio, logout e destinazioni per ruolo |
-| `feature/dashboard`, `plays`, `games`, `ratings`, `stats` | Consultazione online e letture ELO |
+| `feature/dashboard`, `plays`, `games`, `players`, `ratings`, `stats` | Consultazione online e letture ELO |
 | `feature/comments`, `playeditor`, `profile` | Commenti propri, editor admin e profilo in lettura |
 
 Home legge soltanto la prima pagina e mostra le cinque partite più recenti. Statistiche attraversa l'archivio su richiesta, conserva aggregati e ID e pubblica un risultato soltanto dopo la lettura completa. Classifiche e cataloghi usano cursori ID; lo storico ELO usa data e ID. Le viste condividono SupabaseReader e la stessa barriera di accesso, senza nuove dipendenze.
@@ -21,6 +21,8 @@ Home legge soltanto la prima pagina e mostra le cinque partite più recenti. Sta
 `HistoryFilters` viene applicato sul server prima della paginazione. Ricerca e cursore condividono il gruppo AND; il partecipante usa un alias di selezione separato dai punteggi restituiti. `ReadAllById` riusa la traversata dei cataloghi e rating. Lo stato UI salva soltanto gli input dei filtri per il ripristino della schermata, senza righe o cataloghi; `Blocked` rimuove anche questo stato dell'account.
 
 Il dettaglio gioco legge una sola riga `games` per UUID attraverso lo stesso repository verificato. Solo dopo il caricamento dei metadati avvia `HistoryViewModel` con `HistoryFilters(gameId = id)`. Entrambi i ViewModel appartengono alla destinazione di navigazione dell'account; il ritorno dalla partita conserva le pagine, mentre Aggiorna rilegge metadati e prima pagina. Una revisione in memoria distingue anche refresh che restituiscono metadati identici. Riaprire il gioco dalla sua partita torna alla destinazione esistente, senza aggiungere copie allo stack.
+
+Il dettaglio giocatore segue lo stesso flusso con `players` per UUID e `HistoryFilters(playerId = id)`. Il filtro sull'alias dei punteggi seleziona le partite del partecipante senza rimuovere gli altri punteggi. `DetailHistory` condivide il rendering di paginazione, errori e aggiornamento fra gioco e giocatore. Il comando nel dettaglio partita usa lo score.player_id, anche con join players null; senza ID non compare. Il confronto account_user_id/account autenticato determina Sei tu, senza usare il vecchio flag is_me.
 
 ## Stati dell'app
 

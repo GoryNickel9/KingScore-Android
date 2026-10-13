@@ -169,6 +169,7 @@ class HistoryFiltersUiTest {
         bitmap.recycle()
     }
     private class FakePlays : PlaysRepository {
+        override suspend fun player(id: UUID) = player
         override suspend fun game(id: UUID) = game
         val requests = mutableListOf<Pair<HistoryFilters, PlayCursor?>>()
         var optionsCalls = 0

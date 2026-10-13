@@ -153,6 +153,7 @@ class SupabaseStatisticsRepositoryTest {
         LocalDate.parse(date), null, null, minutes, "offline", null, null, null, null), null, scores)
 
     private class FakePlays(private val scan: suspend (PlaySource?, PlayCursor?) -> PlayPage) : PlaysRepository {
+        override suspend fun player(id: UUID): PlayerRow? = error("Statistics must not fetch player details")
         override suspend fun game(id: UUID): GameRow? = error("Statistics must not fetch games")
         override suspend fun history(filters: HistoryFilters, after: PlayCursor?) = scan(filters.source, after)
         override suspend fun filterOptions() = HistoryOptions()

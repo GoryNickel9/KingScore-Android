@@ -16,7 +16,7 @@ Usare il catalogo reale, non il replay incompleto delle migrazioni, per definire
 
 | Voce | Decisione o verifica |
 | --- | --- |
-| Package ID | `app.kingscore.android` nella build 0.3.3 |
+| Package ID | `app.kingscore.android` nella build 0.3.4 |
 | Android minimo | API 26, per java.time senza desugaring; dispositivo minimo ancora da provare |
 | Target e compile SDK | API 36; build, lint e installazione su emulatore API 31 verificati |
 | Contratti Kotlin | Compilati con Kotlin JVM 1.9.24, Java 21, bytecode target 17; senza dipendenze Android o librerie JSON |

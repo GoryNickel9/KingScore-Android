@@ -58,6 +58,14 @@ class SupabasePlaysRepository(private val reader: AuthenticatedReader, private v
         return "\"${regex.replace("\\", "\\\\").replace("\"", "\\\"")}\""
     }
 
+    override suspend fun player(id: UUID): kingscore.contracts.v1.PlayerRow? {
+        val rows = decode(reader.get(accountId, "players", listOf(
+            "select" to "*", "id" to "eq.$id", "limit" to "1",
+        )), RowDecoders::player)
+        validate { require(rows.size <= 1 && rows.all { it.id == id }) }
+        return rows.singleOrNull()
+    }
+
     override suspend fun game(id: UUID): kingscore.contracts.v1.GameRow? {
         val rows = decode(reader.get(accountId, "games", listOf(
             "select" to "*", "id" to "eq.$id", "limit" to "1",

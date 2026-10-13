@@ -20,6 +20,7 @@ class GameDetailViewModelTest {
     private var calls = 0
     private val failures = mutableListOf<AuthProblem>()
     private val repository = object : PlaysRepository {
+        override suspend fun player(id: UUID): PlayerRow? = error("Unused player detail")
         override suspend fun game(id: UUID): GameRow? { assertEquals(this@GameDetailViewModelTest.id, id); calls++; return read() }
         override suspend fun history(filters: HistoryFilters, after: PlayCursor?): PlayPage = error("Metadata must not scan history")
         override suspend fun filterOptions(): HistoryOptions = error("Unused catalog")

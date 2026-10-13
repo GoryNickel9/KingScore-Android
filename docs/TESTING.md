@@ -123,11 +123,28 @@ Risultati, runner, checksum e immagini sono in [evidence/phase33-validation.json
 
 Nella cattura verticale al 130%, l'etichetta Statistiche della barra inferiore esistente risulta troncata. Il percorso resta utilizzabile; correggere e verificare le etichette della navigazione con caratteri grandi prima della release stabile. Il corpo del dettaglio gioco è scorrevole anche in orizzontale.
 
+## Risultati dettaglio giocatore, build 0.3.4
+
+| Controllo eseguito | Esito | Ambito |
+| --- | --- | --- |
+| Test JVM completi | 104 superati, zero errori | Nove nuovi test per profilo, query, pagina partecipante, refresh e risposte/errori obsoleti |
+| Storico partecipante sintetico | 1.051 partite in 22 richieste | Filtro conservato in ogni pagina e tutti i punteggi restituiti |
+| Test Android API 31 | 31 superati | Otto nuove prove per percorso completo, errori, alias/identità account, rete, logout e cambio account |
+| Layout con testo al 130% | Percorso giocatore/pagina/partita/ritorno/refresh superato in verticale e orizzontale | Circa 376 dp in verticale e viewport corta orizzontale, animazioni disattivate |
+| Test evidenze Node | 10 superati | Contratti e limiti del perimetro |
+| Lint debug | Zero errori, 22 warning preesistenti | Nessun nuovo warning |
+
+Gioco e giocatore riusano `DetailHistory` per caricamento, errori, conteggio e cursore. La suite completa include i percorsi del gioco per verificare l'estrazione. Il test del giocatore apre anche la partita e controlla l'altro partecipante e il punteggio zero, prima di riaprire il profilo con le pagine conservate. Il flag storico is_me non viene usato per identificare l'account corrente.
+
+La prima prova orizzontale falliva dopo il tap sul partecipante. Il test scorreva fino all'item, ma il pulsante in fondo a una riga più alta della viewport poteva restare fuori dall'area visibile. La correzione scorre fino al pulsante e ne verifica la visibilità prima del tap; il percorso orizzontale è poi passato con la stessa build dell'app. La suite Android completa è rieseguita con questo helper aggiornato.
+
+Risultati, runner, checksum e immagini sono in [evidence/phase34-validation.json](evidence/phase34-validation.json). Fixture sintetiche; nessuna nuova probe o mutazione Supabase. La build locale usa gli stessi workaround ignorati della 0.3.3. La CI verifica Node, test JVM, lint e APK; i test Android sono eseguiti localmente sull'AVD dedicato.
+
 ## Controlli ancora aperti
 
 1. Login con account reale ordinario/admin, revoca remota effettiva e riavvio del processo con sessione reale. Nessuna credenziale utente è stata usata nei test.
 2. Installazione e aggiornamento su telefono fisico, API minima 26, TalkBack e caratteri grandi. I risultati dell'emulatore API 31 non coprono questi dispositivi.
-3. Nella fase 3: dettaglio giocatore e immagini. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
+3. Nella fase 3: immagini e rifiniture accessibilità. Nella fase 4: commenti e scritture isolate secondo i controlli sotto.
 
 Non sono stati eseguiti benchmark mobili. Home, Statistiche ed ELO sono implementate nell'incremento 0.3.1; la verifica con dati reali rimane aperta.
 

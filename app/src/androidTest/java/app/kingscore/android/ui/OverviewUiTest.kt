@@ -82,6 +82,7 @@ class OverviewUiTest {
                 listOf(GameStatistic(game.id, game.name, 1051)), if (unlinked) null else player, 1, 1)
         }
         val plays = object : PlaysRepository {
+            override suspend fun player(id: UUID) = player
             override suspend fun game(id: UUID) = game
             override suspend fun history(filters: HistoryFilters, after: PlayCursor?) = PlayPage(listOf(play), null)
             override suspend fun filterOptions() = HistoryOptions()

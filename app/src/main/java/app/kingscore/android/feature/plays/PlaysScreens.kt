@@ -20,6 +20,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.kingscore.android.core.auth.AuthProblem
@@ -52,11 +54,11 @@ fun HistoryRoute(repository: PlaysRepository, onAccessFailure: (AuthProblem) -> 
 
 @Composable
 fun DetailRoute(repository: PlaysRepository, accountId: UUID, id: UUID, onAccessFailure: (AuthProblem) -> Unit,
-    onOpenGame: (UUID) -> Unit, onBack: () -> Unit) {
+    onOpenGame: (UUID) -> Unit, onOpenPlayer: (UUID) -> Unit, onBack: () -> Unit) {
     val model: PlayDetailViewModel = viewModel(factory = modelFactory { PlayDetailViewModel(repository, id, onAccessFailure) })
     val state by model.detail.collectAsStateWithLifecycle()
     LaunchedEffect(model) { if (model.detail.value.loading) model.refresh() }
-    DetailScreen(state, accountId, model::refresh, model::moreComments, model::retryComments, onBack, onOpenGame)
+    DetailScreen(state, accountId, model::refresh, model::moreComments, model::retryComments, onBack, onOpenGame, onOpenPlayer)
 }
 
 @Composable
@@ -118,7 +120,8 @@ fun HistoryScreen(state: HistoryState, query: String, onQuery: (String) -> Unit,
 
 @Composable
 fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onMoreComments: () -> Unit,
-    onRetryComments: () -> Unit, onBack: () -> Unit, onOpenGame: ((UUID) -> Unit)? = null) {
+    onRetryComments: () -> Unit, onBack: () -> Unit, onOpenGame: ((UUID) -> Unit)? = null,
+    onOpenPlayer: ((UUID) -> Unit)? = null) {
     Column(Modifier.fillMaxSize().testTag("play-detail")) {
         ScreenHeader("Dettaglio partita", onBack, onRefresh, state.loading)
         when {
@@ -160,6 +163,12 @@ fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onM
                             Text(row.score.score?.let { "Punteggio: ${it.toPlainString().replace('.', ',')}" } ?: "Punteggio non registrato")
                             if (row.score.winner == true) Text("Vincitore", color = MaterialTheme.colorScheme.primary)
                             row.score.role?.takeIf { it.isNotBlank() }?.let { Text("Ruolo: $it") }
+                            row.score.player_id?.let { playerId ->
+                                if (onOpenPlayer != null) TextButton(onClick = { onOpenPlayer(playerId) },
+                                    modifier = Modifier.testTag("open-player-${row.score.id}").semantics {
+                                        contentDescription = "Apri giocatore: ${playerName(row.player)}"
+                                    }) { Text("Apri giocatore") }
+                            }
                             HorizontalDivider(Modifier.padding(top = 12.dp))
                         }
                     }

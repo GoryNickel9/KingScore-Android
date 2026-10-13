@@ -134,6 +134,7 @@ class GameUiTest {
         image.recycle()
     }
     private class FakePlays : PlaysRepository {
+        override suspend fun player(id: UUID): PlayerRow? = error("Unused player detail")
         var gameRead: suspend () -> GameRow? = { game }
         var gameCalls = 0
         var failMore = false

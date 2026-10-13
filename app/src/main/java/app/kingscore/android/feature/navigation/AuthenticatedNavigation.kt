@@ -50,6 +50,7 @@ import app.kingscore.android.feature.ratings.RatingsRoute
 import app.kingscore.android.feature.plays.HistoryRoute
 import app.kingscore.android.feature.plays.DetailRoute
 import app.kingscore.android.feature.games.GameRoute
+import app.kingscore.android.feature.players.PlayerRoute
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import java.util.UUID
@@ -86,7 +87,7 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                     destinations.forEach { destination ->
                         NavigationBarItem(
                             selected = entry?.destination?.route == destination.route ||
-                                (destination.route == "plays" && entry?.destination?.route in listOf("play/{id}", "game/{id}")),
+                                (destination.route == "plays" && entry?.destination?.route in listOf("play/{id}", "game/{id}", "player/{id}")),
                             onClick = {
                                 navigation.navigate(destination.route) {
                                     popUpTo(navigation.graph.findStartDestination().id) { saveState = true }
@@ -150,6 +151,8 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                         onOpenGame = { gameId ->
                             // Reopening the parent game returns to its existing pages instead of stacking duplicates.
                             if (!navigation.popBackStack("game/$gameId", false)) navigation.navigate("game/$gameId")
+                        }, onOpenPlayer = { playerId ->
+                            if (!navigation.popBackStack("player/$playerId", false)) navigation.navigate("player/$playerId")
                         }) { navigation.popBackStack() }
                     else Text("Partita non disponibile.", modifier = Modifier.padding(24.dp))
                 }
@@ -158,6 +161,12 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                     if (repository != null && id != null) GameRoute(repository, id, onAccessFailure,
                         onOpenPlay = { navigation.navigate("play/$it") }) { navigation.popBackStack() }
                     else Text("Gioco non disponibile.", modifier = Modifier.padding(24.dp))
+                }
+                composable("player/{id}", arguments = listOf(navArgument("id") { type = NavType.StringType })) { playerEntry ->
+                    val id = runCatching { UUID.fromString(playerEntry.arguments?.getString("id")) }.getOrNull()
+                    if (repository != null && id != null) PlayerRoute(repository, account.id, id, onAccessFailure,
+                        onOpenPlay = { navigation.navigate("play/$it") }) { navigation.popBackStack() }
+                    else Text("Giocatore non disponibile.", modifier = Modifier.padding(24.dp))
                 }
             }
         }

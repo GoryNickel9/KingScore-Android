@@ -1,6 +1,6 @@
 # Piano di integrazione dei writer e dell'editor Android
 
-Definito il 14 ottobre 2026. Il piano è salvato soltanto in KingScore-Android e non autorizza modifiche ad altre repo, pubblicazioni Vercel o operazioni Supabase. I test backend restano sul PC, con account sintetici e destinazioni loopback.
+Definito il 14 ottobre 2026. Il piano è salvato in KingScore-Android. L'utente ha ora autorizzato modifiche al codice King-Score e preparazione della migrazione, con test soltanto sul PC. Pubblicazione del sito, Vercel e Supabase restano esclusi. I test backend usano account sintetici e destinazioni loopback.
 
 ## Stato verificato e fonti
 
@@ -25,7 +25,25 @@ Il 14 ottobre 2026 il codice di King-Score è stato consultato in sola lettura, 
 
 Nel percorso ELO ispezionato non è stata individuata una scrittura delle posizioni in play_scores: la candidata locale apply_positions è un adattatore sintetico, non una prova di un writer attivo del sito. L'inventario deve coprire anche la chiusura dei vecchi percorsi di cancellazione cataloghi; il contratto partita V1 da solo non definisce queste operazioni.
 
-Le route di creazione/modifica usano ProtectedRoute requireAdmin e il componente verifica app_metadata.role. EditPlay filtra inoltre user_id uguale all'account corrente, e il SQL di replace_play_scores controlla ownership. Prima del passaggio alle RPC va confermata la matrice admin/proprietario: la candidata locale consente l'admin globale, ma questo non dimostra che tutti i percorsi attuali del sito lo consentano. Nessuna modifica implicita dei permessi durante la migrazione.
+Le route di creazione/modifica usano ProtectedRoute requireAdmin e il componente verifica app_metadata.role. EditPlay filtra inoltre user_id uguale all'account corrente, e il SQL di replace_play_scores controlla ownership. L'utente ha confermato il nuovo comportamento: amministratori su tutte le partite, come nella candidata locale. Il nuovo writer dovrà rimuovere il filtro frontend sul solo proprietario e verificare questa matrice nel database; il proprietario storico resta preservato nell'update.
+
+### Primo checkpoint web locale
+
+Checkout: `.work/King-Score-atomic`, branch web `codex/atomic-play-writers`, commit locale `5eb614221bcb84f57a13aa92328d5279492aa7de`. Il checkout primario del sito e i suoi file non committati preesistenti restano invariati. Il branch non è stato pubblicato.
+
+Il modulo `src/services/playSaveRequests.ts` prepara richieste V1 immutabili e validate, conserva UUID e metadati, mantiene i punteggi come stringhe decimali e distingue null/zero. Le prove locali superano 16 nuovi casi, 62 test della suite completa, typecheck app/script ed ESLint dei due nuovi file. Nessuna richiesta HTTP nei test. Il modulo non è ancora un writer completo: mancano trasporto, autenticazione, registro degli esiti e collegamento alle pagine; non attiva le API inesistenti.
+
+### Compatibilità della migrazione da verificare sul PC
+
+La revisione locale distingue la fixture dal codice da migrare. Non basta eliminare il guard di candidate.sql:
+
+1. Lo storico SQL e il catalogo salvato divergono su `played_at` date/timestamptz, `bga_table_id`, score color/role e timestamp. Alcune migrazioni storiche aggiungono due volte position/alias. Il preflight deve dichiarare lo schema supportato e rifiutare varianti incompatibili, senza conversioni silenziose.
+2. Il DROP incondizionato del trigger score rimuoverebbe anche un trigger valido nella variante con updated_at. La riparazione va condizionata alla struttura. Verificare lo scambio di partecipanti sugli ID score mantenuti: UNIQUE(play_id,player_id) immediato può far fallire gli UPDATE intermedi.
+3. Il dedupe BGA non deve nascondere duplicati storici con SELECT LIMIT 1. Preflight e protezione della chiave actor/table devono rifiutare ambiguità; nessuna cancellazione automatica dei dati storici.
+4. RPC additive, migrazione web e cutover sono fasi separate. La chiusura DML/replace_play_scores deve includere le cancellazioni indirette da giochi e giocatori; il solo blocco UI non protegge le cascade.
+5. La pubblicazione ELO resta distinta dal salvataggio partita. apply_positions non integra performFullRecalc; rating e storico richiedono un protocollo proprio per input e pubblicazione coerenti.
+
+La revisione non esegue SQL né certifica lo schema remoto attuale. Migrazione di compatibilità, RPC e cutover dovranno essere collaudati localmente prima di qualsiasi proposta di applicazione reale.
 
 ## Ordine delle attività
 
@@ -143,4 +161,4 @@ L'intervallo in cui vecchi e nuovi writer convivono non offre ancora la garanzia
 
 Encoder/decoder, trasporto RPC, recupero cifrato, ViewModel e UI editor sono preparati. Il collegamento ad Application, navigazione e sessione rimane da implementare e collaudare: non è completato dalla ricreazione delle schermate di consultazione. L'inventario attuale non basta per una stima affidabile dei job server o del rollout.
 
-Prima di proseguire con il backend serve la discussione prevista da [AGENTS.md](../AGENTS.md): «Se una funzionalità richiede modifiche fuori da questa repo o non può funzionare entro i vincoli, discuterne con l'utente prima dell'implementazione». L'utente ha scelto questa discussione: deve stabilire come ottenere le API reali e chi adeguerà writer web e job; non autorizza automaticamente migrazioni, deploy o test su Supabase remoto. La CI Android è invece già autorizzata. La RC3 resta una candidata e l'editor rimane disabilitato.
+La discussione richiesta da [AGENTS.md](../AGENTS.md) è stata svolta: l'utente ha autorizzato codice web, preparazione della migrazione e test locali, confermando gli admin globali. Queste decisioni non autorizzano pubblicazione, applicazione SQL o test su Supabase remoto. La CI Android è autorizzata e passa anche sul checkpoint e65e158. La RC3 resta una candidata e l'editor rimane disabilitato fino alle API reali e al collaudo dell'integrazione.

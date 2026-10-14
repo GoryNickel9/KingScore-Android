@@ -1,6 +1,6 @@
 # Prima versione stabile: stato e criteri
 
-Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Commit e push accompagnano i passaggi principali. Il 14 ottobre l'utente ha riattivato la CI Android e chiesto di discutere prima le modifiche a web e backend. Le modifiche restano in KingScore-Android; altre repo, Vercel e Supabase rimangono esclusi.
+Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Commit e push accompagnano i passaggi principali. Il 14 ottobre l'utente ha riattivato la CI Android e autorizzato codice web, preparazione della migrazione e test locali, con admin su tutte le partite. Il lavoro web usa un checkout separato e rimane locale; Vercel, Supabase e pubblicazioni del sito rimangono esclusi.
 
 La stabile mantiene il perimetro concordato: login e Internet obbligatori, consultazione, commenti propri e gestione partite admin atomica. Non comprende ricalcolo ELO, registrazione, modifica credenziali/avatar o uso offline. È disponibile la candidata privata firmata 0.5.0-rc3; la stabile completa non è ancora dichiarata raggiunta.
 
@@ -13,7 +13,7 @@ La stabile mantiene il perimetro concordato: login e Internet obbligatori, consu
 | Recupero salvataggi | Journal cifrato preparato; account verificato prima del recupero | Collegamento al ciclo di vita dell'editor e collaudo dei percorsi completi |
 | Editor partite | Controller, bozza e schermata Compose preparati con fixture | Factory, navigazione/sessione, rotazione dell'Activity e recupero completo dopo arresto del processo |
 | APK privato e aggiornamenti | RC3 firmata, non debuggabile; aggiornamento 8 → 11, registri cifrati e rete verificati su API 31; sette avvii release misurati su API 35 | Conservare la chiave privata; la RC2 ha anche il collaudo aggiornamento/rete API 35; nessuna verifica Auth remota |
-| CI GitHub | Riattivata; run 38624823497 superato sul commit abaf16c | Ogni successivo checkpoint va verificato sul suo SHA; nessun deploy |
+| CI GitHub | Riattivata; run 38624823497 su abaf16c e 38626236650 su e65e158 superati | Ogni successivo checkpoint va verificato sul suo SHA; nessun deploy |
 
 ## Ordine del lavoro autonomo
 
@@ -41,6 +41,6 @@ Il registro `AccountPlayJournals`, il [controller con fixture](PLAY_EDITOR_STATE
 
 Firma privata, installazione, aggiornamento, checksum e documentazione sono descritti in [PRIVATE_RELEASE.md](PRIVATE_RELEASE.md). La rc1 è stata ritirata dopo il difetto di perdita rete su Android 15; la rc2 corregge il monitor e supera le prove live su API 31 e 35. La rc3 aggiunge le correzioni per font grandi; il [collaudo finale con fixture](FINAL_PC_QA.md) passa su API 35. Le misure non certificano prestazioni su telefoni o autenticazione remota. Restano aperti i criteri esterni.
 
-La versione completa con gestione partite admin richiede la discussione sul backend scelta dall'utente. Finché le API mancano, l'editor resta disabilitato. La CI è riattivata e il checkpoint abaf16c supera Node, 225 test JVM, lint e APK; i checkpoint successivi richiedono verifica sul proprio SHA. API reali e integrazione dell'editor impediscono ancora di assegnare una data definitiva alla stabile completa. Il nuovo inventario in sola lettura è in [WRITER_INTEGRATION.md](WRITER_INTEGRATION.md).
+La discussione ha autorizzato lo sviluppo web e la preparazione della migrazione sul PC; il primo checkpoint di richieste V1 supera i 62 test web. Finché le API reali mancano, l'editor resta disabilitato. La CI Android passa su e65e158; i checkpoint successivi richiedono verifica sul proprio SHA. Writer reali, migrazione compatibile, pubblicazione autorizzata e integrazione dell'editor restano necessari prima della stabile completa. Stato e prove: [WRITER_INTEGRATION.md](WRITER_INTEGRATION.md).
 
 La [gestione della ricreazione](ACTIVITY_LIFECYCLE.md) conserva ora repository, ViewModel figli e bozze dei commenti attraverso le modifiche di configurazione. Le verifiche di accesso e le transizioni a Checking, blocco, logout o altro account continuano a rimuovere lo stato della sessione precedente. Le prove native eseguono la navigazione di produzione in un host debug con account sintetici; non certificano GoTrue remoto o MainActivity con credenziali reali.

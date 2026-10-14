@@ -15,6 +15,7 @@ import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.feature.plays.*
 import app.kingscore.android.ui.modelFactory
 import app.kingscore.android.ui.GameCover
+import app.kingscore.android.feature.navigation.PlayDataRefresh
 import java.util.UUID
 import kingscore.contracts.v1.GameRow
 
@@ -27,7 +28,7 @@ fun GameRoute(repository: PlaysRepository, id: UUID, onAccessFailure: (AuthProbl
     })
     val game by model.detail.collectAsStateWithLifecycle()
     val plays by history.history.collectAsStateWithLifecycle()
-    LaunchedEffect(model) { model.show() }
+    PlayDataRefresh(model, onShow = model::show, onRefresh = { history.clearMemory(); model.refresh() })
     LaunchedEffect(game.game, game.revision) { if (game.game != null) history.show(HistoryFilters(gameId = id)) }
     GameScreen(game, plays, { history.clearMemory(); model.refresh() }, history::loadMore,
         history::retry, onOpenPlay, onBack)

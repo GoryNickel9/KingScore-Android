@@ -25,6 +25,13 @@ import app.kingscore.android.core.images.AccountImages
 import app.kingscore.android.core.auth.AuthFailure
 import app.kingscore.android.core.auth.AuthProblem
 import kotlin.time.Duration.Companion.seconds
+import app.kingscore.android.data.local.EncryptedPendingPlayStore
+import app.kingscore.android.data.repository.AccountPlayJournals
+import app.kingscore.android.data.repository.PlayWrites
+import app.kingscore.android.data.remote.SupabasePlayWrites
+
+// Enable only after the backend and legacy writer cutover have been authorized and verified.
+internal const val ATOMIC_PLAY_EDITOR_ENABLED = false
 
 class KingScoreApplication : Application() {
     lateinit var network: AndroidNetworkMonitor
@@ -32,7 +39,16 @@ class KingScoreApplication : Application() {
     var auth: SupabaseAuthRepository? = null
         private set
     private val commentOutcomes by lazy { AccountCommentOutcomes(EncryptedCommentOutcomeStore(this)) }
-    fun clearCommentOutcomes() { commentOutcomes.clear() }
+    private val playJournals = lazy { AccountPlayJournals(EncryptedPendingPlayStore(this)) }
+    fun clearAccountWriteMemory() {
+        commentOutcomes.clear()
+        if (playJournals.isInitialized()) playJournals.value.clearMemory()
+    }
+    val playWritesFactory: ((UUID) -> PlayWrites)?
+        get() = if (!ATOMIC_PLAY_EDITOR_ENABLED || auth == null) null else { accountId ->
+            SupabasePlayWrites(checkNotNull(auth), network, accountId, enabled = true,
+                journal = playJournals.value.forAccount(accountId))
+        }
 
     fun plays(accountId: UUID): PlaysRepository = SupabasePlaysRepository(SupabaseReader(checkNotNull(auth), network), accountId,
         SupabaseCommentWrites(checkNotNull(auth), network, accountId, outcomes = commentOutcomes.forAccount(accountId)))

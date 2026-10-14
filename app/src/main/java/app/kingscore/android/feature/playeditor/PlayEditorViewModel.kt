@@ -33,7 +33,7 @@ data class PlayEditorState(
     val canDelete: Boolean get() = snapshot != null && canMutate
 }
 
-/** Fixture-ready state machine only. Production navigation and write capability remain disabled. */
+/** The navigation owns its scope; production write capability remains disabled. */
 class PlayEditorViewModel(
     private val account: Account, private val network: NetworkMonitor, private val reads: PlaysRepository,
     private val writes: PlayWrites?, private val playId: UUID? = null,
@@ -194,6 +194,7 @@ class PlayEditorViewModel(
         onAccessFailure(problem)
     }
     fun clearMemory() {
+        if (disposed) return
         disposed = true; generation++; job?.cancel(); networkJob.cancel(); writes?.close()
         originalDraft = null
         state.value = PlayEditorState(accessBlocked = true)

@@ -7,20 +7,32 @@ import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.data.repository.RatingsRepository
 import app.kingscore.android.data.repository.StatisticsRepository
 import java.util.UUID
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /** Retained by the Activity across configuration changes, released when access is removed. */
 class AuthenticatedResources : ViewModel() {
     class Session(val accountId: UUID, val plays: PlaysRepository?,
-        val statistics: StatisticsRepository?, val ratings: RatingsRepository?) : ViewModelStoreOwner {
+        val statistics: StatisticsRepository?, val ratings: RatingsRepository?,
+        internal val isAdmin: Boolean, internal val editorAvailable: Boolean) : ViewModelStoreOwner {
         override val viewModelStore = ViewModelStore()
-        internal fun close() { viewModelStore.clear(); plays?.commentWrites?.close() }
+        private var closed = false
+        private val revision = MutableStateFlow(0)
+        val playDataRevision: StateFlow<Int> = revision
+        fun playSaved() { if (!closed) revision.value++ }
+        internal fun close() {
+            if (closed) return
+            closed = true
+            viewModelStore.clear(); plays?.commentWrites?.close()
+        }
     }
     private var current: Session? = null
     fun acquire(accountId: UUID, plays: ((UUID) -> PlaysRepository)?,
-        statistics: ((UUID) -> StatisticsRepository)?, ratings: ((UUID) -> RatingsRepository)?): Session {
-        current?.takeIf { it.accountId == accountId }?.let { return it }
+        statistics: ((UUID) -> StatisticsRepository)?, ratings: ((UUID) -> RatingsRepository)?,
+        isAdmin: Boolean = false, editorAvailable: Boolean = false): Session {
+        current?.takeIf { it.accountId == accountId && it.isAdmin == isAdmin && it.editorAvailable == editorAvailable }?.let { return it }
         current?.let(::release)
-        return Session(accountId, plays?.invoke(accountId), statistics?.invoke(accountId), ratings?.invoke(accountId))
+        return Session(accountId, plays?.invoke(accountId), statistics?.invoke(accountId), ratings?.invoke(accountId), isAdmin, editorAvailable)
             .also { current = it }
     }
     fun release(session: Session) {

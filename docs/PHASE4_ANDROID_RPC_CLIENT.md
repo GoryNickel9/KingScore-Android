@@ -1,8 +1,8 @@
 # Client RPC Android, preparazione locale
 
-Il client implementa getter editor, creazione, modifica ed eliminazione secondo il [contratto V1](PLAY_SAVE_CONTRACT.md). Non è collegato alla navigazione, a PlaysRepository o all'Application. `SupabasePlayWrites` è disabilitato per default: senza attivazione esplicita restituisce UNAVAILABLE prima di verificare la sessione o inviare richieste. Soltanto i test lo attivano con Auth simulata e trasporto controllato.
+Il client implementa getter editor, creazione, modifica ed eliminazione secondo il [contratto V1](PLAY_SAVE_CONTRACT.md). Dal 15 ottobre l'Application prepara un factory con journal cifrato per account e la navigazione può ricevere tale factory. ATOMIC_PLAY_EDITOR_ENABLED resta false: MainActivity riceve un factory assente e non apre editor reali. Il costruttore standalone di SupabasePlayWrites resta disabilitato per default e restituisce UNAVAILABLE prima di leggere storage, verificare la sessione o inviare richieste.
 
-L'APK resta 0.4.0, con editor partite disabilitato. Non sono modificati King-Score, Vercel o Supabase. Nessuna richiesta di questa preparazione raggiunge il backend reale; non vengono introdotti import BGA, ricalcolo ELO, registrazione, modifica credenziali/avatar o invii offline.
+La candidata firmata rimane 0.5.0-rc3 e non include ancora il nuovo collegamento; la produzione conserva l'editor disabilitato. Le prove Android del collegamento usano fixture e APK debug. Nessuna richiesta di questa preparazione raggiunge il backend reale; non vengono introdotti import BGA, ricalcolo ELO, registrazione, modifica credenziali/avatar o invii offline.
 
 ## Codice e contratti
 
@@ -50,7 +50,7 @@ Il client ora richiede un codice macchina coerente con lo stato HTTP prima di ca
 
 La stessa risposta ambigua sul getter produce INVALID_RESPONSE e non modifica il journal. Le risposte reali di errore attraversano il filtro già presente del trasporto, che conserva soltanto il codice macchina e limita la lettura a 8 KiB. Le nuove prove verificano 27 combinazioni di stato/corpo e il recupero dopo ricreazione del client, usando uno store in memoria condiviso, Auth simulata e trasporto controllato. Non certificano l'integrazione con lo store Android cifrato o con le RPC reali. La produzione resta disabilitata.
 
-Questo primo incremento conservava la richiesta nella sola istanza del client. Il successivo journal prepara persistenza cifrata, ripristino verificato per account e conservazione della conferma dopo risposta: [STABILITY.md](STABILITY.md). Il client predefinito resta disabilitato e con store in memoria; il factory dell'editor dovrà iniettare lo store cifrato e condividere il journal. Nessuna riconnessione invia automaticamente dati. Un replay o una conferma recuperata riguardano la vecchia operazione; la UI futura dovrà rileggere lo stato corrente della partita.
+Questo primo incremento conservava la richiesta nella sola istanza del client. Il successivo journal aggiunge persistenza cifrata, ripristino verificato per account e conservazione della conferma dopo risposta: [STABILITY.md](STABILITY.md). Il client standalone resta disabilitato e con store in memoria; il factory preparato nell'Application inietta lo store cifrato e condivide il journal. Nessuna riconnessione invia automaticamente dati. Un replay o una conferma recuperata riguardano la vecchia operazione; la navigazione aggiorna le letture alla chiusura del risultato.
 
 ## Validazione
 
@@ -60,4 +60,4 @@ Risultati della suite completa, lint, APK e hash: [android-rpc-client-validation
 
 ## Prossima attività
 
-Il [controller e la schermata editor](PLAY_EDITOR_STATE.md) preparano ora bozze, conflitti, conferma della cancellazione e recupero con fixture. Factory, navigazione reale e ciclo di vita completo restano da integrare; le scritture reali sono disabilitate.
+Il [controller e la schermata editor](PLAY_EDITOR_STATE.md) sono collegati alla navigazione admin, ancora disabilitata in produzione. Il prossimo collaudo sul PC deve unire navigazione, richieste RPC locali e store cifrato, includendo arresto del processo. Le prove di questi componenti separati non certificano tale percorso completo.

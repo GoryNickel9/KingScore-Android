@@ -44,7 +44,7 @@ class PlayEditorViewModelTest {
     private inner class Writer : PlayWrites {
         override var pendingRequest: PendingPlayRequest? = null
         var completed: PlayWriteResult? = null
-        var restored = 0; var closed = false; var editorCalls = 0
+        var restored = 0; var closed = false; var editorCalls = 0; var closeCalls = 0
         val commands = mutableListOf<Any>()
         var read: suspend () -> PlayEditorResult = { snapshot() }
         var send: suspend () -> PlayMutationResult = { PlayMutationResult(f.play, "v1:new", false) }
@@ -58,7 +58,7 @@ class PlayEditorViewModelTest {
             commands += command; send(); return DeletePlayResult(command.play_id, true, false)
         }
         override suspend fun retryPending(): PlayWriteResult { commands += "retry"; return retry() }
-        override fun close() { closed = true }
+        override fun close() { closeCalls++; closed = true }
     }
     private fun model(id: UUID? = null, enabled: Boolean = true, admin: Boolean = true) = PlayEditorViewModel(
         account.copy(isAdmin = admin), network, reads, writer, id, enabled, failures::add,
@@ -67,6 +67,14 @@ class PlayEditorViewModelTest {
     private fun valid() = PlayDraft(f.game, "2026-10-14", scores = listOf(DraftScore(playerId = f.player)))
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
     @After fun teardown() { models.forEach { it.clearMemory() }; Dispatchers.resetMain() }
+
+    @Test fun `explicit exit followed by scope clearing closes the writer once`() = runTest(dispatcher) {
+        val vm = loaded()
+        vm.clearMemory(); vm.clearMemory()
+        assertEquals(1, writer.closeCalls)
+        assertTrue(vm.editor.value.accessBlocked)
+        assertNull(vm.editor.value.draft)
+    }
 
     @Test fun `disabled and nonadmin never read or write`() = runTest(dispatcher) {
         model(enabled = false).apply { load(); save(); requestDelete() }

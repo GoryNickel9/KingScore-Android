@@ -14,6 +14,7 @@ import app.kingscore.android.core.auth.AuthProblem
 import app.kingscore.android.data.repository.StatisticsRepository
 import app.kingscore.android.feature.plays.playerName
 import app.kingscore.android.ui.modelFactory
+import app.kingscore.android.feature.navigation.PlayDataRefresh
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -21,7 +22,7 @@ import java.math.RoundingMode
 fun StatisticsRoute(repository: StatisticsRepository, onAccessFailure: (AuthProblem) -> Unit) {
     val model: StatisticsViewModel = viewModel(factory = modelFactory { StatisticsViewModel(repository, onAccessFailure) })
     val state by model.statistics.collectAsStateWithLifecycle()
-    LaunchedEffect(model) { model.show() }
+    PlayDataRefresh(model, onShow = model::show, onRefresh = model::refresh)
     LazyColumn(Modifier.fillMaxSize().testTag("statistics-content"), contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Text("Statistiche", style = MaterialTheme.typography.headlineLarge)

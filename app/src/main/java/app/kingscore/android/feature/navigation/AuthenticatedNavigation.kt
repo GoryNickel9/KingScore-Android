@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -64,6 +65,11 @@ import java.util.UUID
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.kingscore.android.ui.modelFactory
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.kingscore.android.core.network.NetworkMonitor
+import app.kingscore.android.data.repository.PlayWrites
+import app.kingscore.android.feature.playeditor.PlayEditorRoute
+import app.kingscore.android.feature.playeditor.PlayEditorViewModel
 
 private data class Destination(val route: String, val label: String, val icon: ImageVector)
 private val destinations = listOf(
@@ -78,25 +84,33 @@ private const val BASE_NAVIGATION_HEIGHT_DP = 80f
 @Composable
 fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
     playsFactory: ((UUID) -> PlaysRepository)? = null, onAccessFailure: (AuthProblem) -> Unit = {},
-    statisticsFactory: ((UUID) -> StatisticsRepository)? = null, ratingsFactory: ((UUID) -> RatingsRepository)? = null) {
+    statisticsFactory: ((UUID) -> StatisticsRepository)? = null, ratingsFactory: ((UUID) -> RatingsRepository)? = null,
+    playWritesFactory: ((UUID) -> PlayWrites)? = null, editorNetwork: NetworkMonitor? = null) {
+    key(account.id, account.isAdmin, playWritesFactory != null && editorNetwork != null) {
     val navigation = rememberNavController()
     val entry by navigation.currentBackStackEntryAsState()
     val context = LocalContext.current
     val navigationHeight = (BASE_NAVIGATION_HEIGHT_DP * LocalDensity.current.fontScale.coerceAtLeast(1f)).dp
     var browserUnavailable by remember { mutableStateOf(false) }
     val resourcesModel: AuthenticatedResources = viewModel(factory = modelFactory { AuthenticatedResources() })
-    val resources = remember(resourcesModel, account.id) { resourcesModel.acquire(account.id, playsFactory, statisticsFactory, ratingsFactory) }
+    val editorAvailable = playWritesFactory != null && editorNetwork != null
+    val resources = remember(resourcesModel, account.id, account.isAdmin, editorAvailable) {
+        resourcesModel.acquire(account.id, playsFactory, statisticsFactory, ratingsFactory, account.isAdmin, editorAvailable)
+    }
     val repository = resources.plays
     val statistics = resources.statistics
     val ratings = resources.ratings
+    val revision by resources.playDataRevision.collectAsStateWithLifecycle()
+    val canEditPlays = account.isAdmin && repository != null && playWritesFactory != null && editorNetwork != null
+    val editing = entry?.destination?.route in setOf("play/new", "play/edit/{id}")
     val activity = context.activity()
     DisposableEffect(resources) { onDispose {
         if (activity?.isChangingConfigurations != true) resourcesModel.release(resources)
     } }
-    CompositionLocalProvider(LocalViewModelStoreOwner provides resources) {
+    CompositionLocalProvider(LocalViewModelStoreOwner provides resources, LocalPlayDataRevision provides revision) {
         Scaffold(
             bottomBar = {
-                NavigationBar(modifier = Modifier.heightIn(min = navigationHeight)) {
+                if (!editing) NavigationBar(modifier = Modifier.heightIn(min = navigationHeight)) {
                     destinations.forEach { destination ->
                         NavigationBarItem(
                             selected = entry?.destination?.route == destination.route ||
@@ -120,7 +134,8 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                 destinations.forEach { destination ->
                     composable(destination.route) {
                         if (destination.route == "plays" && repository != null) {
-                            HistoryRoute(repository, onAccessFailure) { id -> navigation.navigate("play/$id") }
+                            HistoryRoute(repository, onAccessFailure,
+                                onCreate = if (canEditPlays) ({ navigation.navigate("play/new") }) else null) { id -> navigation.navigate("play/$id") }
                         } else if (destination.route == "home" && repository != null) {
                             DashboardRoute(account, repository, onAccessFailure,
                                 onOpen = { navigation.navigate("play/$it") }, onHistory = { navigation.navigate("plays") },
@@ -166,7 +181,7 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                             if (!navigation.popBackStack("game/$gameId", false)) navigation.navigate("game/$gameId")
                         }, onOpenPlayer = { playerId ->
                             if (!navigation.popBackStack("player/$playerId", false)) navigation.navigate("player/$playerId")
-                        }) { navigation.popBackStack() }
+                        }, onManage = if (canEditPlays) ({ navigation.navigate("play/edit/$id") }) else null) { navigation.popBackStack() }
                     else Text("Partita non disponibile.", modifier = Modifier.padding(24.dp))
                 }
                 composable("game/{id}", arguments = listOf(navArgument("id") { type = NavType.StringType })) { gameEntry ->
@@ -181,8 +196,33 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                         onOpenPlay = { navigation.navigate("play/$it") }) { navigation.popBackStack() }
                     else Text("Giocatore non disponibile.", modifier = Modifier.padding(24.dp))
                 }
+                composable("play/new") {
+                    EditorDestination(account, null, repository, playWritesFactory, editorNetwork, canEditPlays,
+                        onAccessFailure, resources::playSaved) { navigation.popBackStack() }
+                }
+                composable("play/edit/{id}", arguments = listOf(navArgument("id") { type = NavType.StringType })) { editorEntry ->
+                    val id = runCatching { UUID.fromString(editorEntry.arguments?.getString("id")) }.getOrNull()
+                    EditorDestination(account, id, repository, playWritesFactory, editorNetwork, canEditPlays && id != null,
+                        onAccessFailure, resources::playSaved) { navigation.popBackStack() }
+                }
             }
         }
+    }
+    }
+}
+
+@Composable
+private fun EditorDestination(account: Account, id: UUID?, reads: PlaysRepository?,
+    factory: ((UUID) -> PlayWrites)?, network: NetworkMonitor?, allowed: Boolean,
+    onAccessFailure: (AuthProblem) -> Unit, onSaved: () -> Unit, onClose: () -> Unit) {
+    if (allowed && reads != null && factory != null && network != null) {
+        val model: PlayEditorViewModel = viewModel(factory = modelFactory {
+            PlayEditorViewModel(account, network, reads, factory(account.id), id, enabled = true, onAccessFailure = onAccessFailure)
+        })
+        PlayEditorRoute(model, onResult = { onSaved() }, onClose = onClose)
+    } else Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text("La gestione delle partite non è disponibile.")
+        TextButton(onClick = onClose) { Text("Torna indietro") }
     }
 }
 

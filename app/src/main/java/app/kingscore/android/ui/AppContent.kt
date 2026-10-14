@@ -38,6 +38,8 @@ import app.kingscore.android.core.images.AccountImages
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.CompositionLocalProvider
+import app.kingscore.android.core.network.NetworkMonitor
+import app.kingscore.android.data.repository.PlayWrites
 
 @Composable
 fun AppContent(
@@ -51,6 +53,8 @@ fun AppContent(
     statisticsFactory: ((UUID) -> StatisticsRepository)? = null,
     ratingsFactory: ((UUID) -> RatingsRepository)? = null,
     imagesFactory: ((UUID, (AuthProblem) -> Unit) -> AccountImages)? = null,
+    playWritesFactory: ((UUID) -> PlayWrites)? = null,
+    editorNetwork: NetworkMonitor? = null,
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     val holder = rememberSaveableStateHolder()
@@ -85,13 +89,16 @@ fun AppContent(
                     val images = remember(access.account.id, imagesFactory) { imagesFactory?.invoke(access.account.id, onAccessFailure) }
                     DisposableEffect(images) { onDispose { images?.close() } }
                     CompositionLocalProvider(LocalAccountImages provides images) {
-                        AuthenticatedNavigation(access.account, onSignOut, playsFactory, onAccessFailure, statisticsFactory, ratingsFactory)
+                        AuthenticatedNavigation(access.account, onSignOut, playsFactory, onAccessFailure,
+                            statisticsFactory, ratingsFactory, playWritesFactory, editorNetwork)
                     }
                 }
                 is AccessState.Blocked -> Column(Modifier.padding(28.dp).verticalScroll(rememberScrollState()).testTag("connection-blocked"),
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(access.problem.message(), style = MaterialTheme.typography.headlineSmall)
-                    if (playsFactory != null) Text("Se avevi inviato una modifica, verifica i commenti prima di ripetere l'operazione.")
+                    if (playsFactory != null) Text(if (playWritesFactory == null)
+                        "Se avevi inviato una modifica, verifica i commenti prima di ripetere l'operazione."
+                        else "Se avevi inviato una modifica, verifica il suo esito prima di ripetere l'operazione.")
                     Button(onClick = onRetry) { Text("Riprova") }
                     TextButton(onClick = onNetworkSettings) { Text("Impostazioni rete") }
                     TextButton(onClick = onSignOut) { Text("Esci dall’account") }

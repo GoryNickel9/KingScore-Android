@@ -15,6 +15,7 @@ import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.feature.plays.*
 import app.kingscore.android.ui.modelFactory
 import app.kingscore.android.ui.GameCover
+import app.kingscore.android.feature.navigation.PlayDataRefresh
 import java.util.UUID
 
 @Composable
@@ -22,7 +23,7 @@ fun DashboardRoute(account: Account, repository: PlaysRepository, onAccessFailur
     onOpen: (UUID) -> Unit, onHistory: () -> Unit, onRatings: () -> Unit) {
     val model: HistoryViewModel = viewModel(factory = modelFactory { HistoryViewModel(repository, onAccessFailure) })
     val state by model.history.collectAsStateWithLifecycle()
-    LaunchedEffect(model) { model.show() }
+    PlayDataRefresh(model, onShow = model::show, onRefresh = { model.refresh() })
     LazyColumn(Modifier.fillMaxSize().testTag("dashboard-content"), contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Text("Ciao, ${account.name}", style = MaterialTheme.typography.headlineLarge)

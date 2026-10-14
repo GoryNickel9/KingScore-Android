@@ -17,6 +17,7 @@ import app.kingscore.android.feature.plays.playerName
 import app.kingscore.android.ui.modelFactory
 import app.kingscore.android.ui.PlayerAvatar
 import app.kingscore.android.ui.GameCover
+import app.kingscore.android.feature.navigation.PlayDataRefresh
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -28,7 +29,8 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
     var game by rememberSaveable { mutableStateOf<String?>(null) }
     var chooseGame by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
-    LaunchedEffect(model, game) { model.show(game?.let(UUID::fromString)) }
+    PlayDataRefresh(model, selection = game, onShow = { model.show(game?.let(UUID::fromString)) },
+        onRefresh = { model.refresh(game?.let(UUID::fromString)) })
     if (chooseGame) AlertDialog(onDismissRequest = { chooseGame = false }, title = { Text("Scegli gioco") },
         confirmButton = { TextButton(onClick = { chooseGame = false }) { Text("Chiudi") } }, text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

@@ -15,6 +15,7 @@ import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.feature.plays.*
 import app.kingscore.android.ui.modelFactory
 import app.kingscore.android.ui.PlayerAvatar
+import app.kingscore.android.feature.navigation.PlayDataRefresh
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -29,7 +30,7 @@ fun PlayerRoute(repository: PlaysRepository, accountId: UUID, id: UUID, onAccess
     })
     val player by model.detail.collectAsStateWithLifecycle()
     val plays by history.history.collectAsStateWithLifecycle()
-    LaunchedEffect(model) { model.show() }
+    PlayDataRefresh(model, onShow = model::show, onRefresh = { history.clearMemory(); model.refresh() })
     LaunchedEffect(player.player, player.revision) { if (player.player != null) history.show(HistoryFilters(playerId = id)) }
     PlayerScreen(player, plays, accountId, { history.clearMemory(); model.refresh() }, history::loadMore,
         history::retry, onOpenPlay, onBack)

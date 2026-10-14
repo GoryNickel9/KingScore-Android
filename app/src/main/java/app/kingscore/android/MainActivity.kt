@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
                         }
                     })
                     val state by model.access.collectAsStateWithLifecycle()
-                    LaunchedEffect(state) { if (state is AccessState.SignedOut) app.clearCommentOutcomes() }
+                    LaunchedEffect(state) { if (state is AccessState.SignedOut) app.clearAccountWriteMemory() }
                     val lifecycle = LocalLifecycleOwner.current.lifecycle
                     LaunchedEffect(model, lifecycle) {
                         var firstStart = true
@@ -57,10 +57,11 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-                    AppContent(state, model::signIn, model::retry, { app.clearCommentOutcomes(); model.signOut() },
+                    AppContent(state, model::signIn, model::retry, { app.clearAccountWriteMemory(); model.signOut() },
                         onNetworkSettings = { startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS)) },
                         playsFactory = app::plays, onAccessFailure = model::rejectAccess,
-                        statisticsFactory = app::statistics, ratingsFactory = app::ratings, imagesFactory = app::images)
+                        statisticsFactory = app::statistics, ratingsFactory = app::ratings, imagesFactory = app::images,
+                        playWritesFactory = app.playWritesFactory, editorNetwork = app.network)
                 }
             }
         }

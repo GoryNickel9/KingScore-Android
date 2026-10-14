@@ -31,16 +31,21 @@ import java.time.LocalDate
 import java.util.UUID
 import kingscore.contracts.v1.*
 
-/** Caller owns the ViewModel scope. No production navigation or capability is enabled here. */
+/** Caller owns the ViewModel scope and controls whether the editor is reachable. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayEditorRoute(model: PlayEditorViewModel, onClose: () -> Unit) {
+fun PlayEditorRoute(model: PlayEditorViewModel, onResult: (PlayWriteResult) -> Unit = {}, onClose: () -> Unit) {
     val state by model.editor.collectAsStateWithLifecycle()
     var leaving by remember(model) { mutableStateOf(false) }
     var picking by remember(model) { mutableStateOf<String?>(null) }
     val focus = LocalFocusManager.current
     val list = rememberLazyListState()
-    val close = { model.clearMemory(); onClose() }
+    val close = {
+        val result = model.editor.value.result
+        model.clearMemory()
+        result?.let(onResult)
+        onClose()
+    }
     val back = {
         if (!state.saving) {
             if (state.dirty && state.result == null && !state.accessBlocked) leaving = true else close()

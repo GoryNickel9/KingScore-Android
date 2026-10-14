@@ -9,11 +9,11 @@ La stabile mantiene il perimetro concordato: login e Internet obbligatori, consu
 | Consultazione, login e blocco rete | Suite funzionali con fixture su API 31/35; 77 casi finali API 35, font grandi, tastiera e storico da 1.200 partite verificati | Nessuna certificazione Auth/RLS remota; misure PC con limiti espliciti in BENCHMARKS.md |
 | Commenti propri | Implementati, registro cifrato nell'Application; recupero dopo arresto del processo e percorsi di sessione verificati | Rilettura completa e conferma manuale prima di nuove scritture; nessuna promessa di idempotenza server |
 | Contratti e salvataggi atomici | Candidata e migrazione web predisposta: 21 casi superati anche sulla fonte install-only | API reali e writer web/server coerenti, oggi indisponibili |
-| Client RPC Android | Preparato, disabilitato per default; risposte di rifiuto ambigue conservano la richiesta | Integrazione nell'editor dopo le condizioni backend |
+| Client RPC Android | Factory e journal per account preparati nell'Application; factory di produzione assente | Collaudo con RPC locali e store cifrato insieme alla navigazione; poi condizioni backend |
 | Writer web locale | Preparatore, trasporto mutazioni, journal con conferme e verifica account; 97 test web, typecheck/lint superati | Pagine, conflitti, collaudo browser e integrazione SQL ancora da completare; nessuna pubblicazione |
 | Compatibilità SQL | Preflight read-only: 19 casi; migrazione predisposta: 16 profili e 21 casi HTTP passati su PostgreSQL 17.4 | Cutover, caller reali e verifica backend restano da completare; nessuna modifica cloud |
-| Recupero salvataggi | Journal cifrato preparato; account verificato prima del recupero | Collegamento al ciclo di vita dell'editor e collaudo dei percorsi completi |
-| Editor partite | Controller, bozza e schermata Compose preparati con fixture | Factory, navigazione/sessione, rotazione dell'Activity e recupero completo dopo arresto del processo |
+| Recupero salvataggi | Journal cifrato iniettato dal factory; ciclo di vita per account collegato | RPC, navigazione e cifratura vanno verificati nello stesso percorso dopo arresto del processo |
+| Editor partite | Navigazione collegata ma disabilitata in produzione; dieci casi nativi nuovi e suite API 35 completa, 87 test, passati | Percorso HTTP/cifrato completo, disponibilità delle API e nuova candidata firmata |
 | APK privato e aggiornamenti | RC3 firmata, non debuggabile; aggiornamento 8 → 11, registri cifrati e rete verificati su API 31; sette avvii release misurati su API 35 | Conservare la chiave privata; la RC2 ha anche il collaudo aggiornamento/rete API 35; nessuna verifica Auth remota |
 | CI GitHub | Riattivata; run 38624823497 su abaf16c e 38626236650 su e65e158 superati | Ogni successivo checkpoint va verificato sul suo SHA; nessun deploy |
 
@@ -37,9 +37,9 @@ Una risposta valida viene conservata come conferma cifrata, anziché cancellare 
 
 Il client cancella una richiesta nuova soltanto dopo un rifiuto con codice macchina riconosciuto e coerente con lo stato HTTP. Un corpo vuoto, HTML o con codice inatteso conserva il comando originale e blocca nuovi salvataggi. Il checkpoint verifica 27 combinazioni ambigue e il replay dopo ricreazione del client con store in memoria: [android-play-rejection-validation.json](evidence/android-play-rejection-validation.json). Le prove non chiudono l'integrazione con l'editor, lo store cifrato o il backend reale.
 
-Il factory dell'editor dovrà condividere un journal per account e iniettare lo store cifrato. Il client predefinito resta disabilitato e usa memoria: non è ancora collegato all'Application. Le garanzie del file riguardano riavvio e arresto del processo; non certificano perdita del dispositivo, cancellazione dei dati dell'app o guasti del filesystem.
+Il factory preparato nell'Application condivide un journal per account e inietta lo store cifrato. La disponibilità del factory resta condizionata a ATOMIC_PLAY_EDITOR_ENABLED, oggi false; non viene creato alcun editor reale. Il costruttore standalone del client resta disabilitato per default e usa memoria. Le garanzie del file riguardano riavvio e arresto del processo; non certificano perdita del dispositivo, cancellazione dei dati dell'app o guasti del filesystem.
 
-Il registro `AccountPlayJournals`, il [controller con fixture](PLAY_EDITOR_STATE.md) e la schermata Compose preparano questa integrazione. Il controller gestisce caricamento, validazione della bozza, conferma della cancellazione, conflitti e recupero esplicito. Restano da collegare factory, navigazione e ciclo di vita della sessione; i percorsi reali non sono abilitati.
+Il registro AccountPlayJournals, il [controller](PLAY_EDITOR_STATE.md) e la schermata Compose sono collegati alle destinazioni admin. Il controller gestisce caricamento, validazione della bozza, conferma della cancellazione, conflitti e recupero esplicito. Rotazione e ricreazione conservano la bozza; perdita di accesso o ruolo rimuove la sessione. Il collaudo nativo usa fixture senza RPC e non chiude la verifica completa HTTP/cifratura: [editor-navigation-validation.json](evidence/editor-navigation-validation.json). I percorsi reali non sono abilitati.
 
 ## Lavoro restante
 

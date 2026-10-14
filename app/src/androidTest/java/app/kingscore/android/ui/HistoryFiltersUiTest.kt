@@ -132,7 +132,7 @@ class HistoryFiltersUiTest {
         val restoration = StateRestorationTester(compose)
         val owner = object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() }
         restoration.setContent { KingScoreTheme { CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
-            HistoryRoute(repo, {}, {})
+            HistoryRoute(repo, {}, onOpen = {})
         } } }
         compose.onNodeWithTag("history-query").performTextReplacement("Finale")
         compose.onNodeWithTag("history-query").performImeAction()

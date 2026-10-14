@@ -29,13 +29,15 @@ import app.kingscore.android.data.repository.*
 import app.kingscore.android.ui.modelFactory
 import app.kingscore.android.ui.GameCover
 import app.kingscore.android.ui.PlayerAvatar
+import app.kingscore.android.feature.navigation.PlayDataRefresh
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kingscore.contracts.v1.*
 
 @Composable
-fun HistoryRoute(repository: PlaysRepository, onAccessFailure: (AuthProblem) -> Unit, onOpen: (UUID) -> Unit) {
+fun HistoryRoute(repository: PlaysRepository, onAccessFailure: (AuthProblem) -> Unit,
+    onCreate: (() -> Unit)? = null, onOpen: (UUID) -> Unit) {
     val model: HistoryViewModel = viewModel(factory = modelFactory { HistoryViewModel(repository, onAccessFailure) })
     val state by model.history.collectAsStateWithLifecycle()
     var applied by rememberSaveable(stateSaver = historyFiltersSaver) { mutableStateOf(HistoryFilters()) }
@@ -43,34 +45,37 @@ fun HistoryRoute(repository: PlaysRepository, onAccessFailure: (AuthProblem) -> 
     var filtersOpen by rememberSaveable { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     val focus = LocalFocusManager.current
-    LaunchedEffect(model) { model.show(applied) }
+    PlayDataRefresh(model, onShow = { model.show(applied) }, onRefresh = { model.refresh(applied) })
     val apply: (HistoryFilters) -> Unit = { applied = it.copy(query = it.query.trim()); model.refresh(applied) }
     val validQuery = query.length <= MAX_HISTORY_QUERY && query.none { it.isISOControl() }
     val search = { if (validQuery) { focus.clearFocus(); keyboard?.hide(); query = query.trim(); apply(applied.copy(query = query)) }; Unit }
     HistoryScreen(state, query, { query = it }, validQuery, search,
         { apply(applied.copy(source = it)) }, { focus.clearFocus(); keyboard?.hide(); filtersOpen = true },
-        { query = ""; apply(HistoryFilters()) }, { model.refresh() }, model::loadMore, model::retry, onOpen)
+        { query = ""; apply(HistoryFilters()) }, { model.refresh() }, model::loadMore, model::retry, onOpen, onCreate)
     if (filtersOpen) HistoryFiltersDialog(state, model::loadOptions,
         { filtersOpen = false; focus.clearFocus(); keyboard?.hide(); apply(it) }, { filtersOpen = false })
 }
 
 @Composable
 fun DetailRoute(repository: PlaysRepository, accountId: UUID, id: UUID, onAccessFailure: (AuthProblem) -> Unit,
-    onOpenGame: (UUID) -> Unit, onOpenPlayer: (UUID) -> Unit, onBack: () -> Unit) {
+    onOpenGame: (UUID) -> Unit, onOpenPlayer: (UUID) -> Unit, onManage: (() -> Unit)? = null, onBack: () -> Unit) {
     val model: PlayDetailViewModel = viewModel(factory = modelFactory { PlayDetailViewModel(repository, id, onAccessFailure, accountId) })
     val state by model.detail.collectAsStateWithLifecycle()
-    LaunchedEffect(model) { if (model.detail.value.loading) model.refresh() }
+    PlayDataRefresh(model, onShow = { if (model.detail.value.loading) model.refresh() }, onRefresh = model::refresh)
     DetailScreen(state, accountId, model::refresh, model::moreComments, model::retryComments, onBack, onOpenGame, onOpenPlayer,
         if (repository.commentWrites == null) null else CommentActions(model::composeComment, model::changeComment,
-            model::saveComment, model::requestCommentDeletion, model::deleteComment, model::dismissComment, model::recheckComments, model::acknowledgeComments))
+            model::saveComment, model::requestCommentDeletion, model::deleteComment, model::dismissComment, model::recheckComments, model::acknowledgeComments), onManage)
 }
 
 @Composable
 fun HistoryScreen(state: HistoryState, query: String, onQuery: (String) -> Unit, validQuery: Boolean, onSearch: () -> Unit,
     onSource: (PlaySource?) -> Unit, onFilters: () -> Unit, onReset: () -> Unit,
-    onRefresh: () -> Unit, onMore: () -> Unit, onRetry: () -> Unit, onOpen: (UUID) -> Unit) {
+    onRefresh: () -> Unit, onMore: () -> Unit, onRetry: () -> Unit, onOpen: (UUID) -> Unit, onCreate: (() -> Unit)? = null) {
     Column(Modifier.fillMaxSize().testTag("plays-history")) {
         ScreenHeader("Partite", onRefresh = onRefresh, refreshing = state.loading)
+        onCreate?.let { create ->
+            Button(onClick = create, modifier = Modifier.padding(horizontal = 24.dp).testTag("create-play")) { Text("Nuova partita") }
+        }
         key(state.filters) {
             LazyColumn(Modifier.weight(1f).testTag("history-content"), contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 item {
@@ -125,7 +130,7 @@ fun HistoryScreen(state: HistoryState, query: String, onQuery: (String) -> Unit,
 @Composable
 fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onMoreComments: () -> Unit,
     onRetryComments: () -> Unit, onBack: () -> Unit, onOpenGame: ((UUID) -> Unit)? = null,
-    onOpenPlayer: ((UUID) -> Unit)? = null, commentActions: CommentActions? = null) {
+    onOpenPlayer: ((UUID) -> Unit)? = null, commentActions: CommentActions? = null, onManage: (() -> Unit)? = null) {
     Column(Modifier.fillMaxSize().testTag("play-detail")) {
         ScreenHeader("Dettaglio partita", onBack, onRefresh, state.loading || state.commentSaving)
         when {
@@ -144,6 +149,9 @@ fun DetailScreen(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onM
                             Text(detail.game?.name ?: "Gioco non disponibile", modifier = Modifier.weight(1f), style = MaterialTheme.typography.headlineMedium)
                         }
                         Text(playDateFormat.format(detail.play.played_at), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        onManage?.let { manage ->
+                            OutlinedButton(onClick = manage, enabled = !state.commentSaving, modifier = Modifier.testTag("manage-play")) { Text("Gestisci partita") }
+                        }
                         detail.play.game_id?.let { gameId ->
                             if (onOpenGame != null) OutlinedButton(onClick = { onOpenGame(gameId) },
                                 modifier = Modifier.testTag("open-game")) { Text("Apri gioco") }

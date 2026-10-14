@@ -38,6 +38,30 @@ class AuthenticatedResourcesTest {
         assertSame(next, resources.acquire(UUID(0, 2), null, null, null))
         resources.release(next); assertEquals(1, newRepo.closed)
     }
+    @Test fun `confirmed play changes survive recreation but stop with the session`() {
+        val resources = AuthenticatedResources()
+        val session = resources.acquire(account, { FakePlays() }, null, null)
+        session.playSaved()
+        assertEquals(1, resources.acquire(account, null, null, null).playDataRevision.value)
+        resources.release(session)
+        session.playSaved()
+        val fresh = resources.acquire(account, { FakePlays() }, null, null)
+        assertEquals(1, session.playDataRevision.value)
+        assertEquals(0, fresh.playDataRevision.value)
+        resources.release(fresh)
+    }
+    @Test fun `role or capability loss closes old models before reusing the same account`() {
+        val resources = AuthenticatedResources()
+        val old = resources.acquire(account, { FakePlays() }, null, null, isAdmin = true, editorAvailable = true)
+        val model = ViewModelProvider(old, modelFactory { ProbeModel() })[ProbeModel::class.java]
+        val revoked = resources.acquire(account, { FakePlays() }, null, null, isAdmin = false, editorAvailable = true)
+        assertNotSame(old, revoked); assertEquals(1, model.cleared)
+        resources.release(old)
+        assertSame(revoked, resources.acquire(account, null, null, null, isAdmin = false, editorAvailable = true))
+        val unavailable = resources.acquire(account, null, null, null, isAdmin = false, editorAvailable = false)
+        assertNotSame(revoked, unavailable)
+        resources.release(unavailable)
+    }
     private class ProbeModel : ViewModel() {
         var cleared = 0
         override fun onCleared() { cleared++ }

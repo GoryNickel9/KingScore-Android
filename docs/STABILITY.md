@@ -6,7 +6,7 @@ La stabile mantiene il perimetro concordato: login e Internet obbligatori, consu
 
 | Requisito | Stato | Verifica necessaria per chiuderlo |
 | --- | --- | --- |
-| Consultazione, login e blocco rete | Implementati, con test JVM e Android | Collaudo finale e accessibilità su emulatore; copertura di più versioni Android sul PC |
+| Consultazione, login e blocco rete | Implementati; suite complete su API 31 e 35, ricreazione e rotazione verificate con fixture | Collaudare la build di rilascio e la distribuzione firmata |
 | Commenti propri | Implementati, con registro cifrato degli esiti incerti iniettato nell'Application | Collaudo finale; rilettura completa e conferma manuale prima di nuove scritture, nessuna promessa di idempotenza server |
 | Contratti e salvataggi atomici | Candidata locale con 21 casi superati | API reali e writer web/server coerenti, oggi indisponibili |
 | Client RPC Android | Preparato, disabilitato per default | Integrazione nell'editor dopo le condizioni backend |
@@ -38,6 +38,8 @@ Il registro `AccountPlayJournals`, il [controller con fixture](PLAY_EDITOR_STATE
 
 ## Lavoro restante
 
-La stima operativa per il lavoro indipendente Android è 4–8 ore: collaudo finale su più versioni emulate, rete/sessione e ricreazione dell'Activity; firma privata, installazione e aggiornamento dell'APK; documentazione di rilascio. È una stima soggetta ai difetti trovati durante il collaudo.
+La stima operativa per il lavoro indipendente Android restante è 3–6 ore: firma privata, collaudo della build di rilascio, installazione e aggiornamento dell'APK, documentazione di rilascio. È una stima soggetta ai difetti trovati durante il collaudo.
 
 Questa stima non include l'attivazione delle API atomiche reali. La versione completa con gestione partite admin richiede prima una decisione sul backend, escluso dal perimetro attuale. Finché queste API mancano, l'editor resta disabilitato e la stabile completa non è dichiarata raggiunta.
+
+La [gestione della ricreazione](ACTIVITY_LIFECYCLE.md) conserva ora repository, ViewModel figli e bozze dei commenti attraverso le modifiche di configurazione. Le verifiche di accesso e le transizioni a Checking, blocco, logout o altro account continuano a rimuovere lo stato della sessione precedente. Le prove native eseguono la navigazione di produzione in un host debug con account sintetici; non certificano GoTrue remoto o MainActivity con credenziali reali.

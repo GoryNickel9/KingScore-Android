@@ -314,3 +314,19 @@ L'Application inietta il registro cifrato dei commenti. Il client salva gli UUID
 La prima suite completa ha eseguito 70 test con un errore: checkingDuringDispatchReconcilesAllPagesWhenTheSameAccountReturns conservava la vecchia aspettativa di sblocco automatico. Il controllo aggiornato verifica il blocco e la conferma manuale; la successiva suite completa supera tutti i 70 casi. Durata: 160,848 secondi, non un benchmark. Il runner verifica anche il recupero commenti in un nuovo processo e ripristina le impostazioni dell'emulatore. La schermata di verifica è stata acquisita e controllata visivamente.
 
 Le prove di storage, HTTP simulato e UI rimangono separate; non certificano una mutazione remota completa dopo morte del processo. Il registro non conserva receipt confermate e il backend esistente non garantisce exactly-once. Nessuna modifica fuori repo, richiesta Supabase remota o firma di rilascio. L'editor partite reale resta disabilitato. La CI GitHub non è stata avviata, secondo le ultime istruzioni dell'utente; il commit usa `[skip ci]`. Risultati e hash: [comment-recovery-validation.json](evidence/comment-recovery-validation.json).
+
+## Ricreazione e rotazione della navigazione, 14 ottobre 2026
+
+| Controllo | Esito | Ambito |
+| --- | --- | --- |
+| JVM | 221 test superati, zero errori | Cinque nuovi casi per risorse conservate, rilascio e revalidazione dell'accesso |
+| Android 12, API 31 | 74 test superati | Suite completa, quattro nuovi casi con ricreazione effettiva dell'Activity |
+| Android 15, API 35 | 74 test superati | Stesso APK e suite completa su display 320×640 px, densità 160 dpi |
+| Recupero dopo arresto forzato | Superato su entrambe le versioni | Partite e commenti letti da processi diversi; impostazioni ripristinate |
+| Node, lint e build | 39 controlli superati; zero errori lint, 16 warning preesistenti | APK debug e test compilati |
+
+La prova nativa esegue AppContent e la navigazione di produzione in un host del source set debug, non esportato. ActivityScenario.recreate e la rotazione portrait → landscape devono produrre un'altra istanza dell'Activity. I test conservano bozza, dettaglio e pagine senza un nuovo repository o caricamento; un invio in corso rimane singolo. Blocco rete, cambio account, logout e Checking continuano a chiudere il writer e scartare le bozze precedenti. Il test ripristina portrait prima di chiudere l'host.
+
+Il primo run completo API 31 esegue 74 test con un errore No compose hierarchies nel dialogo di cancellazione, CommentsUiTest.kt:113; i quattro nuovi casi di ricreazione passano. Dopo la correzione della pulizia dell'orientamento, il run completo API 31 passa in 188,586 secondi. La causa del primo errore non è stata dimostrata in modo conclusivo. API 35 passa in 316,468 secondi. Sono tempi di collaudo, non benchmark.
+
+Le probe di recupero scrivono/leggono nei PID 8281/8325 su API 31 e 7601/7680 su API 35. Non verificano un invio remoto completo dopo morte del processo. MainActivity viene compilata e analizzata dal lint; la revalidazione del suo AppViewModel è testata separatamente con Auth sintetica. Nessuna credenziale reale, richiesta al backend remoto, firma di rilascio o modifica fuori repo. CI sospesa; editor admin disabilitato. Dettagli: [ACTIVITY_LIFECYCLE.md](ACTIVITY_LIFECYCLE.md); risultati e hash: [activity-recreation-validation.json](evidence/activity-recreation-validation.json).

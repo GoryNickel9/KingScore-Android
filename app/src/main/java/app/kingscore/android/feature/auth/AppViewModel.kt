@@ -57,9 +57,9 @@ class AppViewModel(
         }
     }
 
-    fun onForeground() {
+    fun onForeground(hideContent: Boolean = true) {
         // Returning from a password manager must keep the login form mounted.
-        if (state.value !is AccessState.SignedOut) recheck()
+        if (state.value !is AccessState.SignedOut) recheck(hideContent)
     }
 
     fun verifyActiveSession() {

@@ -104,6 +104,26 @@ class AppViewModelTest {
         assertEquals(AccessState.Blocked(AuthProblem.BACKEND_UNAVAILABLE), model.access.value)
     }
 
+    @Test fun `recreated Activity revalidates the retained account without discarding navigation`() = runTest(dispatcher) {
+        repository.account = account()
+        val model = AppViewModel(repository, network); advanceUntilIdle()
+        val pending = CompletableDeferred<Account?>(); repository.restoreWait = pending
+        model.onForeground(hideContent = false); runCurrent()
+        assertEquals(2, repository.restores)
+        assertTrue(model.access.value is AccessState.Connected)
+        pending.complete(null); advanceUntilIdle()
+        assertEquals(AccessState.SignedOut(), model.access.value)
+    }
+
+    @Test fun `network loss during recreation verification hides retained content immediately`() = runTest(dispatcher) {
+        repository.account = account()
+        val model = AppViewModel(repository, network); advanceUntilIdle()
+        repository.restoreWait = CompletableDeferred()
+        model.onForeground(hideContent = false); runCurrent()
+        network.connected.value = false; runCurrent()
+        assertEquals(AccessState.Blocked(AuthProblem.NETWORK_UNAVAILABLE), model.access.value)
+    }
+
     @Test fun `periodic verification keeps navigation mounted until rejection`() = runTest(dispatcher) {
         repository.account = account()
         val model = AppViewModel(repository, network)

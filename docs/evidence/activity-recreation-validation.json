@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "scope": "activity-recreation-retained-authenticated-navigation",
+  "status": "PASS",
+  "baseCommit": "eaf4c7287d2727fd9ef0e324298842983714ed97",
+  "versionName": "0.4.0",
+  "remoteDatabaseContacted": false,
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "androidEditorEnabled": false,
+  "jvm": {
+    "failures": 0,
+    "tests": 221,
+    "errors": 0,
+    "newTests": 5
+  },
+  "node": {
+    "log": ".work/activity-recreation-node.log",
+    "failures": 0,
+    "tests": 39
+  },
+  "lint": {
+    "warnings": 16,
+    "errors": 0
+  },
+  "build": {
+    "mainElapsed": "2m 26s",
+    "mainLog": ".work/activity-recreation-build.log",
+    "finalTestElapsed": "2m 9s",
+    "status": "PASS",
+    "finalTestLog": ".work/activity-recreation-cleanup-build.log"
+  },
+  "android": [
+    {
+      "commentRecoveryVerified": true,
+      "writeProcess": 8281,
+      "settingsRestored": true,
+      "report": ".work/pending-recovery/ddd1c967c3fe4317b2ad26e14807a39d/report.json",
+      "elapsedSeconds": 188.586,
+      "status": "PASS",
+      "serial": "emulator-5582",
+      "api": 31,
+      "forceStopVerified": true,
+      "newTests": 4,
+      "tests": 74,
+      "readProcess": 8325
+    },
+    {
+      "commentRecoveryVerified": true,
+      "writeProcess": 7601,
+      "settingsRestored": true,
+      "report": ".work/pending-recovery/075857d89d1b406d9e22b457d0ff51db/report.json",
+      "elapsedSeconds": 316.468,
+      "status": "PASS",
+      "serial": "emulator-5586",
+      "api": 35,
+      "forceStopVerified": true,
+      "newTests": 4,
+      "tests": 74,
+      "readProcess": 7680
+    }
+  ],
+  "apkSha256": "688085956a694819358e5251e3992a060f17162a436a3856f115cde89d6d8277",
+  "testApkSha256": "20c2ba742c9ab85a43decf4d1daf0f1d1a2e6850792d843800f0557f79dde010",
+  "normalizedUtf8LfSha256": {
+    "app/src/main/java/app/kingscore/android/MainActivity.kt": "ea421209cf3ba2313898d4300bc794c57b701f9b8b59316074518a6077b50f94",
+    "app/src/main/java/app/kingscore/android/feature/auth/AppViewModel.kt": "80353a9c76a345ce8eb878806f7f5484d91ea63fcf94fc134fa1dfdf1a43726e",
+    "app/src/main/java/app/kingscore/android/feature/navigation/AuthenticatedNavigation.kt": "c840523aae9a9034052f49a36fd3688a7742572aef8e15595c9af91af9089f03",
+    "app/src/test/java/app/kingscore/android/feature/auth/AppViewModelTest.kt": "ff8eb1cef55f3d40d219145fe9660b577237374d650308ae4573b683ade5a709",
+    "app/src/androidTest/java/app/kingscore/android/ui/ActivityRecreationTest.kt": "4b6d065bec10e62156b39cc56e16038b2b3a935513175b27bef1d297bd1076ab",
+    "app/src/debug/AndroidManifest.xml": "e52915d224bd286dda1dfff3d2d4c300c50483cc3e1427f4564d2cbb528cfbe7",
+    "app/src/debug/java/app/kingscore/android/DebugRecreationActivity.kt": "c06a135cd558cefa03a5448fb216faa1a022e948e046354d7cabc3146b3992c5",
+    "app/src/main/java/app/kingscore/android/feature/navigation/AuthenticatedResources.kt": "92808acf02a39f7653c6f2586d2023f0e49c43765ea97f5385ee442588729c6a",
+    "app/src/test/java/app/kingscore/android/feature/navigation/AuthenticatedResourcesTest.kt": "fa868eabefb8418425926bb53a6d4f0cfa7326b364dad877499931130eed28fd"
+  },
+  "githubCi": {
+    "executed": false,
+    "reason": "Suspended by latest user instructions; commit uses [skip ci]"
+  },
+  "priorAttempts": [
+    "First API 31 full run: 74 executed, one No compose hierarchies failure at CommentsUiTest.kt:113 while opening the delete dialog. All four new recreation cases passed. Test-host teardown now restores portrait before closing; complete rerun passed. The failure cause was not established conclusively."
+  ],
+  "limitations": [
+    "Native recreation tests use a debug-only host with production AppContent/navigation and synthetic repositories, not MainActivity with real GoTrue.",
+    "JVM tests verify AppViewModel revalidation separately; MainActivity wiring is compiled and linted.",
+    "Unsaved comment drafts remain in memory and are discarded on process death or access removal; uncertain-write IDs persist in the encrypted store.",
+    "No release signing or remote database validation in this checkpoint; production admin editor remains disabled."
+  ]
+}

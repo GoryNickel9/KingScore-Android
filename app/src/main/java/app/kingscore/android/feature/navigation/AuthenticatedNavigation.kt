@@ -2,6 +2,9 @@ package app.kingscore.android.feature.navigation
 
 import android.content.Intent
 import android.content.ActivityNotFoundException
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,9 +57,9 @@ import app.kingscore.android.feature.players.PlayerRoute
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import java.util.UUID
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
+import app.kingscore.android.ui.modelFactory
 
 private data class Destination(val route: String, val label: String, val icon: ImageVector)
 private val destinations = listOf(
@@ -75,12 +78,16 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
     val entry by navigation.currentBackStackEntryAsState()
     val context = LocalContext.current
     var browserUnavailable by remember { mutableStateOf(false) }
-    val repository = remember(account.id, playsFactory) { playsFactory?.invoke(account.id) }
-    val statistics = remember(account.id, statisticsFactory) { statisticsFactory?.invoke(account.id) }
-    val ratings = remember(account.id, ratingsFactory) { ratingsFactory?.invoke(account.id) }
-    val modelOwner = remember(account.id) { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
-    DisposableEffect(modelOwner, repository) { onDispose { modelOwner.viewModelStore.clear(); repository?.commentWrites?.close() } }
-    CompositionLocalProvider(LocalViewModelStoreOwner provides modelOwner) {
+    val resourcesModel: AuthenticatedResources = viewModel(factory = modelFactory { AuthenticatedResources() })
+    val resources = remember(resourcesModel, account.id) { resourcesModel.acquire(account.id, playsFactory, statisticsFactory, ratingsFactory) }
+    val repository = resources.plays
+    val statistics = resources.statistics
+    val ratings = resources.ratings
+    val activity = context.activity()
+    DisposableEffect(resources) { onDispose {
+        if (activity?.isChangingConfigurations != true) resourcesModel.release(resources)
+    } }
+    CompositionLocalProvider(LocalViewModelStoreOwner provides resources) {
         Scaffold(
             bottomBar = {
                 NavigationBar {
@@ -171,4 +178,10 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
             }
         }
     }
+}
+
+private tailrec fun Context.activity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.activity()
+    else -> null
 }

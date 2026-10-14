@@ -46,8 +46,11 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(state) { if (state is AccessState.SignedOut) app.clearCommentOutcomes() }
                     val lifecycle = LocalLifecycleOwner.current.lifecycle
                     LaunchedEffect(model, lifecycle) {
+                        var firstStart = true
                         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                            model.onForeground()
+                            // The retained account is revalidated without discarding drafts on recreation.
+                            model.onForeground(hideContent = !firstStart || savedInstanceState == null)
+                            firstStart = false
                             while (isActive) {
                                 delay(60_000)
                                 model.verifyActiveSession()

@@ -34,6 +34,14 @@ La lettura della conferma persistita mantiene il lock per account fino alla deco
 
 ## Limiti e verifica
 
+`PlayEditorRoute` presenta ora il controller con componenti Material dell'app. Non è una destinazione della navigazione reale. Mostra gioco, modalità, data, durata, note e partecipanti; permette di aggiungere o rimuovere partecipanti e modificare punteggio, vincitore, colore e ruolo. Il catalogo è ricercabile e gli omonimi mostrano un identificativo.
+
+Gli errori compaiono nei campi e in un messaggio riepilogativo. I controlli dei risultati hanno etichette accessibili e area interattiva di almeno 48 dp. L'elenco scorre sopra la tastiera; dialoghi e selettori si chiudono quando l'accesso è bloccato. Il successo chiude il modulo di scrittura e distingue un nuovo salvataggio dal recupero di un'operazione precedente.
+
+La schermata chiede conferma prima di uscire da una bozza modificata. I callback applicano le modifiche alla bozza attuale, senza riutilizzare valori di un frame precedente. Il confronto con il server mostra note, risultati e tutti i partecipanti; accettarlo scarta esplicitamente la bozza locale. I dati storici non modificabili restano leggibili e la cancellazione richiede conferma.
+
+Il chiamante possiede il ViewModel. La sola ricreazione della composizione non chiude il writer; uscita esplicita, distruzione del ViewModel, cambio account o revoca del ruolo devono invece chiuderlo. Il ripristino della composizione nelle fixture non certifica ancora la ricreazione dell'Activity attraverso la navigazione reale.
+
 Le prove JVM usano cataloghi, Auth e writer simulati; il trasporto esistente ha test TCP loopback separati. Il controller non conserva una bozza non inviata dopo morte del processo: il journal riguarda la richiesta già preparata e il suo esito, non una coda offline.
 
-Mancano schermata Compose, factory e integrazione con navigazione/sessione. Rotazione, confronto visivo dei conflitti e percorsi dell'editor dopo arresto del processo richiedono test Android quando questi componenti saranno presenti. L'APK rimane un'anteprima 0.4.0.
+Mancano factory e integrazione con navigazione/sessione. Rotazione dell'Activity e percorsi completi dell'editor dopo arresto del processo richiedono il collaudo dell'integrazione, con store cifrato e writer controllato. Le fixture della schermata non inviano HTTP e non rendono disponibili le RPC reali. L'APK rimane un'anteprima 0.4.0.

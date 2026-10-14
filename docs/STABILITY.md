@@ -6,12 +6,12 @@ La stabile mantiene il perimetro concordato: login e Internet obbligatori, consu
 
 | Requisito | Stato | Verifica necessaria per chiuderlo |
 | --- | --- | --- |
-| Consultazione, login e blocco rete | Implementati, con test JVM e Android | Collaudo finale, accessibilità e dispositivo reale |
+| Consultazione, login e blocco rete | Implementati, con test JVM e Android | Collaudo finale e accessibilità su emulatore; copertura di più versioni Android sul PC |
 | Commenti propri | Implementati | Rafforzare il recupero degli esiti incerti dopo morte del processo; nessuna promessa di idempotenza server |
 | Contratti e salvataggi atomici | Candidata locale con 21 casi superati | API reali e writer web/server coerenti, oggi indisponibili |
 | Client RPC Android | Preparato, disabilitato per default | Integrazione nell'editor dopo le condizioni backend |
 | Recupero salvataggi | Journal cifrato preparato; account verificato prima del recupero | Collegamento al ciclo di vita dell'editor e collaudo dei percorsi completi |
-| Editor partite | Controller e bozza preparati con fixture; schermata da implementare | Integrazione Compose, ciclo di vita, conflitti, rete, logout e rotazione |
+| Editor partite | Controller, bozza e schermata Compose preparati con fixture | Factory, navigazione/sessione, rotazione dell'Activity e recupero completo dopo arresto del processo |
 | APK privato e aggiornamenti | Firma debug attuale | Firma di rilascio, checksum, installazione e aggiornamento verificati |
 
 ## Ordine del lavoro autonomo

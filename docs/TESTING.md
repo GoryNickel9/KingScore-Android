@@ -280,3 +280,21 @@ La suite JVM comprende 200 test, con 25 casi aggiunti: 23 per bozza/controller, 
 I test mantengono leggibili tutti i 64 partecipanti di una fixture storica incompatibile, senza crearne una bozza modificabile. Una richiesta pendente conserva la propria identità anche se il caricamento dei cataloghi fallisce. Lo svuotamento differito della cache non elimina una conferma durante la lettura; il registro conserva lo stesso lock per account.
 
 Node supera 39 controlli; lint riporta zero errori e 16 warning preesistenti. Le build debug e APK di test vengono verificate. Nessun nuovo test Android viene eseguito in questo incremento: non esiste ancora la schermata editor. Nessuna nuova prova SQL o richiesta al backend reale. Descrizione: [PLAY_EDITOR_STATE.md](PLAY_EDITOR_STATE.md); risultati e hash: [editor-viewmodel-validation.json](evidence/editor-viewmodel-validation.json).
+
+## Schermata editor con fixture, 14 ottobre 2026
+
+| Controllo | Esito | Ambito |
+| --- | --- | --- |
+| JVM | 202 test superati | Due nuovi casi per bozza modificata, aggiornamenti rapidi e disponibilità dei controlli |
+| Android API 31 completo | 65 test superati | 48 precedenti e 17 nuovi percorsi dell'editor |
+| Journal dopo arresto forzato | Superato | Scrittura nel PID 7060, lettura nel PID 7106, impostazioni emulatore ripristinate |
+| Node | 39 controlli superati | Contratti ed evidenze salvate |
+| Lint e APK | Zero errori, 16 warning preesistenti; build superate | APK debug e test, senza attivare l'editor reale |
+
+Le prove UI verificano scelta di gioco e partecipanti, modalità online, decimali esatti e negativi, dati nullable, risultati cooperativi, rimozione dei partecipanti e validazione della data. Coprono confronto dei conflitti, recupero della richiesta originale anche per un'altra partita, errori di storage/catalogo, 64 partecipanti storici, conferma della cancellazione e uscita dalla bozza. Account non admin e capacità disabilitata non caricano cataloghi o controlli di scrittura. Perdita rete e chiusura dell'account impediscono il ritorno dei dati e dei successi tardivi.
+
+Il ripristino della composizione mantiene la bozza con lo stesso ViewModel; non equivale ancora alla ricreazione dell'Activity attraverso la navigazione reale. Il caso con font 1,8× verifica che campi e salvataggio restino raggiungibili. Le tre schermate acquisite sono state controllate visivamente e rimangono in `.work/editor-ui/screenshots`.
+
+Il primo lint ha analizzato un file modificato durante l'esecuzione e ha segnalato un'indentazione con numeri di riga non allineati. La build ripetuta a sorgenti fermi passa. La build finale include la tastiera testuale dei punteggi, che consente anche il segno meno; la suite completa usa questi APK. Durata della suite: 266,819 secondi, non un benchmark dell'app.
+
+Nessuna nuova prova SQL, richiesta al backend reale o modifica fuori repo. Il journal dopo arresto forzato viene verificato separatamente dalle fixture UI: non è ancora un collaudo completo RPC/editor/SQL con morte del processo. Fonte dei risultati e hash: [editor-ui-validation.json](evidence/editor-ui-validation.json).

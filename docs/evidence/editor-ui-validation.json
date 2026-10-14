@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "scope": "disabled-play-editor-compose-fixtures",
+  "status": "PASS",
+  "baseCommit": "1ac6ecf33188f83ef6693dff545d1bf04858c635",
+  "remoteDatabaseContacted": false,
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "androidEditorEnabled": false,
+  "encryptedStoreWiredToApplication": false,
+  "versionName": "0.4.0",
+  "jvm": {
+    "failures": 0,
+    "errors": 0,
+    "suites": 22,
+    "newTests": 2,
+    "tests": 202
+  },
+  "node": {
+    "log": ".work/editor-ui-node.log",
+    "failures": 0,
+    "tests": 39
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 16
+  },
+  "build": {
+    "tasks": [
+      ":app:testDebugUnitTest",
+      ":app:lintDebug",
+      ":app:assembleDebug",
+      ":app:assembleDebugAndroidTest"
+    ],
+    "status": "PASS",
+    "localWorkaround": "Ignored TCP Java agent, JBR 21 and dedicated daemon registry",
+    "log": ".work/editor-ui-checkpoint-build.log",
+    "elapsed": "6m 22s"
+  },
+  "android": {
+    "newTests": 17,
+    "readProcess": 7106,
+    "report": ".work/pending-recovery/6c5ac40bccdf49728c20238df2ded58e/report.json",
+    "elapsedSeconds": 266.819,
+    "forceStopVerified": true,
+    "status": "PASS",
+    "settingsRestored": true,
+    "tests": 65,
+    "api": 31,
+    "writeProcess": 7060,
+    "serial": "emulator-5582"
+  },
+  "apkSha256": "b9277de5bf9e0eb14983c8182a47d7ffb43a0c751b4cff03e07914042cf68e72",
+  "testApkSha256": "6c948509de9822312dc07bde7a8c646c5ac2969ee75fc9bca7281fd2716bbcd5",
+  "normalizedUtf8LfSha256": {
+    "app/src/main/java/app/kingscore/android/feature/playeditor/PlayEditorScreen.kt": "7cba326a5e7bcde0e1da22e7dae57cf7a92121d8a5a822541c4324d439925306",
+    "app/src/main/java/app/kingscore/android/feature/playeditor/PlayEditorViewModel.kt": "15df0c00d84ba0ddc4f0dc77825e6239623486c745941b110d1f56736ea0eac3",
+    "app/src/test/java/app/kingscore/android/feature/playeditor/PlayEditorViewModelTest.kt": "16be1449f182dc41840cdd33175ad1a9c7406fc0764e1d0b9f07b65e6421462d",
+    "app/src/androidTest/java/app/kingscore/android/ui/PlayEditorUiTest.kt": "942e49ec5bff38d881894bf9dc9f12abe09470bd953f985320dc8c3590e6ea24"
+  },
+  "screenshotSha256": {
+    ".work/editor-ui/screenshots/editor-create.png": "01a9216f517a994d2bbc8f7747177fba5376475ece1e27fa1c0ade022babdb21",
+    ".work/editor-ui/screenshots/editor-conflict.png": "146e32bce7acbf7e659d3945092b075141540fe1d9fce481261a155fc5f91f6c",
+    ".work/editor-ui/screenshots/editor-large-font.png": "d4b174900715b47f879b530ea179be13f7858d64d0af9e7b2fc9bd181d62d322"
+  },
+  "priorAttempts": [
+    "First lint ran while the source was being edited and reported stale line offsets; frozen-source rebuild passed.",
+    "Selected editor suite passed 17 tests before the final keyboard change; complete 65-test suite covers the final APKs."
+  ],
+  "limitations": [
+    "Production editor, factory and navigation remain disabled; atomic RPCs are unavailable.",
+    "Composition restoration with the same ViewModel does not certify Activity recreation in production navigation.",
+    "Process probe verifies encrypted storage separately from UI fixtures; no complete editor/RPC/SQL process-death integration.",
+    "No remote Auth, remote database, physical-device or release-signing validation in this increment."
+  ]
+}

@@ -21,10 +21,17 @@ data class PlayEditorState(
     val snapshot: PlayEditorResult? = null, val options: HistoryOptions = HistoryOptions(),
     val readProblem: DataProblem? = null, val writeProblem: PlayWriteProblem? = null,
     val pending: PendingPlayRequest? = null, val recovered: PlayWriteResult? = null,
-    val result: PlayWriteResult? = null, val conflict: Boolean = false,
+    val result: PlayWriteResult? = null, val resultFromRecovery: Boolean = false, val conflict: Boolean = false,
     val latest: PlayEditorResult? = null, val confirmingDelete: Boolean = false,
-    val accessBlocked: Boolean = false,
-)
+    val accessBlocked: Boolean = false, val dirty: Boolean = false,
+) {
+    val busy: Boolean get() = loading || saving
+    val canMutate: Boolean get() = !busy && !accessBlocked && result == null && pending == null && !conflict &&
+        writeProblem !in setOf(PlayWriteProblem.STORAGE, PlayWriteProblem.UNCERTAIN, PlayWriteProblem.FORBIDDEN,
+            PlayWriteProblem.UNAVAILABLE, PlayWriteProblem.CLOSED, PlayWriteProblem.INVALID_RESPONSE)
+    val canEdit: Boolean get() = draft != null && canMutate
+    val canDelete: Boolean get() = snapshot != null && canMutate
+}
 
 /** Fixture-ready state machine only. Production navigation and write capability remain disabled. */
 class PlayEditorViewModel(
@@ -38,6 +45,7 @@ class PlayEditorViewModel(
     private var job: Job? = null
     private var generation = 0
     private var disposed = false
+    private var originalDraft: PlayDraft? = null
 
     private val networkJob = viewModelScope.launch {
         network.connected.collect { online ->
@@ -62,6 +70,7 @@ class PlayEditorViewModel(
                 val snapshot = playId?.let { writer.editor(it) }
                 val draft = snapshot?.let(PlayDraft::from) ?: if (playId == null) PlayDraft(playedAt = today().toString()) else null
                 if (!current(stamp)) return@launch
+                originalDraft = draft
                 state.value = PlayEditorState(draft = draft, snapshot = snapshot, options = options,
                     pending = pending, recovered = recovered)
             } catch (cancelled: CancellationException) { throw cancelled }
@@ -76,8 +85,13 @@ class PlayEditorViewModel(
 
     fun change(draft: PlayDraft) {
         if (!access() || !editable()) return
-        state.value = state.value.copy(draft = draft.copy(scores = draft.scores.toList()),
+        val copy = draft.copy(scores = draft.scores.toList())
+        state.value = state.value.copy(draft = copy, dirty = copy != originalDraft,
             writeProblem = null, confirmingDelete = false)
+    }
+    fun edit(transform: (PlayDraft) -> PlayDraft) {
+        if (!access() || !editable()) return
+        change(transform(checkNotNull(state.value.draft)))
     }
     fun save() {
         if (!access() || !editable()) return
@@ -132,8 +146,10 @@ class PlayEditorViewModel(
         if (!idle() || !access() || !state.value.conflict || state.value.pending != null) return
         val latest = state.value.latest ?: return
         try {
-            state.value = state.value.copy(snapshot = latest, draft = PlayDraft.from(latest), latest = null,
-                conflict = false, writeProblem = null, confirmingDelete = false)
+            val draft = PlayDraft.from(latest)
+            originalDraft = draft
+            state.value = state.value.copy(snapshot = latest, draft = draft, latest = null,
+                conflict = false, writeProblem = null, confirmingDelete = false, dirty = false)
         } catch (_: IllegalArgumentException) { state.value = state.value.copy(writeProblem = PlayWriteProblem.INVALID_RESPONSE) }
     }
 
@@ -145,7 +161,7 @@ class PlayEditorViewModel(
             try {
                 val result = action(checkNotNull(writes))
                 if (current(stamp)) state.value = state.value.copy(saving = false,
-                    result = result,
+                    result = result, resultFromRecovery = recovering,
                     recovered = if (recovering) result else state.value.recovered, pending = null)
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: AuthFailure) { reject(failure.problem, stamp) }
@@ -156,10 +172,8 @@ class PlayEditorViewModel(
         }
     }
     private fun idle() = !disposed && !state.value.loading && !state.value.saving && !state.value.accessBlocked && state.value.result == null
-    private fun editable() = state.value.draft != null && writable()
-    private fun writable() = idle() && state.value.pending == null && !state.value.conflict &&
-        state.value.writeProblem !in setOf(PlayWriteProblem.STORAGE, PlayWriteProblem.UNCERTAIN,
-            PlayWriteProblem.FORBIDDEN, PlayWriteProblem.UNAVAILABLE, PlayWriteProblem.CLOSED, PlayWriteProblem.INVALID_RESPONSE)
+    private fun editable() = !disposed && state.value.canEdit
+    private fun writable() = !disposed && state.value.canMutate
     private fun access(): Boolean {
         if (disposed || state.value.accessBlocked) return false
         if (!enabled || writes == null) { state.value = state.value.copy(writeProblem = PlayWriteProblem.UNAVAILABLE); return false }
@@ -175,11 +189,13 @@ class PlayEditorViewModel(
     private fun reject(problem: AuthProblem, stamp: Int) {
         if (disposed || stamp != generation) return
         generation++; job?.cancel()
+        originalDraft = null
         state.value = PlayEditorState(accessBlocked = true)
         onAccessFailure(problem)
     }
     fun clearMemory() {
         disposed = true; generation++; job?.cancel(); networkJob.cancel(); writes?.close()
+        originalDraft = null
         state.value = PlayEditorState(accessBlocked = true)
     }
     override fun onCleared() { clearMemory() }

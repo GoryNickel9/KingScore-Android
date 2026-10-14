@@ -175,6 +175,7 @@ class PlayEditorViewModelTest {
         writer.retry = { PlayWriteResult.Saved(PlayMutationResult(f.play, "v1:new", true)) }
         vm.recover(f.request); vm.recover(f.request); advanceUntilIdle()
         assertEquals(listOf("retry"), writer.commands.drop(1)); assertNotNull(vm.editor.value.recovered)
+        assertTrue(vm.editor.value.resultFromRecovery)
         vm.save(); assertEquals(2, writer.commands.size)
     }
     @Test fun `another play pending blocks create and is never automatically sent`() = runTest(dispatcher) {
@@ -193,6 +194,7 @@ class PlayEditorViewModelTest {
         writer.completed = PlayWriteResult.Saved(PlayMutationResult(f.play, "v1:new", false), restored = true)
         val vm = loaded(); assertEquals(writer.completed, vm.editor.value.recovered)
         assertNull(vm.editor.value.result); assertTrue(writer.commands.isEmpty())
+        assertFalse(vm.editor.value.resultFromRecovery)
     }
     @Test fun `storage failure prevents delete and new writes`() = runTest(dispatcher) {
         val vm = loaded(f.play); writer.send = { throw PlayWriteFailure(PlayWriteProblem.STORAGE) }
@@ -239,5 +241,24 @@ class PlayEditorViewModelTest {
         vm.readConflict(); advanceUntilIdle(); vm.useLatest(); vm.save()
         assertEquals(draft, vm.editor.value.draft); assertEquals("v1:opaque", vm.editor.value.snapshot?.revision)
         assertTrue(vm.editor.value.conflict); assertEquals(1, writer.commands.size)
+    }
+    @Test fun `dirty flag follows original draft and rapid edits read current state`() = runTest(dispatcher) {
+        val vm = loaded(f.play); val original = vm.editor.value.draft!!
+        assertFalse(vm.editor.value.dirty)
+        vm.edit { it.copy(notes = "new") }
+        vm.edit { it.copy(duration = "50") }
+        assertEquals("new", vm.editor.value.draft?.notes); assertEquals("50", vm.editor.value.draft?.duration)
+        assertTrue(vm.editor.value.dirty)
+        vm.change(original); assertFalse(vm.editor.value.dirty)
+    }
+    @Test fun `state capabilities block edits and deletion for uncertainty and forbidden`() {
+        val loaded = PlayEditorState(draft = valid(), snapshot = snapshot())
+        assertTrue(loaded.canEdit); assertTrue(loaded.canDelete)
+        for (problem in listOf(PlayWriteProblem.STORAGE, PlayWriteProblem.UNCERTAIN, PlayWriteProblem.FORBIDDEN,
+            PlayWriteProblem.UNAVAILABLE, PlayWriteProblem.CLOSED, PlayWriteProblem.INVALID_RESPONSE)) {
+            assertFalse(loaded.copy(writeProblem = problem).canEdit); assertFalse(loaded.copy(writeProblem = problem).canDelete)
+        }
+        assertFalse(loaded.copy(saving = true).canDelete); assertFalse(loaded.copy(conflict = true).canEdit)
+        assertFalse(loaded.copy(accessBlocked = true).canEdit)
     }
 }

@@ -23,7 +23,7 @@ Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Sco
 | [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Contratti V1 e candidata locale dei salvataggi, senza deploy |
 | [docs/WRITER_INTEGRATION.md](docs/WRITER_INTEGRATION.md) | Piano dei writer web/server, test locali e dipendenze dell'editor Android |
 | [docs/PHASE4_ANDROID_RPC_CLIENT.md](docs/PHASE4_ANDROID_RPC_CLIENT.md) | Client RPC preparato e testato localmente, disabilitato per default |
-| [docs/PLAY_EDITOR_STATE.md](docs/PLAY_EDITOR_STATE.md) | Controller editor con fixture, bozze, conflitti e recupero; percorsi reali disabilitati |
+| [docs/PLAY_EDITOR_STATE.md](docs/PLAY_EDITOR_STATE.md) | Controller e schermata editor con fixture, bozze, conflitti e recupero; percorsi reali disabilitati |
 | [local-tests/README.md](local-tests/README.md) | PostgreSQL e HTTP sul PC, difetti riprodotti e 21 casi atomici |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Moduli e flusso dati Android |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Decisioni tecniche e vincoli |

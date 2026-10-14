@@ -47,4 +47,4 @@ Risultati della suite completa, lint, APK e hash: [android-rpc-client-validation
 
 ## Prossima attività
 
-Il [controller editor](PLAY_EDITOR_STATE.md) prepara ora bozze, conflitti, conferma della cancellazione e recupero con fixture. La prossima attività è la schermata Compose e il suo ciclo di vita; navigazione e scritture reali restano disabilitate.
+Il [controller e la schermata editor](PLAY_EDITOR_STATE.md) preparano ora bozze, conflitti, conferma della cancellazione e recupero con fixture. Factory, navigazione reale e ciclo di vita completo restano da integrare; le scritture reali sono disabilitate.

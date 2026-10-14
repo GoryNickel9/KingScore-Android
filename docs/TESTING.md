@@ -371,3 +371,9 @@ Il primo protocollo di avvio release fallisce nella connessione UiAutomation. Il
 La RC3 non ha un nuovo collaudo completo di aggiornamento API 35: quello della RC2 rimane evidenza separata. I tempi dello storico includono instrumentation e fixture preallocate, senza HTTP, JSON o immagini; il renderer software non consente una promessa di 60 fps. Limiti e protocollo: [FINAL_PC_QA.md](FINAL_PC_QA.md) e [BENCHMARKS.md](BENCHMARKS.md). Risultati e hash: [final-pc-qa-validation.json](evidence/final-pc-qa-validation.json).
 
 CI sospesa, editor admin disabilitato, nessun account o database remoto usato per i test. Questa evidenza chiude il checkpoint locale della candidata; non dichiara completati i requisiti esterni della stabile.
+
+## Riattivazione CI, 14 ottobre 2026
+
+Su autorizzazione esplicita dell'utente, Android CI è stato riattivato. Il run [38624823497](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38624823497), sul commit abaf16c17f25ec70f000488ceeb126ea79ba976c, termina con successo: 39 controlli Node, 225 test JVM debug senza failure o ignored, lint e APK debug. Il report lint contiene 25 warning e nessun errore: target SDK, aggiornamenti plugin/dipendenze e quattro UseKtx. La build termina in due minuti; è tempo di build, non un benchmark dell'app.
+
+I report e l'APK CI sono stati scaricati in `.work/ci-resume/38624823497` e controllati. La CI non esegue i 21 casi PostgreSQL/PostgREST, i test Android nativi o la firma privata: queste restano prove locali separate. Nessun deploy, test su Supabase remoto o chiave privata inviata a GitHub. La CI sospesa nei report RC3 precedenti è uno stato storico, non la configurazione attuale. Metadati: [ci-resume-validation.json](evidence/ci-resume-validation.json).

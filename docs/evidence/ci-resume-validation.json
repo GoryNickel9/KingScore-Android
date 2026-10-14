@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "status": "PASS",
+  "stable": false,
+  "authorization": "User explicitly resumed Android CI on 2026-10-14",
+  "run": {
+    "conclusion": "success",
+    "createdAt": "2026-10-14T19:34:30Z",
+    "databaseId": 38624823497,
+    "headSha": "abaf16c17f25ec70f000488ceeb126ea79ba976c",
+    "jobs": [
+      {
+        "completedAt": "2026-10-14T19:37:37Z",
+        "conclusion": "success",
+        "databaseId": 116061192328,
+        "name": "verify",
+        "startedAt": "2026-10-14T19:34:33Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-14T19:34:38Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-14T19:34:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:34:40Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-14T19:34:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:34:40Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-java@v4",
+            "number": 3,
+            "startedAt": "2026-10-14T19:34:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:34:49Z",
+            "conclusion": "success",
+            "name": "Run gradle/actions/setup-gradle@v4",
+            "number": 4,
+            "startedAt": "2026-10-14T19:34:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:34:59Z",
+            "conclusion": "success",
+            "name": "Run android-actions/setup-android@v3",
+            "number": 5,
+            "startedAt": "2026-10-14T19:34:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:34:59Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "number": 6,
+            "startedAt": "2026-10-14T19:34:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:35:00Z",
+            "conclusion": "success",
+            "name": "Validate recorded contracts",
+            "number": 7,
+            "startedAt": "2026-10-14T19:34:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:37:01Z",
+            "conclusion": "success",
+            "name": "Build, unit tests and lint",
+            "number": 8,
+            "startedAt": "2026-10-14T19:35:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:37:03Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@v4",
+            "number": 9,
+            "startedAt": "2026-10-14T19:37:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:37:03Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v4",
+            "number": 15,
+            "startedAt": "2026-10-14T19:37:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:37:34Z",
+            "conclusion": "success",
+            "name": "Post Run gradle/actions/setup-gradle@v4",
+            "number": 16,
+            "startedAt": "2026-10-14T19:37:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:37:34Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-java@v4",
+            "number": 17,
+            "startedAt": "2026-10-14T19:37:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:37:34Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 18,
+            "startedAt": "2026-10-14T19:37:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:37:34Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "startedAt": "2026-10-14T19:37:34Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38624823497/job/116061192328"
+      }
+    ],
+    "status": "completed",
+    "updatedAt": "2026-10-14T19:37:38Z",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38624823497"
+  },
+  "node": {
+    "failures": 0,
+    "tests": 39
+  },
+  "jvm": {
+    "tests": 225,
+    "ignored": 0,
+    "failures": 0
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 25
+  },
+  "artifact": {
+    "releaseSigned": false,
+    "unitReportSha256": "ca62233d8b4ea718f736154b7bae69a97c62d5bebf8469b47d75da36d7330030",
+    "name": "android-debug",
+    "apkSha256": "b4cb21d5c68bd92954b841a80b937aaec60f3fe0faea4fdb77e03024a848ba0e"
+  },
+  "localNativeTestsRerun": false,
+  "remoteDatabaseContacted": false,
+  "deploymentPerformed": false,
+  "privateSigningKeyUploaded": false,
+  "androidEditorEnabled": false
+}

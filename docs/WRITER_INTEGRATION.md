@@ -8,7 +8,24 @@ La candidata locale implementa cinque RPC, transazioni, ricevute e revisioni per
 
 La candidata Android attuale è 0.5.0-rc3, versionCode 11: APK firmato, login e Internet obbligatori, consultazione e commenti propri. Adattatori RPC, editability, journal cifrato, controller e schermata editor sono preparati e verificati con fixture; mancano factory e collegamento alla navigazione/sessione. L'editor reale resta disabilitato e le RPC risultano indisponibili secondo AGENTS.md; non sono state interrogate nuovamente nel cloud. Il collaudo della consultazione e dei commenti non certifica il percorso completo dell'editor admin: [STABILITY.md](STABILITY.md), [PLAY_EDITOR_STATE.md](PLAY_EDITOR_STATE.md), [final-pc-qa-validation.json](evidence/final-pc-qa-validation.json).
 
-La mappa web deriva dai documenti storici [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRITERS.md) e [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md), relativi a modifiche annullate. In questa attività non è stato riletto il repository King-Score né interrogato il cloud. I nomi AddPlay, EditPlay e PlayDetail identificano percorsi da verificare, non una lista aggiornata e completa di file. Il catalogo SQL salvato non contiene l'implementazione dei job applicativi né una verifica aggiornata dei cron.
+Il 14 ottobre 2026 il codice di King-Score è stato consultato in sola lettura, sul commit `a5e5dd6`, per la discussione scelta dall'utente. Nessun file del sito è stato modificato. Non sono stati interrogati Vercel o Supabase. La mappa seguente riguarda i percorsi individuati nei sorgenti; non certifica lo schema distribuito, i cron attivi o writer esterni. I documenti storici [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRITERS.md) e [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md) restano relativi a modifiche annullate.
+
+### Riscontri nel codice del sito
+
+| Percorso letto | Comportamento osservato | Cambiamento da discutere |
+| --- | --- | --- |
+| `src/pages/AddPlay.tsx:355`, `:405` | Inserisce prima plays, poi play_scores con un'altra richiesta | Una sola create RPC per partita e risultati |
+| `src/pages/EditPlay.tsx:191`, `:248` | Aggiorna plays, poi chiama replace_play_scores; la validazione degli score avviene dopo il parent update | Validazione prima dell'invio; update unico con revisione e metadati preservati |
+| `src/pages/PlayDetail.tsx:117` | Delete diretta di plays, poi ricalcolo separato | Delete con snapshot/revisione e invalidazione dei risultati derivati |
+| `src/services/bgaImport.ts:171`, `:196`, `:209` | Crea il parent prima degli score; un giocatore non creato viene saltato | Risolvere tutti i partecipanti prima della RPC; deduplica per actor/table |
+| `src/pages/Games.tsx:220`, `:235` | Cancella partite del gioco, poi il gioco, in richieste separate | Operazione di catalogo controllata; non chiudere il DML plays lasciando questo consumer legacy |
+| `src/pages/Players.tsx:191`, `src/pages/Admin.tsx:376` | Cancellano players; il SQL della repo dichiara cascade su play_scores | Verificare cascade, revisioni e invalidazione; schema reale ancora da confermare |
+| `src/utils/elo/recalc.ts:146`, `:169`, `:182`, `:192`, `:228` | Cancella/reinserisce rating e storico e aggiorna rating generali in batch separati | Pubblicazione coerente su input ancora valido, comprese nuove partite/eliminazioni |
+| `supabase/functions/nightly-elo-recalc/index.ts:20` | Importa la stessa performFullRecalc del frontend | Adeguare insieme i consumer browser e server; non aggiungere ricalcolo Android |
+
+Nel percorso ELO ispezionato non è stata individuata una scrittura delle posizioni in play_scores: la candidata locale apply_positions è un adattatore sintetico, non una prova di un writer attivo del sito. L'inventario deve coprire anche la chiusura dei vecchi percorsi di cancellazione cataloghi; il contratto partita V1 da solo non definisce queste operazioni.
+
+Le route di creazione/modifica usano ProtectedRoute requireAdmin e il componente verifica app_metadata.role. EditPlay filtra inoltre user_id uguale all'account corrente, e il SQL di replace_play_scores controlla ownership. Prima del passaggio alle RPC va confermata la matrice admin/proprietario: la candidata locale consente l'admin globale, ma questo non dimostra che tutti i percorsi attuali del sito lo consentano. Nessuna modifica implicita dei permessi durante la migrazione.
 
 ## Ordine delle attività
 

@@ -10,7 +10,7 @@ if ($Serial -notmatch '^emulator-[0-9]+$') { throw 'This PC-only runner requires
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $run = Join-Path $repo ('.work/pending-recovery/' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $run -Force | Out-Null
-$report = [ordered]@{status='FAIL';serial=$Serial;remoteDatabaseContacted=$false;androidTests=0;writeProcess=$null;readProcess=$null;forceStopVerified=$false;settingsRestored=$false;failure=$null}
+$report = [ordered]@{status='FAIL';serial=$Serial;remoteDatabaseContacted=$false;androidTests=0;writeProcess=$null;readProcess=$null;forceStopVerified=$false;commentRecoveryVerified=$false;settingsRestored=$false;failure=$null}
 $settings = @{}
 function Invoke-Adb([string]$Name, [string[]]$Arguments) {
     $output = (& $Adb -s $Serial @Arguments 2>&1 | Out-String)
@@ -40,6 +40,8 @@ try {
     if ($read -notmatch 'pendingProbe=PASS' -or $read -notmatch 'processId=([0-9]+)') { throw 'Read probe failed' }
     $report.readProcess = [int]$Matches[1]
     $report.forceStopVerified = $report.readProcess -ne $report.writeProcess
+    $report.commentRecoveryVerified = $write -match 'commentProbe=PASS' -and $read -match 'commentProbe=PASS'
+    if (-not $report.commentRecoveryVerified) { throw 'Comment process recovery failed' }
     if (-not $report.forceStopVerified) { throw 'Probe did not run in a fresh process' }
     $report.status = 'PASS'
 } catch { $report.failure = $_.Exception.Message }

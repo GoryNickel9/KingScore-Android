@@ -12,6 +12,7 @@ import kingscore.contracts.v1.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.json.*
 import okhttp3.*
@@ -74,9 +75,18 @@ class NoRetryCommentTransport(private val captureErrorCode: Boolean = false) : C
 
 class SupabaseCommentWrites(private val auth: SupabaseAuthRepository, private val network: NetworkMonitor,
     private val accountId: UUID, private val transport: CommentTransport = NoRetryCommentTransport(),
-    private val outcomes: CommentOutcomes = CommentOutcomes()) : CommentWrites {
+    private val outcomes: CommentOutcomes = CommentOutcomes(accountId)) : CommentWrites {
+    @Volatile private var closed = false
+    init { require(outcomes.accountId == accountId) }
     override fun hasUncertainOutcome(playId: UUID): Boolean = outcomes.has(playId)
-    override fun acknowledgeOutcome(playId: UUID) { outcomes.acknowledge(playId) }
+    override suspend fun restoreUncertainOutcome(playId: UUID): Boolean {
+        checkNetwork()
+        return auth.withVerifiedSession(accountId) { _, _ -> checkNetwork(); outcomes.restore(); checkNetwork(); outcomes.has(playId) }
+    }
+    override suspend fun acknowledgeOutcome(playId: UUID) {
+        checkNetwork()
+        auth.withVerifiedSession(accountId) { _, _ -> checkNetwork(); outcomes.acknowledge(playId); checkNetwork() }
+    }
     override suspend fun create(command: CreateComment): PlayCommentRow = write("POST", command.play_id, null,
         buildJsonObject { put("play_id", command.play_id.toString()); put("content", command.content) }, command.content)
 
@@ -84,7 +94,7 @@ class SupabaseCommentWrites(private val auth: SupabaseAuthRepository, private va
         write("PATCH", playId, commentId, buildJsonObject { put("content", command.content) }, command.content)
 
     override suspend fun delete(playId: UUID, commentId: UUID): PlayCommentRow = write("DELETE", playId, commentId, null, null)
-    override fun close() { transport.close() }
+    override fun close() { closed = true; outcomes.forget(); transport.close() }
 
     private suspend fun write(method: String, playId: UUID, commentId: UUID?, payload: JsonObject?, content: String?): PlayCommentRow {
         checkNetwork()
@@ -102,6 +112,8 @@ class SupabaseCommentWrites(private val auth: SupabaseAuthRepository, private va
                 .header("apikey", client.supabaseKey).header("Prefer", "return=representation")
                 .header("Accept", "application/json").method(method, payload?.toString()?.toRequestBody("application/json".toMediaType())).build()
             outcomes.begin(playId)
+            kotlinx.coroutines.currentCoroutineContext().ensureActive()
+            checkNetwork()
             val response = try { transport.send(request) } catch (cancelled: CancellationException) { throw cancelled
             } catch (failure: CommentFailure) { throw failure
             } catch (_: IOException) { throw CommentFailure(CommentProblem.UNCERTAIN) }
@@ -126,5 +138,8 @@ class SupabaseCommentWrites(private val auth: SupabaseAuthRepository, private va
         }
     }
 
-    private fun checkNetwork() { if (!network.connected.value) throw AuthFailure(AuthProblem.NETWORK_UNAVAILABLE) }
+    private fun checkNetwork() {
+        if (closed) throw AuthFailure(AuthProblem.INVALID_CREDENTIALS)
+        if (!network.connected.value) throw AuthFailure(AuthProblem.NETWORK_UNAVAILABLE)
+    }
 }

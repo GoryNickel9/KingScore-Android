@@ -19,6 +19,8 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.runBlocking
+import app.kingscore.android.data.local.EncryptedCommentOutcomeStore
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -89,10 +91,13 @@ class CommentsUiTest {
         capture("phase40-uncertain", dialog = true)
         assertEquals(1, repo.calls.size)
         compose.onNodeWithTag("recheck-comments").performScrollTo().performClick()
-        compose.onNodeWithTag("comment-write-error").assertDoesNotExist()
+        compose.onNodeWithTag("comment-write-error").assertExists()
         compose.onNodeWithTag("cancel-comment").performScrollTo().performClick()
         compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Già salvato"))
         compose.onNodeWithText("Già salvato").assertIsDisplayed()
+        compose.onNodeWithTag("detail-content").performScrollToNode(hasTestTag("acknowledge-comment-outcome"))
+        compose.onNodeWithTag("acknowledge-comment-outcome").performClick()
+        compose.onNodeWithTag("comment-write-error").assertDoesNotExist()
         assertEquals(1, repo.calls.size)
     }
 
@@ -162,6 +167,11 @@ class CommentsUiTest {
         compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Esito incerto al rientro"))
         compose.onNodeWithText("Esito incerto al rientro").assertIsDisplayed()
         assertTrue(repo.reads.any { it != null })
+        assertTrue(repo.uncertain)
+        compose.onNodeWithTag("detail-content").performScrollToNode(hasTestTag("add-comment"))
+        compose.onNodeWithTag("add-comment").assertIsNotEnabled()
+        compose.onNodeWithTag("detail-content").performScrollToNode(hasTestTag("acknowledge-comment-outcome"))
+        compose.onNodeWithTag("acknowledge-comment-outcome").performClick()
         assertFalse(repo.uncertain)
         assertEquals(1, repo.calls.size)
         compose.onNodeWithTag("comment-dialog").assertDoesNotExist()
@@ -197,6 +207,35 @@ class CommentsUiTest {
         bitmap.recycle()
     }
 
+    @Test fun restoredEncryptedMarkerRequiresReviewAndExplicitAcknowledgment() = runBlocking {
+        val store = EncryptedCommentOutcomeStore(InstrumentationRegistry.getInstrumentation().targetContext)
+        store.save(account.id, setOf(play.play.id))
+        try {
+            repo.restoreOutcome = { play.play.id in store.load(account.id) }
+            repo.acknowledgeOutcome = { store.save(account.id, emptySet()) }
+            show(); openDetail()
+            compose.onNodeWithTag("detail-content").performScrollToNode(hasTestTag("add-comment"))
+            compose.onNodeWithTag("add-comment").assertIsNotEnabled()
+            assertTrue(repo.reads.size >= 2); assertTrue(play.play.id in store.load(account.id))
+            compose.onNodeWithTag("detail-content").performScrollToNode(hasTestTag("acknowledge-comment-outcome"))
+            capture("comment-process-review")
+            compose.onNodeWithTag("acknowledge-comment-outcome").performClick()
+            compose.onNodeWithTag("add-comment").assertIsEnabled()
+            assertTrue(store.load(account.id).isEmpty()); assertTrue(repo.calls.isEmpty())
+        } finally { store.save(account.id, emptySet()) }
+    }
+    @Test fun unreadableMarkerKeepsCommentsReadableButAllMutationControlsDisabled() {
+        repo.restoreOutcome = { throw CommentFailure(CommentProblem.STORAGE) }
+        show(); openDetail()
+        compose.onNodeWithTag("detail-content").performScrollToNode(hasTestTag("add-comment"))
+        compose.onNodeWithTag("add-comment").assertIsNotEnabled()
+        compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Mio"))
+        compose.onNodeWithText("Mio").assertIsDisplayed()
+        compose.onNodeWithTag("edit-comment-${own.id}").assertIsNotEnabled()
+        compose.onNodeWithTag("delete-comment-${own.id}").assertIsNotEnabled()
+        assertTrue(repo.calls.isEmpty())
+    }
+
     private class FakePlays : PlaysRepository {
         val rows = mutableListOf(own, other)
         val calls = mutableListOf<String>()
@@ -206,11 +245,17 @@ class CommentsUiTest {
         var pending: CompletableDeferred<Unit>? = null
         var closed = 0
         var uncertain = false
+        var restoreOutcome: (suspend () -> Boolean)? = null
+        var acknowledgeOutcome: suspend () -> Unit = {}
         val reads = mutableListOf<CommentCursor?>()
         override val commentWrites = object : CommentWrites {
             override fun close() { closed++ }
             override fun hasUncertainOutcome(playId: UUID) = uncertain
-            override fun acknowledgeOutcome(playId: UUID) { uncertain = false }
+            override suspend fun restoreUncertainOutcome(playId: UUID): Boolean {
+                uncertain = restoreOutcome?.invoke() ?: uncertain
+                return uncertain
+            }
+            override suspend fun acknowledgeOutcome(playId: UUID) { this@FakePlays.acknowledgeOutcome(); uncertain = false }
             private suspend fun before() {
                 pending?.let { withContext(NonCancellable) { it.await() } }
                 authProblem?.let { throw AuthFailure(it) }

@@ -172,13 +172,15 @@ class CommentWritesTest {
     }
 
     @Test fun `uncertain outcomes survive writer disposal and prevent a second dispatch until reread`() = check { auth, network ->
-        val outcomes = CommentOutcomes()
+        val outcomes = CommentOutcomes(account)
         var calls = 0
         val transport = CommentTransport { calls++; throw IOException("timeout after commit") }
         val writer = SupabaseCommentWrites(auth, network, account, transport, outcomes)
         expect(CommentProblem.UNCERTAIN) { writer.create(CreateComment(play, "Ciao")) }
         writer.close()
         val recreated = SupabaseCommentWrites(auth, network, account, transport, outcomes)
+        assertFalse(recreated.hasUncertainOutcome(play))
+        assertTrue(recreated.restoreUncertainOutcome(play))
         assertTrue(recreated.hasUncertainOutcome(play))
         expect(CommentProblem.UNCERTAIN) { recreated.create(CreateComment(play, "Ciao")) }
         assertEquals(1, calls)
@@ -186,15 +188,15 @@ class CommentWritesTest {
         assertFalse(recreated.hasUncertainOutcome(play))
     }
 
-    @Test fun `outcome registry clears on logout or account change and isolates late old markers`() {
+    @Test fun `outcome registry forgets memory but preserves actor records and locks`() = runBlocking {
         val registry = AccountCommentOutcomes()
         val first = registry.forAccount(account)
         first.begin(play)
         assertSame(first, registry.forAccount(account))
         val next = registry.forAccount(UUID(0, 99))
         assertFalse(first.has(play)); assertFalse(next.has(play))
-        first.begin(play)
-        assertFalse(next.has(play))
+        first.restore()
+        assertTrue(first.has(play)); assertFalse(next.has(play))
         next.begin(play); registry.clear()
         assertFalse(next.has(play))
         assertFalse(registry.forAccount(account).has(play))
@@ -204,5 +206,43 @@ class CommentWritesTest {
         try { action(); fail("Expected $problem") } catch (failure: CommentFailure) {
             assertEquals(problem, failure.problem); assertFalse(failure.message.orEmpty().contains("private-server-body"))
         }
+    }
+
+    @Test fun `journal persists before HTTP and new client restores without dispatching`() = check { auth, network ->
+        val store = MemoryCommentOutcomeStore(); var calls = 0
+        val writer = SupabaseCommentWrites(auth, network, account, CommentTransport {
+            calls++; assertTrue(play in store.load(account)); throw IOException()
+        }, CommentOutcomes(account, store))
+        expect(CommentProblem.UNCERTAIN) { writer.create(CreateComment(play, "Ciao")) }; writer.close()
+        val restored = SupabaseCommentWrites(auth, network, account, CommentTransport { calls++; CommentHttpResponse(200, row()) }, CommentOutcomes(account, store))
+        assertTrue(restored.restoreUncertainOutcome(play))
+        expect(CommentProblem.UNCERTAIN) { restored.create(CreateComment(play, "Ciao")) }
+        assertEquals(1, calls)
+    }
+    @Test fun `failed storage blocks HTTP before dispatch`() = check { auth, network ->
+        var calls = 0
+        val store = object : CommentOutcomeStore {
+            override suspend fun load(accountId: UUID) = emptySet<UUID>()
+            override suspend fun save(accountId: UUID, plays: Set<UUID>) { throw IOException() }
+        }
+        val writer = SupabaseCommentWrites(auth, network, account, CommentTransport { calls++; CommentHttpResponse(200, row()) }, CommentOutcomes(account, store))
+        expect(CommentProblem.STORAGE) { writer.create(CreateComment(play, "Ciao")) }; assertEquals(0, calls)
+    }
+    @Test fun `offline different account and closed client never read persisted IDs`() = check { auth, network ->
+        var loads = 0
+        val store = object : CommentOutcomeStore {
+            override suspend fun load(accountId: UUID): Set<UUID> { loads++; return setOf(play) }
+            override suspend fun save(accountId: UUID, plays: Set<UUID>) { fail() }
+        }
+        val writer = SupabaseCommentWrites(auth, network, account, outcomes = CommentOutcomes(account, store))
+        network.connected.value = false
+        try { writer.restoreUncertainOutcome(play); fail() } catch (failure: AuthFailure) { assertEquals(AuthProblem.NETWORK_UNAVAILABLE, failure.problem) }
+        network.connected.value = true
+        val other = UUID(0, 99)
+        val wrong = SupabaseCommentWrites(auth, network, other, outcomes = CommentOutcomes(other, store))
+        try { wrong.restoreUncertainOutcome(play); fail() } catch (failure: AuthFailure) { assertEquals(AuthProblem.INVALID_CREDENTIALS, failure.problem) }
+        writer.close()
+        try { writer.restoreUncertainOutcome(play); fail() } catch (failure: AuthFailure) { assertEquals(AuthProblem.INVALID_CREDENTIALS, failure.problem) }
+        assertEquals(0, loads); wrong.close()
     }
 }

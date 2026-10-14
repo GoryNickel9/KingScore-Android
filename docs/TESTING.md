@@ -298,3 +298,19 @@ Il ripristino della composizione mantiene la bozza con lo stesso ViewModel; non 
 Il primo lint ha analizzato un file modificato durante l'esecuzione e ha segnalato un'indentazione con numeri di riga non allineati. La build ripetuta a sorgenti fermi passa. La build finale include la tastiera testuale dei punteggi, che consente anche il segno meno; la suite completa usa questi APK. Durata della suite: 266,819 secondi, non un benchmark dell'app.
 
 Nessuna nuova prova SQL, richiesta al backend reale o modifica fuori repo. Il journal dopo arresto forzato viene verificato separatamente dalle fixture UI: non è ancora un collaudo completo RPC/editor/SQL con morte del processo. Fonte dei risultati e hash: [editor-ui-validation.json](evidence/editor-ui-validation.json).
+
+## Recupero commenti dopo arresto del processo, 14 ottobre 2026
+
+| Controllo | Esito | Ambito |
+| --- | --- | --- |
+| JVM | 216 test superati, zero errori | 14 nuovi casi per persistenza, account, errori storage e conferma manuale |
+| Android API 31 completo | 70 test superati | Cinque nuovi casi per cifratura, formato partite precedente e controlli UI |
+| Arresto forzato e processo nuovo | Superato | Registro commenti e journal partite scritti nel PID 7886 e letti nel PID 7934 |
+| Node | 39 controlli superati | Contratti ed evidenze salvate, senza interrogare il database remoto |
+| Lint e APK | Zero errori, 16 warning preesistenti; build debug e test superate | Build corretta in 1 minuto e 17 secondi |
+
+L'Application inietta il registro cifrato dei commenti. Il client salva gli UUID delle partite prima dell'HTTP; nessun testo o comando viene accodato. Dopo un esito incerto, una rilettura completa rende disponibile Ho controllato i commenti e non sblocca automaticamente le scritture, neppure con elenco vuoto. Errori di storage lasciano disponibili le letture e impediscono le mutazioni.
+
+La prima suite completa ha eseguito 70 test con un errore: checkingDuringDispatchReconcilesAllPagesWhenTheSameAccountReturns conservava la vecchia aspettativa di sblocco automatico. Il controllo aggiornato verifica il blocco e la conferma manuale; la successiva suite completa supera tutti i 70 casi. Durata: 160,848 secondi, non un benchmark. Il runner verifica anche il recupero commenti in un nuovo processo e ripristina le impostazioni dell'emulatore. La schermata di verifica è stata acquisita e controllata visivamente.
+
+Le prove di storage, HTTP simulato e UI rimangono separate; non certificano una mutazione remota completa dopo morte del processo. Il registro non conserva receipt confermate e il backend esistente non garantisce exactly-once. Nessuna modifica fuori repo, richiesta Supabase remota o firma di rilascio. L'editor partite reale resta disabilitato. La CI GitHub non è stata avviata, secondo le ultime istruzioni dell'utente; il commit usa `[skip ci]`. Risultati e hash: [comment-recovery-validation.json](evidence/comment-recovery-validation.json).

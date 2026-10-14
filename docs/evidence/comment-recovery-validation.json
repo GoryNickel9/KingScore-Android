@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "scope": "encrypted-comment-outcomes-and-explicit-review",
+  "status": "PASS",
+  "baseCommit": "048061e0828eb0073a3d257c5ebb3aa0aa22308e",
+  "versionName": "0.4.0",
+  "remoteDatabaseContacted": false,
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "androidEditorEnabled": false,
+  "commentStoreWiredToApplication": true,
+  "jvm": {
+    "tests": 216.0,
+    "failures": 0.0,
+    "errors": 0.0,
+    "newTests": 14
+  },
+  "node": {
+    "tests": 39,
+    "failures": 0,
+    "command": "node --test scripts/check-evidence.test.mjs contracts/tests/*.test.mjs"
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 16
+  },
+  "build": {
+    "elapsed": "1m 17s",
+    "status": "PASS",
+    "tasks": [
+      ":app:testDebugUnitTest",
+      ":app:lintDebug",
+      ":app:assembleDebug",
+      ":app:assembleDebugAndroidTest"
+    ],
+    "log": ".work/comment-recovery-corrected-build.log"
+  },
+  "android": {
+    "settingsRestored": true,
+    "newTests": 5,
+    "elapsedSeconds": 160.848,
+    "forceStopVerified": true,
+    "commentRecoveryVerified": true,
+    "readProcess": 7934,
+    "tests": 70,
+    "status": "PASS",
+    "api": 31,
+    "report": ".work/pending-recovery/414fe6331cf34e02a9aa76ff40f3559c/report.json",
+    "writeProcess": 7886
+  },
+  "apkSha256": "e0b9aadd2c3b60e83a9f4622ecdec73ab47ff96aafba229b329314551d4e375d",
+  "testApkSha256": "b32da22861b179f124fee8675226c8ae94debbd716d844ffd02324049172ad2b",
+  "normalizedUtf8LfSha256": {
+    "app/src/androidTest/java/app/kingscore/android/data/local/PendingRecoveryProbe.kt": "95842f6a9faae9169eee75b8b9866624e8425dcbb2b47b37f6450e90a2b7e57c",
+    "app/src/androidTest/java/app/kingscore/android/ui/CommentsUiTest.kt": "61ce0d7761c2e7cd74f8112566006e93281ce904c084146f7414734fb9a8d401",
+    "app/src/main/java/app/kingscore/android/KingScoreApplication.kt": "623c690c5ef18e9b6afe05bb40763e886dd8ccd64824dc7b87a664a3ff502ad1",
+    "app/src/main/java/app/kingscore/android/data/local/EncryptedPendingPlayStore.kt": "0fd06904e9dfab6f6b54c25ad9741be5f35e50c2e907c3354880fc1db85dc1f6",
+    "app/src/main/java/app/kingscore/android/data/remote/SupabaseCommentWrites.kt": "dd98a7ba207989e99de92ca7a2834767cb26334c0522ece84474d39a9f241c6f",
+    "app/src/main/java/app/kingscore/android/data/repository/CommentOutcomes.kt": "a5b692b795a5423c3033cf94064201683b99e33d2d16b925eb2c8441dd91b517",
+    "app/src/main/java/app/kingscore/android/data/repository/CommentWrites.kt": "80ee7b2c4c493eba0d5fc7033f2d59550b04825d16da4a89c298cd76fe193134",
+    "app/src/main/java/app/kingscore/android/feature/plays/CommentControls.kt": "837078152100ecb5a2c70805373aaff4f6007ef01adc373bd112c3deb8006d4b",
+    "app/src/main/java/app/kingscore/android/feature/plays/PlayDetailViewModel.kt": "68583d050927beff3970bfbee7b15b23d9e48c33dc5fca003c00e8d88952ac99",
+    "app/src/main/java/app/kingscore/android/feature/plays/PlaysScreens.kt": "ecee443ce7421af0f66f6bf0ccb477d89962a0fa7845b64af88b99a81e4b11ee",
+    "app/src/test/java/app/kingscore/android/data/remote/CommentWritesTest.kt": "dff3356ce2840789f7ea89ec54a65e6a50a2d32b1f5070f8567017171732945d",
+    "app/src/test/java/app/kingscore/android/feature/plays/CommentViewModelTest.kt": "4e89aa5314072b18f7ef7a6b802637093d8892750d10afc77fe3e8288c76e90a",
+    "scripts/test-pending-recovery.ps1": "4588c3708c8c846e8ee87fd49676bc06d0f23285d607b2f5463223d3fc86de5f",
+    "app/src/androidTest/java/app/kingscore/android/data/local/EncryptedCommentOutcomeTest.kt": "9ac614bf96f8e29446b1ab82e3e5a331bd2cf1bf2544c4da073cb99f5b30f959",
+    "app/src/main/java/app/kingscore/android/data/local/EncryptedAccountFile.kt": "cc1e0499080604a42cddaca881c1ada899665644fbb6d3613214eafd37f4f7f0",
+    "app/src/main/java/app/kingscore/android/data/local/EncryptedCommentOutcomeStore.kt": "424c3efe08529936a848f071266dca0276db2ee610ea883028bfd398d5311a55",
+    "app/src/test/java/app/kingscore/android/data/remote/CommentOutcomesTest.kt": "a507fceeb4e0ed3b88fff6e7da4d65d49a43e2e57d8be181baa23c634d3b5caa"
+  },
+  "screenshot": {
+    "path": ".work/comment-recovery/comment-process-review.png",
+    "visuallyReviewed": true,
+    "sha256": "f3a28863bb5ff3c55fbb6441643db75f641247216543acf2383b627f3bc8e2f7"
+  },
+  "githubCi": {
+    "executed": false,
+    "reason": "Suspended by latest user instructions; commit uses [skip ci]"
+  },
+  "priorAttempts": [
+    "First complete Android run: 70 executed, one outdated expectation in checkingDuringDispatchReconcilesAllPagesWhenTheSameAccountReturns failed. Updated to require manual acknowledgment; rebuilt and reran the complete suite."
+  ],
+  "limitations": [
+    "Only uncertain play IDs are persisted; no comment content, retry queue, confirmed receipt or exactly-once guarantee.",
+    "Process probe tests encrypted storage separately from authenticated HTTP and Compose fixtures.",
+    "No real remote Auth/database, additional Android API versions or release signing validated in this checkpoint.",
+    "Atomic admin RPCs unavailable; production play editor remains disabled."
+  ]
+}

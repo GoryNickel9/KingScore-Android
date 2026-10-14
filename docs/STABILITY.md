@@ -1,13 +1,13 @@
 # Prima versione stabile: stato e criteri
 
-Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Commit, push e CI accompagnano i passaggi principali. Le modifiche restano in KingScore-Android; altre repo, Vercel e Supabase rimangono esclusi.
+Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Commit e push accompagnano i passaggi principali; la CI è sospesa secondo le ultime istruzioni dell'utente. Le modifiche restano in KingScore-Android; altre repo, Vercel e Supabase rimangono esclusi.
 
 La stabile mantiene il perimetro concordato: login e Internet obbligatori, consultazione, commenti propri e gestione partite admin atomica. Non comprende ricalcolo ELO, registrazione, modifica credenziali/avatar o uso offline. L'APK 0.4.0 è ancora un'anteprima, non la 1.0 stabile.
 
 | Requisito | Stato | Verifica necessaria per chiuderlo |
 | --- | --- | --- |
 | Consultazione, login e blocco rete | Implementati, con test JVM e Android | Collaudo finale e accessibilità su emulatore; copertura di più versioni Android sul PC |
-| Commenti propri | Implementati | Rafforzare il recupero degli esiti incerti dopo morte del processo; nessuna promessa di idempotenza server |
+| Commenti propri | Implementati, con registro cifrato degli esiti incerti iniettato nell'Application | Collaudo finale; rilettura completa e conferma manuale prima di nuove scritture, nessuna promessa di idempotenza server |
 | Contratti e salvataggi atomici | Candidata locale con 21 casi superati | API reali e writer web/server coerenti, oggi indisponibili |
 | Client RPC Android | Preparato, disabilitato per default | Integrazione nell'editor dopo le condizioni backend |
 | Recupero salvataggi | Journal cifrato preparato; account verificato prima del recupero | Collegamento al ciclo di vita dell'editor e collaudo dei percorsi completi |
@@ -34,4 +34,10 @@ Una risposta valida viene conservata come conferma cifrata, anziché cancellare 
 
 Il factory dell'editor dovrà condividere un journal per account e iniettare lo store cifrato. Il client predefinito resta disabilitato e usa memoria: non è ancora collegato all'Application. Le garanzie del file riguardano riavvio e arresto del processo; non certificano perdita del dispositivo, cancellazione dei dati dell'app o guasti del filesystem.
 
-Il registro `AccountPlayJournals` e il [controller con fixture](PLAY_EDITOR_STATE.md) preparano ora questa integrazione. Il controller gestisce caricamento, validazione della bozza, conferma della cancellazione, conflitti e recupero esplicito. Restano da collegare le schermate Compose e il ciclo di vita della sessione; i percorsi reali non sono abilitati.
+Il registro `AccountPlayJournals`, il [controller con fixture](PLAY_EDITOR_STATE.md) e la schermata Compose preparano questa integrazione. Il controller gestisce caricamento, validazione della bozza, conferma della cancellazione, conflitti e recupero esplicito. Restano da collegare factory, navigazione e ciclo di vita della sessione; i percorsi reali non sono abilitati.
+
+## Lavoro restante
+
+La stima operativa per il lavoro indipendente Android è 4–8 ore: collaudo finale su più versioni emulate, rete/sessione e ricreazione dell'Activity; firma privata, installazione e aggiornamento dell'APK; documentazione di rilascio. È una stima soggetta ai difetti trovati durante il collaudo.
+
+Questa stima non include l'attivazione delle API atomiche reali. La versione completa con gestione partite admin richiede prima una decisione sul backend, escluso dal perimetro attuale. Finché queste API mancano, l'editor resta disabilitato e la stabile completa non è dichiarata raggiunta.

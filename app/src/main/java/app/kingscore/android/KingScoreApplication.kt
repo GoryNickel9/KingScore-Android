@@ -10,6 +10,7 @@ import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.data.repository.RatingsRepository
 import app.kingscore.android.data.repository.StatisticsRepository
 import app.kingscore.android.data.repository.AccountCommentOutcomes
+import app.kingscore.android.data.local.EncryptedCommentOutcomeStore
 import app.kingscore.android.data.remote.SupabaseRatingsRepository
 import app.kingscore.android.data.remote.SupabaseStatisticsRepository
 import app.kingscore.android.data.remote.SupabaseCommentWrites
@@ -30,7 +31,7 @@ class KingScoreApplication : Application() {
         private set
     var auth: SupabaseAuthRepository? = null
         private set
-    private val commentOutcomes = AccountCommentOutcomes()
+    private val commentOutcomes by lazy { AccountCommentOutcomes(EncryptedCommentOutcomeStore(this)) }
     fun clearCommentOutcomes() { commentOutcomes.clear() }
 
     fun plays(accountId: UUID): PlaysRepository = SupabasePlaysRepository(SupabaseReader(checkNotNull(auth), network), accountId,

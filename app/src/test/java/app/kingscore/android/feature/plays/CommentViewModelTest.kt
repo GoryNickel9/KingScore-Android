@@ -86,10 +86,14 @@ class CommentViewModelTest {
             else { assertEquals(cursor, after); CommentPage(repo.rows.drop(1), null) } }
         model.recheckComments(); advanceUntilIdle()
         assertEquals(listOf(null, cursor), repo.reads)
+        assertEquals(CommentProblem.UNCERTAIN, model.detail.value.commentWriteProblem)
+        assertTrue(model.detail.value.commentReviewReady)
+        assertEquals("Già salvato", model.detail.value.commentEditor!!.content)
+        model.acknowledgeComments(); advanceUntilIdle()
         assertNull(model.detail.value.commentWriteProblem)
         assertTrue(model.detail.value.comments.any { it.content == "Già salvato" })
         assertEquals(1, repo.calls.size)
-        assertEquals("Già salvato", model.detail.value.commentEditor!!.content)
+        assertNull(model.detail.value.commentEditor)
     }
 
     @Test fun `failed reconciliation keeps uncertain writes disabled and does not lose draft`() = runTest(dispatcher) {
@@ -124,6 +128,8 @@ class CommentViewModelTest {
         model.saveComment(); advanceUntilIdle(); assertEquals(1, repo.calls.size)
         failed = false; repo.reads.clear(); model.retryComments(); advanceUntilIdle()
         assertEquals(listOf(null, cursor), repo.reads)
+        assertEquals(CommentProblem.UNCERTAIN, model.detail.value.commentWriteProblem)
+        model.acknowledgeComments(); advanceUntilIdle()
         assertNull(model.detail.value.commentWriteProblem)
         assertTrue(model.detail.value.comments.any { it.content == "Già salvato" })
         assertEquals(1, repo.calls.size)
@@ -149,6 +155,8 @@ class CommentViewModelTest {
         repo.pages = { after -> if (after == null) CommentPage(listOf(own), cursor) else CommentPage(repo.rows.drop(1), null) }
         repo.reads.clear(); model.refresh(); advanceUntilIdle()
         assertEquals(listOf(null, cursor), repo.reads)
+        assertEquals(CommentProblem.UNCERTAIN, model.detail.value.commentWriteProblem)
+        model.acknowledgeComments(); advanceUntilIdle()
         assertNull(model.detail.value.commentWriteProblem)
         assertEquals(1, repo.calls.size)
     }
@@ -160,6 +168,9 @@ class CommentViewModelTest {
         val recreated = PlayDetailViewModel(repo, play.play.id, problems::add, account)
         recreated.refresh(); advanceUntilIdle()
         assertEquals(listOf(null, cursor), repo.reads)
+        assertTrue(repo.uncertain)
+        assertEquals(CommentProblem.UNCERTAIN, recreated.detail.value.commentWriteProblem)
+        recreated.acknowledgeComments(); advanceUntilIdle()
         assertFalse(repo.uncertain)
         assertEquals(CommentNotice.RECONCILED, recreated.detail.value.commentNotice)
         assertTrue(repo.calls.isEmpty())
@@ -192,6 +203,46 @@ class CommentViewModelTest {
         }
     }
 
+    @Test fun `empty reread does not prove timeout failed or automatically unblock writes`() = runTest(dispatcher) {
+        repo.restore = { repo.uncertain = true }
+        repo.pages = { CommentPage(emptyList(), null) }
+        load(); assertTrue(model.detail.value.commentReviewReady)
+        assertEquals(CommentProblem.UNCERTAIN, model.detail.value.commentWriteProblem)
+        model.composeComment(); model.saveComment(); advanceUntilIdle(); assertTrue(repo.calls.isEmpty())
+        model.acknowledgeComments(); advanceUntilIdle()
+        assertNull(model.detail.value.commentWriteProblem); assertTrue(repo.calls.isEmpty())
+        assertNull(model.detail.value.commentEditor)
+    }
+    @Test fun `acknowledgment before complete or failed reread is rejected`() = runTest(dispatcher) {
+        repo.uncertain = true
+        val page = CompletableDeferred<CommentPage>()
+        repo.pages = { page.await() }
+        model.refresh(); runCurrent(); model.acknowledgeComments(); assertTrue(repo.uncertain)
+        page.completeExceptionally(DataFailure(DataProblem.INVALID_RESPONSE)); advanceUntilIdle()
+        model.acknowledgeComments(); advanceUntilIdle(); assertTrue(repo.uncertain)
+        assertFalse(model.detail.value.commentReviewReady)
+    }
+    @Test fun `storage restore failure keeps reads available but forbids comment mutations`() = runTest(dispatcher) {
+        repo.restore = { throw CommentFailure(CommentProblem.STORAGE) }
+        load(); assertNotNull(model.detail.value.detail); assertTrue(model.detail.value.comments.isNotEmpty())
+        model.composeComment(); model.requestCommentDeletion(own.id); model.saveComment(); model.deleteComment()
+        assertTrue(model.detail.value.commentWritesBlocked); assertTrue(repo.calls.isEmpty())
+    }
+    @Test fun `failed durable acknowledgment cannot silently clear marker or enable another write`() = runTest(dispatcher) {
+        repo.uncertain = true; load()
+        repo.acknowledge = { throw CommentFailure(CommentProblem.STORAGE) }
+        model.acknowledgeComments(); advanceUntilIdle()
+        assertEquals(CommentProblem.STORAGE, model.detail.value.commentWriteProblem)
+        assertTrue(repo.uncertain); model.composeComment(); model.saveComment(); assertTrue(repo.calls.isEmpty())
+    }
+    @Test fun `late acknowledgment never repopulates a cleared account`() = runTest(dispatcher) {
+        repo.uncertain = true; load()
+        val pending = CompletableDeferred<Unit>()
+        repo.acknowledge = { withContext(NonCancellable) { pending.await() } }
+        model.acknowledgeComments(); runCurrent(); model.clearMemory(); pending.complete(Unit); advanceUntilIdle()
+        assertNull(model.detail.value.detail); assertNull(model.detail.value.commentNotice)
+    }
+
     private class FakePlays : PlaysRepository {
         var rows = mutableListOf(own, other)
         val calls = mutableListOf<String>()
@@ -201,9 +252,12 @@ class CommentViewModelTest {
         var afterWrite: suspend () -> Unit = {}
         var detailRead: suspend () -> PlayDetail? = { play }
         var uncertain = false
+        var restore: suspend () -> Unit = {}
+        var acknowledge: suspend () -> Unit = {}
         override val commentWrites = object : CommentWrites {
             override fun hasUncertainOutcome(playId: UUID) = uncertain
-            override fun acknowledgeOutcome(playId: UUID) { uncertain = false }
+            override suspend fun restoreUncertainOutcome(playId: UUID): Boolean { restore(); return uncertain }
+            override suspend fun acknowledgeOutcome(playId: UUID) { acknowledge(); uncertain = false }
             override suspend fun create(command: CreateComment): PlayCommentRow {
                 calls += "create:${command.content}"; beforeWrite()
                 val row = own.copy(id = UUID(0, 40), author_name = "Server", content = command.content)

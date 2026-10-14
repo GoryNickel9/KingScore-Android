@@ -19,15 +19,18 @@ class PendingRecoveryProbe : AndroidJUnitRunner() {
             runBlocking {
                 val account = UUID(7, 44)
                 val store = EncryptedPendingPlayStore(targetContext)
+                val comments = CommentOutcomes(UUID(7, 46), EncryptedCommentOutcomeStore(targetContext))
+                val commentPlay = UUID(7, 47)
                 val record = StoredPlayMutation(accountId = account.toString(), requestId = UUID(7, 45).toString(), playId = null,
                     kind = PlayMutationKind.CREATE, body = "{\"synthetic\":\"process-recovery-probe\"}", confirmedResponse = "{\"synthetic\":true}")
                 when (mode) {
-                    "write" -> store.save(account, record)
-                    "read" -> { check(store.load(account) == record); store.save(account, null) }
+                    "write" -> { store.save(account, record); comments.begin(commentPlay) }
+                    "read" -> { check(store.load(account) == record); store.save(account, null)
+                        comments.restore(); check(comments.has(commentPlay)); comments.acknowledge(commentPlay) }
                     else -> error("Probe mode required")
                 }
             }
-            result.putString("pendingProbe", "PASS"); result.putInt("processId", Process.myPid())
+            result.putString("pendingProbe", "PASS"); result.putString("commentProbe", "PASS"); result.putInt("processId", Process.myPid())
             finish(Activity.RESULT_OK, result)
         } catch (_: Exception) { result.putString("pendingProbe", "FAIL"); finish(Activity.RESULT_CANCELED, result) }
     }

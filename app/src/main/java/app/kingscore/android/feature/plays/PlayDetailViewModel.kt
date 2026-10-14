@@ -25,8 +25,11 @@ data class DetailState(
     val commentsProblem: DataProblem? = null,
     val commentEditor: CommentEditor? = null, val deletingComment: UUID? = null,
     val commentSaving: Boolean = false, val commentWriteProblem: CommentProblem? = null,
+    val commentReviewReady: Boolean = false,
     val commentNotice: CommentNotice? = null,
-)
+) {
+    val commentWritesBlocked: Boolean get() = commentWriteProblem == CommentProblem.UNCERTAIN || commentWriteProblem == CommentProblem.STORAGE
+}
 
 class PlayDetailViewModel(private val repository: PlaysRepository, private val id: UUID,
     private val onAccessFailure: (AuthProblem) -> Unit, private val accountId: UUID? = null) : ViewModel() {
@@ -50,9 +53,14 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
             try {
                 val play = repository.detail(id)
                 if (stamp != generation) return@launch
+                var writeProblem = CommentProblem.UNCERTAIN.takeIf { uncertain }
+                try {
+                    if (repository.commentWrites?.restoreUncertainOutcome(id) == true) writeProblem = CommentProblem.UNCERTAIN
+                } catch (failure: CommentFailure) { writeProblem = failure.problem }
+                if (stamp != generation) return@launch
                 state.value = DetailState(detail = play, loading = false, missing = play == null, commentEditor = editor,
-                    deletingComment = deleting, commentWriteProblem = CommentProblem.UNCERTAIN.takeIf { uncertain })
-                if (play != null) loadComments(null, stamp, reconcileAll = uncertain)
+                    deletingComment = deleting, commentWriteProblem = writeProblem)
+                if (play != null) loadComments(null, stamp, reconcileAll = writeProblem == CommentProblem.UNCERTAIN)
             } catch (cancelled: CancellationException) { throw cancelled
             } catch (failure: AuthFailure) { accessFailure(failure, stamp)
             } catch (failure: DataFailure) {
@@ -75,9 +83,10 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
 
     fun recheckComments() {
         if (state.value.detail == null || state.value.commentSaving) return
+        if (state.value.commentWriteProblem == CommentProblem.STORAGE) { refresh(); return }
         commentRequest?.cancel()
         commentGeneration++
-        state.value = state.value.copy(comments = emptyList(), commentCursor = null, commentsProblem = null)
+        state.value = state.value.copy(comments = emptyList(), commentCursor = null, commentsProblem = null, commentReviewReady = false)
         loadComments(null, generation, reconcileAll = state.value.commentWriteProblem == CommentProblem.UNCERTAIN)
     }
 
@@ -89,15 +98,15 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
     }
 
     fun changeComment(content: String) {
-        if (state.value.commentSaving) return
+        if (state.value.commentSaving || state.value.commentWritesBlocked) return
         state.value.commentEditor?.let { state.value = state.value.copy(commentEditor = it.copy(content = content),
-            commentWriteProblem = state.value.commentWriteProblem?.takeIf { problem -> problem == CommentProblem.UNCERTAIN }) }
+            commentWriteProblem = state.value.commentWriteProblem?.takeIf { problem -> problem == CommentProblem.UNCERTAIN || problem == CommentProblem.STORAGE }) }
     }
 
     fun dismissComment() {
         if (state.value.commentSaving) return
         state.value = state.value.copy(commentEditor = null, deletingComment = null,
-            commentWriteProblem = state.value.commentWriteProblem?.takeIf { it == CommentProblem.UNCERTAIN })
+            commentWriteProblem = state.value.commentWriteProblem?.takeIf { it == CommentProblem.UNCERTAIN || it == CommentProblem.STORAGE })
     }
 
     fun requestCommentDeletion(commentId: UUID) {
@@ -126,7 +135,26 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
 
     private fun ownComment(commentId: UUID) = state.value.comments.firstOrNull { it.id == commentId && it.user_id == accountId }
     private fun canWrite() = repository.commentWrites != null && accountId != null && state.value.detail != null &&
-        !state.value.commentSaving && !state.value.commentsLoading && state.value.commentWriteProblem != CommentProblem.UNCERTAIN
+        !state.value.commentSaving && !state.value.commentsLoading && !state.value.commentWritesBlocked
+
+    fun acknowledgeComments() {
+        val writer = repository.commentWrites ?: return
+        if (!state.value.commentReviewReady || state.value.commentsLoading || state.value.commentSaving ||
+            state.value.commentWriteProblem != CommentProblem.UNCERTAIN) return
+        val stamp = generation
+        state.value = state.value.copy(commentSaving = true)
+        mutation = viewModelScope.launch {
+            try {
+                writer.acknowledgeOutcome(id)
+                if (stamp == generation) state.value = state.value.copy(commentSaving = false, commentWriteProblem = null,
+                    commentReviewReady = false, commentEditor = null, deletingComment = null, commentNotice = CommentNotice.RECONCILED)
+            } catch (cancelled: CancellationException) { throw cancelled }
+            catch (failure: AuthFailure) { accessFailure(failure, stamp) }
+            catch (failure: CommentFailure) {
+                if (stamp == generation) state.value = state.value.copy(commentSaving = false, commentWriteProblem = failure.problem)
+            }
+        }
+    }
 
     private fun writeComment(notice: CommentNotice, action: suspend (CommentWrites) -> PlayCommentRow) {
         val writer = repository.commentWrites ?: return
@@ -160,7 +188,7 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
     private fun loadComments(cursor: CommentCursor?, stamp: Int, reconcileAll: Boolean = false) {
         val reconcile = reconcileAll || (cursor == null && state.value.commentWriteProblem == CommentProblem.UNCERTAIN)
         val commentStamp = ++commentGeneration
-        state.value = state.value.copy(commentsLoading = true, commentsProblem = null)
+        state.value = state.value.copy(commentsLoading = true, commentsProblem = null, commentReviewReady = false)
         commentRequest = viewModelScope.launch {
             try {
                 var page = repository.comments(id, cursor)
@@ -172,10 +200,9 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
                     collected += page.items
                 }
                 val comments = if (cursor == null) collected else (state.value.comments + collected).distinctBy { it.id }
-                if (reconcile) repository.commentWrites?.acknowledgeOutcome(id)
                 state.value = state.value.copy(comments = comments, commentCursor = page.next, commentsLoading = false,
-                    commentNotice = if (reconcile) CommentNotice.RECONCILED else state.value.commentNotice,
-                    commentWriteProblem = state.value.commentWriteProblem?.takeUnless { cursor == null && it == CommentProblem.UNCERTAIN })
+                    commentReviewReady = reconcile && page.next == null,
+                    commentNotice = state.value.commentNotice)
             } catch (cancelled: CancellationException) { throw cancelled
             } catch (failure: AuthFailure) { if (commentStamp == commentGeneration) accessFailure(failure, stamp)
             } catch (failure: DataFailure) {

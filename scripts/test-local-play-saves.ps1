@@ -3,7 +3,8 @@
 param(
     [string]$PostgresBin = 'C:\Program Files\PostgreSQL\17\bin',
     [string]$PostgrestBin = (Join-Path $PSScriptRoot '../.work/undone-external-files/postgrest-14.1/postgrest.exe'),
-    [switch]$Atomic
+    [switch]$Atomic,
+    [string]$WebMigrationDirectory
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -12,6 +13,16 @@ $workRoot = Join-Path $repo '.work/local-play-tests'
 $runDirectory = Join-Path $workRoot ([Guid]::NewGuid().ToString('N'))
 $cluster = Join-Path $runDirectory 'cluster'
 $PostgrestBin = [IO.Path]::GetFullPath($PostgrestBin)
+if ($WebMigrationDirectory) {
+    if (-not $Atomic) { throw 'Prepared web migration testing requires -Atomic' }
+    $WebMigrationDirectory = [IO.Path]::GetFullPath($WebMigrationDirectory)
+    if (-not $WebMigrationDirectory.StartsWith((Join-Path $repo '.work') + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Prepared web SQL must be inside this repository local work directory'
+    }
+    if (-not (Test-Path -LiteralPath (Join-Path $WebMigrationDirectory '01-install-rpcs.sql') -PathType Leaf)) {
+        throw 'Prepared web RPC migration missing'
+    }
+}
 if (-not $PostgrestBin.StartsWith($repo + [IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)) {
     throw 'PostgREST must be a verified file inside this repository'
 }
@@ -27,6 +38,12 @@ foreach ($name in @('initdb','pg_ctl','psql')) {
     $binaries[$name] = $binaryPath
 }
 New-Item -ItemType Directory -Path $runDirectory -Force | Out-Null
+if ($WebMigrationDirectory) {
+    $runMigrationDirectory = Join-Path $runDirectory 'prepared-web-sql'
+    New-Item -ItemType Directory -Path $runMigrationDirectory | Out-Null
+    Copy-Item -LiteralPath (Join-Path $WebMigrationDirectory '01-install-rpcs.sql') -Destination (Join-Path $runMigrationDirectory '01-install-rpcs.sql')
+    $preparedMigrationSha256 = (Get-FileHash -LiteralPath (Join-Path $runMigrationDirectory '01-install-rpcs.sql') -Algorithm SHA256).Hash.ToLowerInvariant()
+}
 $report = [ordered]@{
     status='FAIL'; mode='local-baseline-and-contract-preparation'; host='127.0.0.1'; database='kingscore_local_tests'
     runDirectory=$runDirectory; startedAtUtc=[DateTime]::UtcNow.ToString('o'); finishedAtUtc=$null
@@ -91,7 +108,18 @@ try {
     $http = Get-Content -LiteralPath (Join-Path $runDirectory 'http-report.json') -Raw | ConvertFrom-Json
     if ($http.status -ne 'PASS' -or -not $http.ownGatewayStopped) { throw 'HTTP gateway did not complete and stop' }
     if ($Atomic) {
-        Invoke-LocalProcess 'candidate' $binaries.psql ($connection + @('-d','kingscore_local_tests','-f',(Join-Path $repo 'local-tests/candidate.sql')))
+        if ($WebMigrationDirectory) {
+            Invoke-LocalProcess 'web-migration-profiles' $node @((Join-Path $repo 'local-tests/web-migration-profiles.mjs'),
+                [IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin,$runMigrationDirectory) 180
+            $profiles = Get-Content -LiteralPath (Join-Path $runDirectory 'web-migration-profiles-report.json') -Raw | ConvertFrom-Json
+            if ($profiles.status -ne 'PASS') { throw 'Prepared web migration compatibility checks failed' }
+            if ($profiles.migrationSha256 -ne $preparedMigrationSha256) { throw 'Compatibility test SQL differs from frozen installation input' }
+            Invoke-LocalProcess 'web-migration' $binaries.psql ($connection + @('-d','kingscore_local_tests','-f',(Join-Path $runMigrationDirectory '01-install-rpcs.sql')))
+            # Synthetic position writer is exclusively a local acceptance fixture, never part of web SQL.
+            Invoke-LocalProcess 'synthetic-position-adapter' $binaries.psql ($connection + @('-d','kingscore_local_tests','-f',(Join-Path $repo 'local-tests/web-migration-local-adapter.sql')))
+        } else {
+            Invoke-LocalProcess 'candidate' $binaries.psql ($connection + @('-d','kingscore_local_tests','-f',(Join-Path $repo 'local-tests/candidate.sql')))
+        }
         $report.futureContractImplemented = $true
         Invoke-LocalProcess 'atomic-acceptance' $node @((Join-Path $repo 'local-tests/atomic-acceptance.mjs'),[IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin) 180
         $acceptance = Get-Content -LiteralPath (Join-Path $runDirectory 'acceptance-report.json') -Raw | ConvertFrom-Json
@@ -99,6 +127,15 @@ try {
             throw 'Atomic acceptance incomplete or own gateway did not stop'
         }
         $report.mode = 'local-atomic-acceptance'
+        if ($WebMigrationDirectory) {
+            $report.mode = 'local-prepared-web-migration-acceptance'
+            $report.webMigrationDirectory = $WebMigrationDirectory
+            $report.webMigrationSha256 = $preparedMigrationSha256
+            $report.compatibilityCases = $profiles.cases.Count
+            if ((Get-FileHash -LiteralPath (Join-Path $WebMigrationDirectory '01-install-rpcs.sql') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $preparedMigrationSha256) {
+                throw 'Prepared SQL source changed during local validation; rerun on current input'
+            }
+        }
     }
     $report.status = 'PASS'
 } catch {
@@ -108,7 +145,7 @@ try {
     if ($launchAttempted) {
         try {
             if (Test-Path -LiteralPath (Join-Path $cluster 'postmaster.pid')) {
-                Invoke-LocalProcess 'stop' $binaries.pg_ctl @('-D',$cluster,'-m','fast','-w','-t','30','stop')
+                Invoke-LocalProcess 'stop' $binaries.pg_ctl @('-D',$cluster,'-m','fast','-w','-t','60','stop') 75
             }
             $report.serverStopped = -not (Test-Path -LiteralPath (Join-Path $cluster 'postmaster.pid'))
             if (-not $report.serverStopped) { throw 'Own database server did not stop' }

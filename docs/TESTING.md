@@ -377,3 +377,19 @@ CI sospesa, editor admin disabilitato, nessun account o database remoto usato pe
 Su autorizzazione esplicita dell'utente, Android CI è stato riattivato. Il run [38624823497](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38624823497), sul commit abaf16c17f25ec70f000488ceeb126ea79ba976c, termina con successo: 39 controlli Node, 225 test JVM debug senza failure o ignored, lint e APK debug. Il report lint contiene 25 warning e nessun errore: target SDK, aggiornamenti plugin/dipendenze e quattro UseKtx. La build termina in due minuti; è tempo di build, non un benchmark dell'app.
 
 I report e l'APK CI sono stati scaricati in `.work/ci-resume/38624823497` e controllati. La CI non esegue i 21 casi PostgreSQL/PostgREST, i test Android nativi o la firma privata: queste restano prove locali separate. Nessun deploy, test su Supabase remoto o chiave privata inviata a GitHub. La CI sospesa nei report RC3 precedenti è uno stato storico, non la configurazione attuale. Metadati: [ci-resume-validation.json](evidence/ci-resume-validation.json).
+
+## Migrazione web predisposta: collaudo sul PC
+
+La modalità aggiuntiva esegue la migrazione del checkout web locale, senza usare Supabase o modificare l'APK:
+
+```powershell
+pwsh -NoProfile -File scripts/test-local-play-saves.ps1 -Atomic -WebMigrationDirectory .work/King-Score-atomic/scripts/atomic-play-migrations
+```
+
+Il percorso SQL deve trovarsi nella directory .work di questa repo; il runner richiede Atomic, copia la fonte in una directory di run univoca e confronta il suo SHA256 fra profili, installazione e sorgente finale. Il cluster PostgreSQL e PostgREST sono propri, vincolati a loopback e con ruoli/utenti/dati sintetici. La fonte web contiene soltanto l'installazione V1: Auth fake, adattatore posizioni e cutover rimangono fixture locali distinte.
+
+Il comando finale passa con 16 profili di compatibilità e i 21 casi di accettazione, 1.592 confronti ranking e 170 richieste HTTP. I profili verificano anche scambio partecipanti sotto UNIQUE nei due ordini, preservazione di ID/created_at/metadati, ON CONFLICT non utilizzabile come arbiter deferrable, Auth senza PK, FK dipendenti, rollback su schema/tipi/trigger non supportati e duplicati BGA introdotti dopo l'installazione. Ogni clone viene rimosso dopo il caso, conservando query e report; gateway e server vengono arrestati. Le fixture non verificano GoTrue, il database reale, il browser web o i job reali.
+
+I primi tentativi hanno rilevato due errori del test: confronto inet con suffisso /32 e ID BGA con spazio, respinto prima del controllo duplicati. Sono stati corretti nelle fixture. Due run successivi passavano le prove funzionali ma segnalavano FAIL nella chiusura perché il flush dei 16 clone superava 30 e poi 60 secondi. Le letture successive di pg_ctl status e dei log hanno confermato lo spegnimento; nessun timeout è stato interpretato come arresto immediato. Il runner finale rimuove i soli clone creati nel cluster isolato dopo ogni caso e il comando completo termina PASS. I tentativi precedenti rimangono nei rispettivi run .work e non vengono conteggiati come comandi riusciti.
+
+Evidenze: [run](evidence/prepared-web-migration-run.json), [profili](evidence/prepared-web-migration-profiles.json), [accettazione](evidence/prepared-web-migration-acceptance.json). I test nativi restano locali; la CI Android continua a verificare Node/JVM/lint/APK e non installa questa migrazione.

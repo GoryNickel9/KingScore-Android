@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "mode": "local-atomic-acceptance",
+  "cases": [
+    {
+      "id": "create-rollback",
+      "status": "PASS"
+    },
+    {
+      "id": "update-rollback",
+      "status": "PASS"
+    },
+    {
+      "id": "delete-rollback",
+      "status": "PASS"
+    },
+    {
+      "id": "permission",
+      "status": "PASS"
+    },
+    {
+      "id": "global-admin",
+      "status": "PASS"
+    },
+    {
+      "id": "score-metadata",
+      "status": "PASS"
+    },
+    {
+      "id": "numeric-wire",
+      "status": "PASS"
+    },
+    {
+      "id": "jsonb-size",
+      "status": "PASS"
+    },
+    {
+      "id": "snapshot-revision",
+      "status": "PASS"
+    },
+    {
+      "id": "stale-update-delete",
+      "status": "PASS"
+    },
+    {
+      "id": "parallel-update",
+      "status": "PASS"
+    },
+    {
+      "id": "parallel-create-replay",
+      "status": "PASS"
+    },
+    {
+      "id": "same-key-other-request",
+      "status": "PASS"
+    },
+    {
+      "id": "replay-after-delete",
+      "status": "PASS"
+    },
+    {
+      "id": "role-before-replay",
+      "status": "PASS"
+    },
+    {
+      "id": "ranking",
+      "status": "PASS"
+    },
+    {
+      "id": "bga-import",
+      "status": "PASS"
+    },
+    {
+      "id": "elo-sentinels",
+      "status": "PASS"
+    },
+    {
+      "id": "legacy-writers",
+      "status": "PASS"
+    },
+    {
+      "id": "writer-cooperation",
+      "status": "PASS"
+    },
+    {
+      "id": "legacy-values",
+      "status": "PASS"
+    }
+  ],
+  "host": "127.0.0.1",
+  "remoteContacted": false,
+  "goTrueLoginTested": false,
+  "realWritersIntegrated": false,
+  "ownGatewayStopped": true,
+  "node": "v24.19.0",
+  "v8": "13.6.233.17-node.51",
+  "postgres": "PostgreSQL 17.4 on x86_64-windows, compiled by msvc-19.42.34436, 64-bit",
+  "rankingVectors": 1592,
+  "httpRequests": 170
+}

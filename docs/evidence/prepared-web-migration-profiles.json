@@ -1,0 +1,76 @@
+{
+  "status": "PASS",
+  "mode": "prepared-web-migration-profiles",
+  "host": "127.0.0.1",
+  "remoteContacted": false,
+  "migrationSha256": "f0b4e4a28ba4bcc89c164627de8e9db2275b9aaaf1c51a083cfdbaebf8305047",
+  "cases": [
+    {
+      "name": "nondeferrable-bulk-swap-reproduces-unique-violation",
+      "status": "PASS"
+    },
+    {
+      "name": "captured-date-schema-installs-preserving-rows-and-legacy-grants",
+      "status": "PASS"
+    },
+    {
+      "name": "valid-timestamp-trigger-and-created-metadata-preserved",
+      "status": "PASS"
+    },
+    {
+      "name": "missing-optional-metadata-added-with-null-history",
+      "status": "PASS"
+    },
+    {
+      "name": "supported-unique-normal-rpc-swap-preserves-score-identities",
+      "status": "PASS"
+    },
+    {
+      "name": "supported-unique-reversed-rpc-swap-preserves-score-identities",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy-bga-duplicates-after-install-reject-import-without-receipt-or-data-change",
+      "status": "PASS"
+    },
+    {
+      "name": "timestamp-played-at-refused-with-full-rollback",
+      "status": "PASS"
+    },
+    {
+      "name": "bga-duplicates-refused-without-data-cleanup",
+      "status": "PASS"
+    },
+    {
+      "name": "unsupported-unique-include-refused-with-full-rollback",
+      "status": "PASS"
+    },
+    {
+      "name": "numeric-scale-refused-with-full-rollback",
+      "status": "PASS"
+    },
+    {
+      "name": "inheritance-refused-before-data-scan",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown-active-trigger-refused",
+      "status": "PASS"
+    },
+    {
+      "name": "dependent-foreign-key-prevents-unique-conversion",
+      "status": "PASS"
+    },
+    {
+      "name": "missing-auth-primary-key-refused-with-full-rollback",
+      "status": "PASS"
+    },
+    {
+      "name": "repeated-install-refused-without-changing-first-install",
+      "status": "PASS"
+    }
+  ],
+  "failure": null,
+  "harnessSha256": "bbeade71d1244d484226d18456cc2bb49511d3433fb05faf33c9288e28f8e4f5",
+  "ownedProfileDatabasesRemoved": true
+}

@@ -86,13 +86,52 @@ class PlayWritesTest {
         assertEquals(0, calls); assertNull(writer.pendingRequest)
     }
     @Test fun `confirmed HTTP rejection clears only a fresh request`() = check { auth, network ->
-        for ((status, expected) in listOf(400 to PlayWriteProblem.INVALID_INPUT, 403 to PlayWriteProblem.FORBIDDEN,
-            404 to PlayWriteProblem.NOT_FOUND, 409 to PlayWriteProblem.CONFLICT, 422 to PlayWriteProblem.INVALID_INPUT)) {
+        for ((status, code, expected) in listOf(Triple(400, "PT400", PlayWriteProblem.INVALID_INPUT),
+            Triple(403, "42501", PlayWriteProblem.FORBIDDEN), Triple(403, "PT403", PlayWriteProblem.FORBIDDEN),
+            Triple(404, "PT404", PlayWriteProblem.NOT_FOUND), Triple(409, "PT409", PlayWriteProblem.CONFLICT))) {
             var calls = 0
-            val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; PlayRpcResponse(status, "secret") }, true)
+            val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; PlayRpcResponse(status, """{"code":"$code"}""") }, true)
             problem(expected) { writer.create(f.create()) }
             assertEquals(1, calls); assertNull(writer.pendingRequest)
         }
+    }
+    @Test fun `unrecognized rejection retains the journal and blocks new writes`() = check { auth, network ->
+        val responses = listOf(PlayRpcResponse(422, """{"code":"PT422"}"""), PlayRpcResponse(403, """{"code":"PGRST301"}""")) +
+            listOf(400, 401, 403, 404, 409).flatMap { status ->
+                listOf("", "<html>Gateway error</html>", "{}", """{"code":42501}""", """{"code":"PT500"}""")
+                    .map { PlayRpcResponse(status, it) }
+            }
+        for (response in responses) {
+            val store = MemoryPendingPlayStore()
+            var calls = 0
+            val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; response }, true,
+                PlayWriteJournal(f.account, store))
+            problem(PlayWriteProblem.UNCERTAIN) { writer.create(f.create()) }
+            assertEquals(f.request, writer.pendingRequest!!.requestId)
+            assertEquals(PlaySaveJson.createArguments(f.create()).toString(), store.load(f.account)!!.body)
+            problem(PlayWriteProblem.UNCERTAIN) { writer.create(f.create().copy(request_id = UUID(0, 99))) }
+            assertEquals(1, calls)
+            writer.close()
+            assertNotNull(store.load(f.account))
+        }
+    }
+    @Test fun `ambiguous rejection survives restart and replays only the original request`() = check { auth, network ->
+        val store = MemoryPendingPlayStore()
+        val requests = mutableListOf<Request>()
+        val first = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport {
+            requests += it; PlayRpcResponse(409, "<html>Proxy conflict</html>")
+        }, true, PlayWriteJournal(f.account, store))
+        problem(PlayWriteProblem.UNCERTAIN) { first.create(f.create()) }
+        first.close()
+        val second = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport {
+            requests += it; PlayRpcResponse(200, f.saved(true))
+        }, true, PlayWriteJournal(f.account, store))
+        assertEquals(f.request, second.restorePending()!!.requestId)
+        assertTrue((second.retryPending() as PlayWriteResult.Saved).value.replayed)
+        assertEquals(body(requests[0]), body(requests[1]))
+        assertEquals(2, requests.size)
+        assertNotNull(store.load(f.account)!!.confirmedResponse)
+        second.close()
     }
     @Test fun `missing RPC differs from a missing play and never falls back`() = check { auth, network ->
         var calls = 0
@@ -132,7 +171,7 @@ class PlayWritesTest {
         for (status in listOf(400, 403, 404, 409)) {
             var calls = 0
             val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport {
-                calls++; if (calls == 1) throw IOException() else PlayRpcResponse(status, "")
+                calls++; if (calls == 1) throw IOException() else PlayRpcResponse(status, """{"code":"PT$status"}""")
             }, true)
             problem(PlayWriteProblem.UNCERTAIN) { writer.create(f.create()) }
             try { writer.retryPending(); fail() } catch (_: PlayWriteFailure) { }
@@ -142,7 +181,7 @@ class PlayWritesTest {
     @Test fun `explicit 401 refreshes once with identical payload and new bearer`() = check { auth, network ->
         val requests = mutableListOf<Request>()
         val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport {
-            requests += it; PlayRpcResponse(if (requests.size == 1) 401 else 200, f.saved())
+            requests += it; if (requests.size == 1) PlayRpcResponse(401, """{"code":"PGRST301"}""") else PlayRpcResponse(200, f.saved())
         }, true)
         writer.create(f.create())
         assertEquals(listOf("Bearer user-access", "Bearer new-access"), requests.map { it.header("Authorization") })
@@ -151,7 +190,7 @@ class PlayWritesTest {
     @Test fun `second 401 stops and an earlier ambiguous request survives`() = check { auth, network ->
         var calls = 0
         val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport {
-            calls++; if (calls == 1) throw IOException() else PlayRpcResponse(401, "")
+            calls++; if (calls == 1) throw IOException() else PlayRpcResponse(401, """{"code":"PT401"}""")
         }, true)
         problem(PlayWriteProblem.UNCERTAIN) { writer.create(f.create()) }
         authProblem(AuthProblem.INVALID_CREDENTIALS) { writer.retryPending() }

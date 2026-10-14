@@ -37,6 +37,19 @@ Una mutazione conserva una copia JSON immutabile prima dell'invio. Il token vien
 | Ripetizione incerta rifiutata per sessione o permesso | La vecchia incertezza rimane: il rifiuto attuale non prova che il primo invio non abbia committato |
 | Getter editor | Non crea e non cancella l'incertezza di una mutazione |
 
+### Risposte di errore ambigue, 14 ottobre 2026
+
+Il client ora richiede un codice macchina coerente con lo stato HTTP prima di cancellare una richiesta nuova o rinnovare la sessione. La tabella precedente descriveva il primo incremento; un semplice stato HTTP non basta più.
+
+| Stato HTTP e codice | Prima richiesta | Recupero di una richiesta già incerta |
+| --- | --- | --- |
+| 400/PT400, 403/PT403 o 42501, 404/PT404, 409/PT409 | Errore del contratto; la transazione corrente è rifiutata e la richiesta nuova viene rimossa | La richiesta originale resta conservata |
+| 404/PGRST202 | RPC indisponibile; nessun fallback | La richiesta originale resta conservata |
+| 401/PT401 o PGRST301 | Un solo rinnovo Auth, con lo stesso UUID e corpo | La richiesta originale resta conservata anche se il rinnovo non risolve il rifiuto |
+| Corpo vuoto, HTML, codice assente/non testuale/incoerente, 422 o codice sconosciuto | UNCERTAIN; nessun rinnovo o reinvio automatico della mutazione | La richiesta originale resta conservata |
+
+La stessa risposta ambigua sul getter produce INVALID_RESPONSE e non modifica il journal. Le risposte reali di errore attraversano il filtro già presente del trasporto, che conserva soltanto il codice macchina e limita la lettura a 8 KiB. Le nuove prove verificano 27 combinazioni di stato/corpo e il recupero dopo ricreazione del client, usando uno store in memoria condiviso, Auth simulata e trasporto controllato. Non certificano l'integrazione con lo store Android cifrato o con le RPC reali. La produzione resta disabilitata.
+
 Questo primo incremento conservava la richiesta nella sola istanza del client. Il successivo journal prepara persistenza cifrata, ripristino verificato per account e conservazione della conferma dopo risposta: [STABILITY.md](STABILITY.md). Il client predefinito resta disabilitato e con store in memoria; il factory dell'editor dovrà iniettare lo store cifrato e condividere il journal. Nessuna riconnessione invia automaticamente dati. Un replay o una conferma recuperata riguardano la vecchia operazione; la UI futura dovrà rileggere lo stato corrente della partita.
 
 ## Validazione

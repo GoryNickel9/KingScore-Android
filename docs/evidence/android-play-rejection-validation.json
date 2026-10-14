@@ -1,0 +1,242 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "scope": "Android play RPC rejection classification and journal recovery",
+  "status": "PASS",
+  "baselineCommit": "aee9ac4771d30ab1531018064f9b4e255bdc5fce",
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "remoteDatabaseContacted": false,
+  "androidEditorEnabled": false,
+  "applicationWriterWired": false,
+  "githubCiExecuted": false,
+  "githubCiSkippedByCommit": true,
+  "ciInstruction": "Latest AGENTS.md instructions supplied in conversation prohibit CI execution",
+  "regressionBeforeFix": {
+    "tests": 31,
+    "failures": 2,
+    "errors": 0,
+    "result": "Expected two new assertion failures against the baseline production client",
+    "setupFailures": [
+      "Java 17 loopback connection failed before tests",
+      "Existing ignored javaagent requires Java 21"
+    ]
+  },
+  "build": {
+    "command": "gradlew.bat :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --no-daemon",
+    "result": "BUILD SUCCESSFUL",
+    "exitCode": 0,
+    "seconds": 282,
+    "java": "Oracle JDK 21.0.6",
+    "localWorkaround": "Existing ignored tcp-only-agent.jar with repository-local Gradle cache; absent from APK and CI"
+  },
+  "jvm": {
+    "tests": 227,
+    "failures": 0,
+    "errors": 0,
+    "suites": [
+      {
+        "name": "app.kingscore.android.core.auth.SupabaseAuthRepositoryTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.core.images.ImagePolicyTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.core.network.ValidatedDefaultNetworkTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.AccountPlayJournalsTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.CommentOutcomesTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.CommentWritesTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.GameRepositoryTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.HistoryFiltersRepositoryTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.PlayerRepositoryTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.PlaySaveJsonTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.PlayWritesTest",
+        "tests": 31,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.RowDecodersTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabasePlaysRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseRatingsRepositoryTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseReaderTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.data.remote.SupabaseStatisticsRepositoryTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.auth.AppViewModelTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.games.GameDetailViewModelTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.navigation.AuthenticatedResourcesTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.playeditor.PlayEditorViewModelTest",
+        "tests": 25,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.players.PlayerDetailViewModelTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.plays.CommentViewModelTest",
+        "tests": 19,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.plays.PlaysViewModelTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.ratings.RatingsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "app.kingscore.android.feature.stats.StatisticsViewModelTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  },
+  "node": {
+    "tests": 39,
+    "failures": 0,
+    "exitCode": 0
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 24
+  },
+  "newCoverage": {
+    "ambiguousStatusBodyCombinations": 27,
+    "clientRecreationWithRetainedOriginalRequest": true,
+    "originalBodyAndUuidReplayed": true,
+    "encryptedStoreIntegrationVerified": false,
+    "realRpcIntegrationVerified": false
+  },
+  "hashScheme": "SHA256 of current PC file bytes, without EOL normalization",
+  "hashes": [
+    {
+      "path": "app/src/main/java/app/kingscore/android/data/remote/SupabasePlayWrites.kt",
+      "sha256": "616cfd3b0edd064582538599eb33e35298b8106a2025f520a31e6b0e93cdc46f"
+    },
+    {
+      "path": "app/src/test/java/app/kingscore/android/data/remote/PlayWritesTest.kt",
+      "sha256": "095fc828cac7cdf71d46c5cbb243dbe67d178f44ae2718ade84c31381cfe159a"
+    },
+    {
+      "path": "app/build/outputs/apk/debug/app-debug.apk",
+      "sha256": "d835053f6f1abe01cb9fc3d0ac356b7a2208b50bf928d4ec934dc2b33e35b410"
+    },
+    {
+      "path": ".work/play-rejection-regression-before.xml",
+      "sha256": "4ff3a31ed6cab68a0c90decd31412f6d840c15d87e7f0689207906dcf08d409a"
+    },
+    {
+      "path": ".work/play-rejection-regression-before-tcp21.log",
+      "sha256": "70c27507e880d33aa3514968d6c0fa0340710c74c30ba1a6c4c6a3c6e0d9c6ed"
+    },
+    {
+      "path": ".work/play-rejection-validation.log",
+      "sha256": "e3e89af016839abb4d1592106d6a5f0b7a305293e06f175533f398442435f142"
+    },
+    {
+      "path": ".work/play-rejection-node.log",
+      "sha256": "8fee7d0fd29a255971b1178910a34d0dbfe5dae9e42c2b6810f393e10f6b1455"
+    },
+    {
+      "path": "app/build/reports/lint-results-debug.xml",
+      "sha256": "f6c88be5afaf10c9c7513d87b1d0fcc0442519e12bb61c04862f1149b1629e4a"
+    }
+  ]
+}

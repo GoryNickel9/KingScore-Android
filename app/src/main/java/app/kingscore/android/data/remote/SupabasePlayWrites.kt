@@ -131,14 +131,28 @@ class SupabasePlayWrites(
             }
             catch (_: IOException) { throw PlayWriteFailure(if (prepared == null) PlayWriteProblem.INVALID_RESPONSE else PlayWriteProblem.UNCERTAIN) }
         checkAccess()
+        val code = if (response.status == 200) null else runCatching {
+            Json.parseToJsonElement(response.body).jsonObject["code"]?.jsonPrimitive
+                ?.takeIf { it.isString }?.content
+        }.getOrNull()
+        // A gateway's status alone cannot prove that a mutation was rejected before commit.
+        val rejected = when (response.status) {
+            400, 409 -> code == "PT${response.status}"
+            401 -> code in setOf("PT401", "PGRST301")
+            403 -> code in setOf("PT403", "42501")
+            404 -> code in setOf("PT404", "PGRST202")
+            else -> false
+        }
+        if (response.status != 200 && !rejected)
+            throw PlayWriteFailure(if (prepared == null) PlayWriteProblem.INVALID_RESPONSE else PlayWriteProblem.UNCERTAIN)
         return when (response.status) {
             200 -> response
             401 -> { if (prepared != null && !preservePendingOnError) journal.record(null); throw AuthFailure(AuthProblem.INVALID_CREDENTIALS) }
-            400, 403, 404, 409, 422 -> {
+            400, 403, 404, 409 -> {
                 if (prepared != null && !preservePendingOnError) journal.record(null)
                 throw PlayWriteFailure(when (response.status) {
                     403 -> PlayWriteProblem.FORBIDDEN
-                    404 -> if (runCatching { Json.parseToJsonElement(response.body).jsonObject["code"]?.jsonPrimitive?.contentOrNull }.getOrNull() == "PGRST202")
+                    404 -> if (code == "PGRST202")
                         PlayWriteProblem.UNAVAILABLE else PlayWriteProblem.NOT_FOUND
                     409 -> PlayWriteProblem.CONFLICT
                     else -> PlayWriteProblem.INVALID_INPUT

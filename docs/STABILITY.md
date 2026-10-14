@@ -9,7 +9,7 @@ La stabile mantiene il perimetro concordato: login e Internet obbligatori, consu
 | Consultazione, login e blocco rete | Suite funzionali con fixture su API 31/35; 77 casi finali API 35, font grandi, tastiera e storico da 1.200 partite verificati | Nessuna certificazione Auth/RLS remota; misure PC con limiti espliciti in BENCHMARKS.md |
 | Commenti propri | Implementati, registro cifrato nell'Application; recupero dopo arresto del processo e percorsi di sessione verificati | Rilettura completa e conferma manuale prima di nuove scritture; nessuna promessa di idempotenza server |
 | Contratti e salvataggi atomici | Candidata e migrazione web predisposta: 21 casi superati anche sulla fonte install-only | API reali e writer web/server coerenti, oggi indisponibili |
-| Client RPC Android | Preparato, disabilitato per default | Integrazione nell'editor dopo le condizioni backend |
+| Client RPC Android | Preparato, disabilitato per default; risposte di rifiuto ambigue conservano la richiesta | Integrazione nell'editor dopo le condizioni backend |
 | Writer web locale | Preparatore, trasporto mutazioni, journal con conferme e verifica account; 97 test web, typecheck/lint superati | Pagine, conflitti, collaudo browser e integrazione SQL ancora da completare; nessuna pubblicazione |
 | Compatibilità SQL | Preflight read-only: 19 casi; migrazione predisposta: 16 profili e 21 casi HTTP passati su PostgreSQL 17.4 | Cutover, caller reali e verifica backend restano da completare; nessuna modifica cloud |
 | Recupero salvataggi | Journal cifrato preparato; account verificato prima del recupero | Collegamento al ciclo di vita dell'editor e collaudo dei percorsi completi |
@@ -34,6 +34,8 @@ Le condizioni backend sono in [WRITER_INTEGRATION.md](WRITER_INTEGRATION.md). Il
 Il recupero richiede prima rete e verifica dell'identità. Non invia automaticamente una richiesta: l'operazione incerta può essere ripetuta soltanto su comando esplicito. Record danneggiati, incompatibili o non salvabili bloccano l'invio e non vengono eliminati come se l'operazione fosse fallita sul server. La chiusura del client elimina la copia in memoria; il record cifrato rimane disponibile soltanto per il suo account.
 
 Una risposta valida viene conservata come conferma cifrata, anziché cancellare subito ogni traccia. Questo copre la chiusura dell'app fra risposta server e presentazione del risultato. Il recupero della conferma non esegue HTTP; restituisce un risultato marcato restored, distinto dal campo replayed del server. Una nuova operazione esplicita con un nuovo UUID sostituisce la conferma precedente. Riutilizzare il vecchio UUID con un contenuto diverso produce conflitto.
+
+Il client cancella una richiesta nuova soltanto dopo un rifiuto con codice macchina riconosciuto e coerente con lo stato HTTP. Un corpo vuoto, HTML o con codice inatteso conserva il comando originale e blocca nuovi salvataggi. Il checkpoint verifica 27 combinazioni ambigue e il replay dopo ricreazione del client con store in memoria: [android-play-rejection-validation.json](evidence/android-play-rejection-validation.json). Le prove non chiudono l'integrazione con l'editor, lo store cifrato o il backend reale.
 
 Il factory dell'editor dovrà condividere un journal per account e iniettare lo store cifrato. Il client predefinito resta disabilitato e usa memoria: non è ancora collegato all'Application. Le garanzie del file riguardano riavvio e arresto del processo; non certificano perdita del dispositivo, cancellazione dei dati dell'app o guasti del filesystem.
 

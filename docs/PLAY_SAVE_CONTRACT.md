@@ -1,6 +1,6 @@
-# Contratto dei salvataggi partite, proposta V1
+# Contratto dei salvataggi partite, candidata locale V1
 
-Definizione del 14 ottobre 2026. Questa proposta e le prove sono contenute soltanto in KingScore-Android. Le nuove RPC non sono implementate o deployate; l'editor partite Android resta disabilitato. King-Score, Vercel e Supabase remoto non vengono modificati. Il catalogo di riferimento è l'audit già salvato del 13 ottobre, senza nuove letture remote.
+Definizione del 14 ottobre 2026. La candidata SQL e le prove sono contenute soltanto in KingScore-Android. Le cinque RPC sono implementate nel database locale dedicato, senza deploy; l'editor partite Android resta disabilitato. King-Score, Vercel e Supabase remoto non vengono modificati. Il catalogo di riferimento è l'audit già salvato del 13 ottobre, senza nuove letture remote.
 
 ## Richieste
 
@@ -8,7 +8,7 @@ Il contratto leggibile dalle macchine è [play-saves.json](../contracts/v1/play-
 
 | RPC proposta | Argomenti | Risposta di successo |
 | --- | --- | --- |
-| get_play_editor_v1 | p_play_id | detail e revision dallo stesso snapshot |
+| get_play_editor_v1 | p_play_id | detail, revision ed editability dallo stesso snapshot |
 | create_play_v1 | p_request_id, p_payload | play_id, revision, replayed |
 | update_play_v1 | p_request_id, p_play_id, p_expected_revision, p_payload | play_id, revision, replayed |
 | delete_play_v1 | p_request_id, p_play_id, p_expected_revision | play_id, deleted=true, replayed |
@@ -20,9 +20,9 @@ Il payload contiene esattamente game_id, played_at, duration_minutes, source, no
 
 Ogni score contiene esattamente id, player_id, score, winner, color e role. In creazione id è null; in modifica gli ID esistenti devono appartenere alla partita. ID null indica un partecipante nuovo. Da uno a 63 partecipanti, senza duplicati di player o score ID. I partecipanti omessi in un update vengono rimossi nella stessa transazione; quelli mantenuti conservano gli ID. Color e role devono essere reinviati per ciascun partecipante mantenuto, anche quando null.
 
-Le letture storiche restano più permissive degli input V1: source manual/null, gioco assente, winner null o quantità fuori limite possono comparire nei dati. Il client non deve convertirli o troncarli silenziosamente per salvare una modifica. La gestione editor di queste partite richiederà una scelta esplicita prima dell'implementazione; questa proposta non garantisce già la modifica di ogni riga storica.
+Le letture storiche restano più permissive degli input V1: source manual/null, gioco assente, winner null o quantità fuori limite possono comparire nei dati. Il getter restituisce editability `{editable,issues}`; l'update rifiuta valori storici incompatibili, senza conversioni automatiche. La scelta su come correggerli resta aperta. La lettura conserva anche tutti i partecipanti oltre il limite V1.
 
-Notes, color, role e location accettano testo Unicode valido o null; NUL e surrogate isolate sono rifiutati. Il limite del payload è 1 MiB di UTF-8 nella rappresentazione PostgreSQL jsonb::text. Il server deve verificare questo limite prima di modificare dati. La verifica JS prepara il controllo della stessa rappresentazione; il confronto esatto col SQL resta un test di accettazione della futura implementazione.
+Notes, color, role e location accettano testo Unicode valido o null; NUL e surrogate isolate sono rifiutati. Payload e metadata BGA hanno ciascuno un limite di 1 MiB di UTF-8 nella rappresentazione PostgreSQL jsonb::text. Il server verifica entrambi prima di modificare dati. Le prove locali confrontano il conteggio JS con quello SQL, includendo Unicode, escape e richieste esattamente al limite e un byte oltre.
 
 ## Punteggi senza perdita di precisione
 
@@ -30,7 +30,7 @@ Il wire format comune a web e Android usa score come **stringa decimale oppure n
 
 Il getter editor restituisce anche gli score come stringhe decimali o null; il client li decodifica nei propri tipi di dominio. Le letture delle tabelle esistenti restano invariate e continuano a restituire NUMERIC come token JSON numerici.
 
-Il ranking mantiene il confronto Float64 del sito, separato dal NUMERIC salvato. Sono rifiutati valori che diventano Infinity o uno zero per underflow, salvo lo zero reale. NULL resta distinto da zero. Winner, pareggi e cooperative mantengono il comportamento concordato del sito: nessuna nuova regola NULLS LAST. Una modifica soltanto di note, color o role conserva le posizioni se partecipanti, ID, score, winner, modalità ed esito team sono invariati. La verifica dell'algoritmo di ranking resta da eseguire sulla nuova implementazione.
+Il ranking mantiene il confronto Float64 del sito, separato dal NUMERIC salvato. Sono rifiutati valori che diventano Infinity o uno zero per underflow, salvo lo zero reale. NULL resta distinto da zero. Winner, pareggi e cooperative mantengono il comportamento concordato del sito: nessuna nuova regola NULLS LAST. Una modifica soltanto di note, color o role conserva le posizioni se partecipanti, ID, score, winner, modalità ed esito team sono invariati. Il confronto non transitivo con NULL richiede il percorso V8 per array sotto 64 elementi: 1.592 vettori verificano SQL contro la caratterizzazione JS in questa repo, con Node 24.19.0. Non è un nuovo confronto diretto con il codice web e non garantisce equivalenza con altri motori JavaScript.
 
 ## Transazioni, duplicati e concorrenza
 
@@ -40,7 +40,7 @@ La chiave della ricevuta è actor_id verificato più request_id. La richiesta re
 
 Update e delete ricevono la revisione letta dall'editor. La revisione include tutte le colonne della partita e degli score, con serializzazione e ordine deterministici; esclude nomi dei cataloghi, immagini, commenti e rating. Il server acquisisce lock coerenti e confronta la revisione prima di scrivere. Due aggiornamenti diversi della stessa revisione devono produrre un solo successo e un conflitto 409.
 
-Non basta introdurre le RPC: import, altri client e processi backend che scrivono punteggi devono rispettare la stessa disciplina. La chiusura dei vecchi percorsi di scrittura è un'attività successiva, da provare localmente. Nessun cutover è eseguito ora.
+Non basta introdurre le RPC: import, altri client e processi backend che scrivono punteggi devono rispettare la stessa disciplina. La suite applica separatamente [candidate-cutover.sql](../local-tests/candidate-cutover.sql) alla fixture locale: revoca le scritture dirette, anche a service_role, e la vecchia replace_play_scores. Un adattatore privato sintetico applica soltanto posizioni già calcolate alla revisione di partenza. I job reali non sono integrati; questo test non certifica il funzionamento del sito dopo un cutover. Nessun cutover remoto è eseguito.
 
 ## Import BGA e rating
 
@@ -67,4 +67,4 @@ La verifica locale usa JWT HS256 sintetici. Non valida il servizio di login real
 
 ## Criterio di completamento
 
-La definizione è verificata dai test di payload. La preparazione dell'ambiente è verificata dal runner locale e dalla riproduzione dei difetti attuali. I [21 casi di accettazione](../local-tests/acceptance-cases.json) sono **pending**, finché non esiste una nuova implementazione atomica e non vengono eseguiti. Nessuna di queste prove abilita automaticamente le scritture Android o autorizza un deploy.
+La definizione è verificata dai test di payload. Il runner riproduce prima i difetti attuali e poi applica la candidata a un nuovo cluster locale. I [21 casi di accettazione](../local-tests/acceptance-cases.json), inclusi errori provocati dopo le mutazioni, sono eseguiti da [atomic-acceptance.mjs](../local-tests/atomic-acceptance.mjs). Risultati e hash sono in [local-atomic-validation.json](evidence/local-atomic-validation.json). Nessuna prova abilita le scritture Android o autorizza un deploy.

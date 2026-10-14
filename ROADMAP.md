@@ -181,6 +181,6 @@ La dipendenza delle scritture admin resta irrisolta: le RPC proposte e i writer 
 
 ## Prossima attività
 
-La CI Android è stata riattivata e supera il commit 47d468e del 14 ottobre 2026. Il contratto dei salvataggi è ora definito in [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md); [local-tests/README.md](local-tests/README.md) prepara la replica PostgreSQL/HTTP sul PC e riproduce i difetti del backend attuale. Non sono presenti nuove RPC atomiche.
+Il contratto dei salvataggi e le cinque RPC candidate sono implementati soltanto sul PC: [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) e [local-tests/README.md](local-tests/README.md). Il collaudo supera 21 casi di accettazione, 1.592 vettori di ranking e 29 prove HTTP che caratterizzano la base precedente. Evidenze: [local-atomic-validation.json](docs/evidence/local-atomic-validation.json).
 
-Il prossimo incremento è un'implementazione candidata nel database locale, con i 21 casi di accettazione ancora pending. Le prove usano esclusivamente il PC, senza Supabase remoto come ambiente di test. Modifiche a King-Score e rilasci Vercel/Supabase restano fuori dall'ambito corrente; le scritture partite Android restano disabilitate.
+La prossima attività è definire l'integrazione dei writer reali, inclusi import e processi che aggiornano punteggi, prima di poter abilitare l'editor Android. Richiede una discussione sull'ambito: King-Score e rilasci Vercel/Supabase restano esclusi. Il test del cutover e l'adattatore server sono soltanto locali; nessun consumer reale è integrato. Le scritture partite Android restano disabilitate.

@@ -104,3 +104,11 @@ test('revision is bounded and opaque; import positions are explicit', () => {
     imported.p_metadata.bga_table_id = tableId; assert.throws(() => validatePlaySave('import_bga_play_v1', imported));
   }
 });
+
+test('BGA metadata has its own jsonb byte boundary', () => {
+  const command = { ...create(), p_metadata: { location: '', bga_table_id: 'boundary' }, p_positions: [null] };
+  command.p_metadata.location = 'a'.repeat(contract.limits.metadataJsonbBytes - Buffer.byteLength(jsonbText(command.p_metadata)));
+  validatePlaySave('import_bga_play_v1', command);
+  command.p_metadata.location += 'a';
+  assert.throws(() => validatePlaySave('import_bga_play_v1', command));
+});

@@ -19,8 +19,8 @@ Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Sco
 | [ROADMAP.md](ROADMAP.md) | Fasi, stime e stato corrente |
 | [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md) | Schema reale, RLS e limiti delle verifiche |
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | API esistenti, DTO e RPC proposte |
-| [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Nuovi contratti proposti per i salvataggi, senza deploy |
-| [local-tests/README.md](local-tests/README.md) | PostgreSQL e HTTP sul PC, difetti riprodotti e test futuri |
+| [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Contratti V1 e candidata locale dei salvataggi, senza deploy |
+| [local-tests/README.md](local-tests/README.md) | PostgreSQL e HTTP sul PC, difetti riprodotti e 21 casi atomici |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Moduli e flusso dati Android |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Decisioni tecniche e vincoli |
 | [docs/TESTING.md](docs/TESTING.md) | Comandi di verifica e controlli ancora necessari |
@@ -50,4 +50,4 @@ Lo script riusa URL e chiave pubblica del repository web; le configurazioni loca
 
 Per verificare le evidenze salvate: `node --test scripts/check-evidence.test.mjs`. Per compilare ed eseguire i test Kotlin: `./scripts/check-contracts.ps1` con Kotlin e Java 17 o successivo disponibili.
 
-Le nuove RPC per le partite sono specificate ma non esistono ancora sul backend. Non implementare un ripiego con scritture separate di partita e punteggi.
+Le cinque RPC per le partite sono implementate e verificate soltanto nel database locale di prova; non esistono sul backend reale. Eseguire `pwsh -NoProfile -File scripts/test-local-play-saves.ps1 -Atomic` per riprodurre il collaudo. L'editor Android resta disabilitato; non implementare un ripiego con scritture separate di partita e punteggi.

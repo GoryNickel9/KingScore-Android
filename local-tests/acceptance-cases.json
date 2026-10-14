@@ -1,6 +1,7 @@
 {
-  "stage": "future-atomic-implementation",
-  "status": "pending-implementation",
+  "stage": "local-atomic-candidate",
+  "status": "implemented-results-in-evidence",
+  "evidence": "docs/evidence/local-atomic-validation.json",
   "environment": "PC-loopback-only",
   "cases": [
     {"id":"create-rollback","expect":"Invalid participant or score leaves no parent, scores or receipt"},
@@ -22,7 +23,7 @@
     {"id":"bga-import","expect":"Metadata and nullable external positions commit with scores; duplicate actor/table does not create another play"},
     {"id":"elo-sentinels","expect":"Ratings and recalc runs stay unchanged; only existing play-deletion cascades affect linked history"},
     {"id":"legacy-writers","expect":"After a separately tested local cutover, direct DML and old score RPC cannot bypass atomic writers"},
-    {"id":"writer-cooperation","expect":"Imports and server jobs cannot overwrite newer scores using an obsolete snapshot"},
+    {"id":"writer-cooperation","expect":"Local imports and the synthetic server position adapter reject obsolete snapshots; real jobs are not integrated"},
     {"id":"legacy-values","expect":"Historical manual/null source, null game or winner and unsupported participant counts are shown explicitly; no silent conversion or truncation on edit"}
   ]
 }

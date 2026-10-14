@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "scope": "local-atomic-play-saves",
+  "status": "PASS",
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "remoteDatabaseContacted": false,
+  "candidateInstalledLocally": true,
+  "deployed": false,
+  "androidEditorEnabled": false,
+  "androidBuildVersion": "0.4.0",
+  "apkBuiltLocally": false,
+  "command": "pwsh -NoProfile -File scripts/test-local-play-saves.ps1 -Atomic",
+  "localRun": {
+    "status": "PASS",
+    "mode": "local-atomic-acceptance",
+    "host": "127.0.0.1",
+    "database": "kingscore_local_tests",
+    "runDirectory": "C:\\Users\\GoryNickel\\Documents\\GitHub\\KingScore-Android\\.work\\local-play-tests\\f404c985bd6443b7a3d2b21b9286ff5b",
+    "startedAtUtc": "2026-10-14T11:25:37.5740584Z",
+    "finishedAtUtc": "2026-10-14T11:26:55.6887467Z",
+    "postgresPort": 63655,
+    "exitCodes": {
+      "contract-tests": 0,
+      "generate-fixture": 0,
+      "initdb": 0,
+      "start": 0,
+      "create-database": 0,
+      "mark-database": 0,
+      "fixture": 0,
+      "http-tests": 0,
+      "candidate": 0,
+      "atomic-acceptance": 0,
+      "stop": 0
+    },
+    "serverStopped": true,
+    "remoteContacted": false,
+    "futureContractImplemented": true,
+    "githubCiExecuted": false,
+    "failure": null
+  },
+  "acceptance": {
+    "status": "PASS",
+    "mode": "local-atomic-acceptance",
+    "cases": [
+      {
+        "id": "create-rollback",
+        "status": "PASS"
+      },
+      {
+        "id": "update-rollback",
+        "status": "PASS"
+      },
+      {
+        "id": "delete-rollback",
+        "status": "PASS"
+      },
+      {
+        "id": "permission",
+        "status": "PASS"
+      },
+      {
+        "id": "global-admin",
+        "status": "PASS"
+      },
+      {
+        "id": "score-metadata",
+        "status": "PASS"
+      },
+      {
+        "id": "numeric-wire",
+        "status": "PASS"
+      },
+      {
+        "id": "jsonb-size",
+        "status": "PASS"
+      },
+      {
+        "id": "snapshot-revision",
+        "status": "PASS"
+      },
+      {
+        "id": "stale-update-delete",
+        "status": "PASS"
+      },
+      {
+        "id": "parallel-update",
+        "status": "PASS"
+      },
+      {
+        "id": "parallel-create-replay",
+        "status": "PASS"
+      },
+      {
+        "id": "same-key-other-request",
+        "status": "PASS"
+      },
+      {
+        "id": "replay-after-delete",
+        "status": "PASS"
+      },
+      {
+        "id": "role-before-replay",
+        "status": "PASS"
+      },
+      {
+        "id": "ranking",
+        "status": "PASS"
+      },
+      {
+        "id": "bga-import",
+        "status": "PASS"
+      },
+      {
+        "id": "elo-sentinels",
+        "status": "PASS"
+      },
+      {
+        "id": "legacy-writers",
+        "status": "PASS"
+      },
+      {
+        "id": "writer-cooperation",
+        "status": "PASS"
+      },
+      {
+        "id": "legacy-values",
+        "status": "PASS"
+      }
+    ],
+    "host": "127.0.0.1",
+    "remoteContacted": false,
+    "goTrueLoginTested": false,
+    "realWritersIntegrated": false,
+    "ownGatewayStopped": true,
+    "node": "v24.19.0",
+    "v8": "13.6.233.17-node.51",
+    "postgres": "PostgreSQL 17.4 on x86_64-windows, compiled by msvc-19.42.34436, 64-bit",
+    "rankingVectors": 1592,
+    "httpRequests": 170
+  },
+  "baseline": {
+    "status": "PASS",
+    "cases": 29,
+    "problemsReproduced": [
+      "partial-create",
+      "partial-update",
+      "lost-score-metadata-and-ids",
+      "broken-score-update-trigger",
+      "no-revision-conflict",
+      "duplicate-create",
+      "stale-delete"
+    ],
+    "ownGatewayStopped": true
+  },
+  "nodeChecks": {
+    "command": "node --test scripts/check-evidence.test.mjs contracts/tests/*.test.mjs",
+    "contractTests": 29,
+    "auditTests": 10,
+    "passed": 39,
+    "exitCode": 0
+  },
+  "localCutoverTested": true,
+  "postgrest": "PostgREST 14.1",
+  "sourceHashNormalization": "UTF-8, LF line endings, no leading BOM",
+  "sourceSha256": {
+    "docs/evidence/supabase-audit.json": "f7719d48bfed2e169e14022488945fc26b22d292f04206680e5924d45c418dc4",
+    "contracts/v1/play-saves.json": "b6bc5948d443f3a292a18d67f87f620da566afa1de3d57690918d10b2c93c880",
+    "contracts/tests/play-save-validation.mjs": "7e6982f71dae1b270cd1243be060e9b2a5abe27d2ef28163384bb8e68e3b0821",
+    "contracts/tests/play-save-contracts.test.mjs": "dbef656ebf1ed53cf3128a0d81ca03cff7c2110ac79e856f234e136f05a7a626",
+    "local-tests/generate-baseline.mjs": "b3b244006a0a24e228dd5f858426c68bd8451c988733a1181f36fac12c42587f",
+    "local-tests/baseline-http.mjs": "c0ddbef2c759195fe0f4ce97d6edd686c3883f39cd1f5d9512e5caddd00eeff4",
+    "local-tests/acceptance-cases.json": "e83d42a564d5e06da006c774eb0ab3b6c27e3f31cce2a8941739473a755e90bb",
+    "local-tests/candidate.sql": "4e60ad64ebd084f65da325d664ec91c6468471d4e954fb170fe65d92dc53e5fb",
+    "local-tests/candidate-cutover.sql": "a374ce5820a64c5e8facc4af61ca762cd948e55c7bd1946f50120e307b78c469",
+    "local-tests/atomic-acceptance.mjs": "2726231e124b7ab78d61a08af8ccb7e86f4e9419d934c1ccc8067eb3fc7f5425",
+    "local-tests/local-http.mjs": "258809781152873e829f876ddbf8d0085a24c4edf1bf26f743cae74630033c71",
+    "local-tests/ranking-reference.mjs": "0f9ade8502dcbd97c137a2baebe9f63170d75a0567711364a312970c941be68d",
+    "scripts/test-local-play-saves.ps1": "951489322680c7444af23abcc65ceb8221db5c738059baa8a93b14d45f1efa3f"
+  },
+  "generatedFixtureSha256": "aa3e41cb693d1c8e83ad3b4baa897713cf35a72dd00b2756515221b73f9eed96",
+  "limitations": [
+    "The candidate and cutover run only in a dedicated PC loopback fixture; no production deployment.",
+    "JWTs and Auth accounts are synthetic; GoTrue login, real refresh and remote session revocation are untested.",
+    "Real web/Android consumers and server jobs are not integrated; the server adapter applies synthetic precomputed positions only.",
+    "Ranking is compared to the agreed JS characterisation in this repository, not a fresh read of the website source.",
+    "Legacy values outside V1 remain readable but updates are blocked pending an explicit editor decision.",
+    "No ELO calculation, mobile benchmark, real-device test or local APK build is performed by this increment."
+  ]
+}

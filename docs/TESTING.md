@@ -215,8 +215,26 @@ Risultati e hash dei sorgenti: [evidence/phase42-web-writers-validation.json](ev
 
 ## Contratti e base locale, 14 ottobre 2026
 
-La nuova preparazione usa soltanto questa repo e il PC. Il cluster PostgreSQL 17.4 e il gateway PostgREST 14.1 replicano il catalogo pubblico già auditato, con Auth SQL e JWT sintetici. Non è un progetto Supabase; nessun test contatta Supabase remoto o Vercel. Le RPC atomiche proposte non sono implementate e la verifica dei loro 21 casi di accettazione resta pending.
+La preparazione iniziale usa soltanto questa repo e il PC. Il cluster PostgreSQL 17.4 e il gateway PostgREST 14.1 replicano il catalogo pubblico già auditato, con Auth SQL e JWT sintetici. Non è un progetto Supabase; nessun test contatta Supabase remoto o Vercel. In quel primo incremento le RPC atomiche non erano implementate; il collaudo della nuova candidata è riportato sotto.
 
 Il runner verifica i payload e poi riproduce via HTTP i difetti della base attuale: creazione/modifica parziale, metadati e ID persi, UPDATE incompatibile, assenza di revisioni, duplicati e stale delete. PASS certifica la riproduzione dei problemi, senza dichiararli risolti. Procedura: [local-tests/README.md](../local-tests/README.md); definizione: [PLAY_SAVE_CONTRACT.md](PLAY_SAVE_CONTRACT.md). Risultati e hash: [evidence/local-play-preparation.json](evidence/local-play-preparation.json).
 
 I primi avvii hanno fatto correggere tre errori del nuovo runner: selezione di più eseguibili Node, pipe Windows trattenute dal PostgreSQL in background e punto e virgola assente dopo le definizioni delle funzioni nel generatore. Il run completo finale arresta entrambi i server e conserva i log locali. Nessun codice dell'app o repository web è stato modificato; nessun nuovo APK, login reale o benchmark mobile viene certificato da queste prove.
+
+## Salvataggi atomici locali, 14 ottobre 2026
+
+La candidata [candidate.sql](../local-tests/candidate.sql) implementa getter editor, creazione, modifica, eliminazione e import BGA. Metadati, score e ricevuta committono insieme. I test iniettano errori anche dopo la modifica dei dati, verificano i conflitti fra richieste concorrenti e conservano gli ID dei partecipanti mantenuti. Il trigger UPDATE incompatibile viene rimosso soltanto dalla fixture.
+
+| Controllo eseguito | Esito | Ambito |
+| --- | --- | --- |
+| Accettazione atomica | 21/21 casi, 170 richieste HTTP | PostgreSQL 17.4, PostgREST 14.1, JWT HS256 sintetici |
+| Ranking SQL contro caratterizzazione JS | 1.592 vettori uguali | NULL, pareggi, winner, cooperative, da 1 a 63 partecipanti; Node 24.19.0 / V8 13.6.233.17-node.51 |
+| Contratti ed evidenze Node | 39 superati | 29 controlli payload e 10 controlli dell'audit salvato |
+| Base precedente | 29 prove HTTP superate | Riproduzione dei difetti prima di installare la candidata |
+| Arresto dei processi propri | Superato | Entrambi i gateway e PostgreSQL terminati dal runner |
+
+Il run completo dura 78,115 secondi; è un tempo di collaudo, non un benchmark dei salvataggi. Il caso 19 applica un cutover separato soltanto al database locale e nega DML diretto e RPC legacy. Il caso 20 verifica un adattatore server sintetico con revisione; nessun job reale è integrato. Le sentinelle rating e recalc restano invariate; la cancellazione conserva le cascade preesistenti sullo storico collegato.
+
+Durante la preparazione un gateway è terminato all'avvio senza log diagnostici: il runner ora conserva stdout/stderr. Una prova Unicode falliva perché psql su Windows perdeva caratteri nell'argomento `-c`: le query passano ora da file UTF-8. Un initdb ha superato il limite di 60 secondi; il runner usa 120 secondi e conserva i log anche in caso di timeout. Il collaudo finale completo passa dopo queste correzioni.
+
+Procedura: `pwsh -NoProfile -File scripts/test-local-play-saves.ps1 -Atomic`. Report, versioni, 21 risultati e hash dei sorgenti: [local-atomic-validation.json](evidence/local-atomic-validation.json). La CI verifica contratti Node, test JVM, lint e APK; i test PostgreSQL/HTTP restano sul PC. Non sono verificati GoTrue reale, revoca remota, consumer web/Android o rollout. L'APK resta 0.4.0 e l'editor partite disabilitato. Nessuna modifica a King-Score, Vercel o Supabase remoto.

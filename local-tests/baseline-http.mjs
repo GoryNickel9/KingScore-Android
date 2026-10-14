@@ -14,6 +14,7 @@ assert(Number.isInteger(pgPort) && pgPort > 1024 && pgPort < 65536);
 assert(path.resolve(runDirectory).startsWith(path.join(root, '.work') + path.sep));
 assert(path.resolve(postgrestBin).startsWith(root));
 const childEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(PG|PGRST|POSTGRES|NODE_OPTIONS|HTTPS?_PROXY|ALL_PROXY)/i.test(key)));
+childEnv.PGPASSFILE = path.join(runDirectory, 'empty.pgpass');
 const report = { status: 'FAIL', mode: 'baseline-characterisation', node: process.version, host: '127.0.0.1', cases: [], futureContractImplemented: false, goTrueLoginTested: false, remoteContacted: false, ownGatewayStopped: false };
 const id = value => `00000000-0000-0000-0000-${String(value).padStart(12, '0')}`;
 const actor = id(1); const ordinary = id(2); const secondAdmin = id(3); const game = id(10); const player = id(11);

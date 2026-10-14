@@ -2,7 +2,8 @@
 [CmdletBinding()]
 param(
     [string]$PostgresBin = 'C:\Program Files\PostgreSQL\17\bin',
-    [string]$PostgrestBin = (Join-Path $PSScriptRoot '../.work/undone-external-files/postgrest-14.1/postgrest.exe')
+    [string]$PostgrestBin = (Join-Path $PSScriptRoot '../.work/undone-external-files/postgrest-14.1/postgrest.exe'),
+    [switch]$Atomic
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -48,9 +49,10 @@ function Invoke-LocalProcess([string]$Name, [string]$Binary, [string[]]$Argument
     $process = [Diagnostics.Process]::Start($start)
     $stdout = $process.StandardOutput.ReadToEndAsync()
     $stderr = $process.StandardError.ReadToEndAsync()
-    if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
+    $timedOut = -not $process.WaitForExit($TimeoutSeconds * 1000)
+    if ($timedOut) {
         $process.Kill($true)
-        throw "Own test process timed out: $Name"
+        [void]$process.WaitForExit(5000)
     }
     # pg_ctl's background server can retain pipe handles on Windows after pg_ctl exits.
     foreach ($stream in @(@{task=$stdout;reader=$process.StandardOutput;suffix='stdout'},@{task=$stderr;reader=$process.StandardError;suffix='stderr'})) {
@@ -62,6 +64,7 @@ function Invoke-LocalProcess([string]$Name, [string]$Binary, [string[]]$Argument
         [IO.File]::WriteAllText((Join-Path $runDirectory "$Name.$($stream.suffix).log"),$captured)
     }
     $report.exitCodes[$Name] = $process.ExitCode
+    if ($timedOut) { throw "Own test process timed out: $Name; inspect its logs in $runDirectory" }
     if ($process.ExitCode -ne 0) { throw "Local step failed: $Name; inspect logs in $runDirectory" }
     Write-Host "[$Name] PASS"
     $process.Dispose()
@@ -72,7 +75,7 @@ try {
     Invoke-LocalProcess 'contract-tests' $node @('--test', (Join-Path $repo 'contracts/tests/play-save-contracts.test.mjs'))
     $fixture = Join-Path $runDirectory 'baseline.sql'
     Invoke-LocalProcess 'generate-fixture' $node @((Join-Path $repo 'local-tests/generate-baseline.mjs'),$fixture)
-    Invoke-LocalProcess 'initdb' $binaries.initdb @('-D',$cluster,'-U','postgres','--auth=trust','--encoding=UTF8','--locale=C')
+    Invoke-LocalProcess 'initdb' $binaries.initdb @('-D',$cluster,'-U','postgres','--auth=trust','--encoding=UTF8','--locale=C') 120
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0)
     $listener.Start()
     $port = $listener.LocalEndpoint.Port
@@ -87,6 +90,16 @@ try {
     Invoke-LocalProcess 'http-tests' $node @((Join-Path $repo 'local-tests/baseline-http.mjs'),[IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin)
     $http = Get-Content -LiteralPath (Join-Path $runDirectory 'http-report.json') -Raw | ConvertFrom-Json
     if ($http.status -ne 'PASS' -or -not $http.ownGatewayStopped) { throw 'HTTP gateway did not complete and stop' }
+    if ($Atomic) {
+        Invoke-LocalProcess 'candidate' $binaries.psql ($connection + @('-d','kingscore_local_tests','-f',(Join-Path $repo 'local-tests/candidate.sql')))
+        $report.futureContractImplemented = $true
+        Invoke-LocalProcess 'atomic-acceptance' $node @((Join-Path $repo 'local-tests/atomic-acceptance.mjs'),[IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin) 180
+        $acceptance = Get-Content -LiteralPath (Join-Path $runDirectory 'acceptance-report.json') -Raw | ConvertFrom-Json
+        if ($acceptance.status -ne 'PASS' -or $acceptance.cases.Count -ne 21 -or -not $acceptance.ownGatewayStopped) {
+            throw 'Atomic acceptance incomplete or own gateway did not stop'
+        }
+        $report.mode = 'local-atomic-acceptance'
+    }
     $report.status = 'PASS'
 } catch {
     $report.failure = $_.Exception.Message

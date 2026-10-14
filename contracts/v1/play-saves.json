@@ -1,12 +1,13 @@
 {
   "version": 1,
-  "status": "proposed-not-implemented-not-deployed",
+  "status": "local-candidate-implemented-not-deployed",
   "scope": "shared-play-save-contract",
   "clientScope": {"android": ["get_play_editor_v1", "create_play_v1", "update_play_v1", "delete_play_v1"], "importBga": "web-only"},
   "authentication": "verified-account-with-app_metadata.role-admin",
   "limits": {
     "participants": 63,
     "payloadJsonbBytes": 1048576,
+    "metadataJsonbBytes": 1048576,
     "revisionCharacters": 160,
     "bgaTableIdCharacters": 256
   },
@@ -28,7 +29,8 @@
   "scoreFields": ["id", "player_id", "score", "winner", "color", "role"],
   "metadataFields": ["location", "bga_table_id"],
   "responses": {
-    "editor": ["detail", "revision"],
+    "editor": ["detail", "revision", "editability"],
+    "editability": ["editable", "issues"],
     "editorScoreEncoding": "decimal-string-or-null",
     "mutation": ["play_id", "revision", "replayed"],
     "delete": ["play_id", "deleted", "replayed"],

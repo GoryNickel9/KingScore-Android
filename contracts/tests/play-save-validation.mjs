@@ -63,7 +63,7 @@ function payload(value, create) {
   requireValue(Buffer.byteLength(jsonbText(value), 'utf8') <= contract.limits.payloadJsonbBytes, 'payload bytes');
 }
 
-/** Validates the proposed wire contract only. No HTTP, SQL or server authorization. */
+/** Validates the V1 wire contract only. No HTTP, SQL or server authorization. */
 export function validatePlaySave(name, args) {
   requireValue(Object.hasOwn(contract.rpc, name), 'RPC name');
   fields(args, contract.rpc[name], 'arguments');
@@ -77,6 +77,7 @@ export function validatePlaySave(name, args) {
   if (name === 'import_bga_play_v1') {
     fields(args.p_metadata, contract.metadataFields, 'import metadata');
     requireValue(nullableText(args.p_metadata.location), 'location');
+    requireValue(Buffer.byteLength(jsonbText(args.p_metadata), 'utf8') <= contract.limits.metadataJsonbBytes, 'metadata bytes');
     const tableId = args.p_metadata.bga_table_id;
     requireValue(text(tableId) && tableId.length >= 1 && [...tableId].length <= contract.limits.bgaTableIdCharacters && !/\s/.test(tableId), 'bga_table_id');
     requireValue(Array.isArray(args.p_positions) && args.p_positions.length === args.p_payload.scores.length &&

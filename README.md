@@ -55,7 +55,7 @@ Con Android SDK 36 e JDK 17 o successivo disponibili:
 
 Lo script di configurazione iniziale legge URL e chiave pubblica dal repository web; le configurazioni locali sono escluse da Git. Nel perimetro corrente usare la configurazione già presente oppure impostare manualmente SUPABASE_URL e SUPABASE_PUBLIC_KEY: [docs/PHASE2.md](docs/PHASE2.md). APK debug: `app/build/outputs/apk/debug/app-debug.apk`.
 
-La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e limiti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI è sospesa secondo le ultime istruzioni dell'utente.
+La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e limiti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è riattivata su autorizzazione dell'utente del 14 ottobre 2026; non esegue deploy.
 
 Per verificare le evidenze salvate: `node --test scripts/check-evidence.test.mjs`. Per compilare ed eseguire i test Kotlin: `./scripts/check-contracts.ps1` con Kotlin e Java 17 o successivo disponibili.
 

@@ -1,6 +1,6 @@
 # Prima versione stabile: stato e criteri
 
-Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Commit e push accompagnano i passaggi principali; la CI è sospesa secondo le ultime istruzioni dell'utente. Le modifiche restano in KingScore-Android; altre repo, Vercel e Supabase rimangono esclusi.
+Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Commit e push accompagnano i passaggi principali. Il 14 ottobre l'utente ha riattivato la CI Android e chiesto di discutere prima le modifiche a web e backend. Le modifiche restano in KingScore-Android; altre repo, Vercel e Supabase rimangono esclusi.
 
 La stabile mantiene il perimetro concordato: login e Internet obbligatori, consultazione, commenti propri e gestione partite admin atomica. Non comprende ricalcolo ELO, registrazione, modifica credenziali/avatar o uso offline. È disponibile la candidata privata firmata 0.5.0-rc3; la stabile completa non è ancora dichiarata raggiunta.
 
@@ -13,7 +13,7 @@ La stabile mantiene il perimetro concordato: login e Internet obbligatori, consu
 | Recupero salvataggi | Journal cifrato preparato; account verificato prima del recupero | Collegamento al ciclo di vita dell'editor e collaudo dei percorsi completi |
 | Editor partite | Controller, bozza e schermata Compose preparati con fixture | Factory, navigazione/sessione, rotazione dell'Activity e recupero completo dopo arresto del processo |
 | APK privato e aggiornamenti | RC3 firmata, non debuggabile; aggiornamento 8 → 11, registri cifrati e rete verificati su API 31; sette avvii release misurati su API 35 | Conservare la chiave privata; la RC2 ha anche il collaudo aggiornamento/rete API 35; nessuna verifica Auth remota |
-| CI GitHub | Sospesa su istruzione dell'utente | Nuova autorizzazione e controlli sull'implementazione finale; nessuna esecuzione automatica |
+| CI GitHub | Riattivata su autorizzazione dell'utente; verifica del checkpoint corrente in corso | Node, JVM, lint e APK devono passare sul commit pubblicato; nessun deploy |
 
 ## Ordine del lavoro autonomo
 
@@ -41,6 +41,6 @@ Il registro `AccountPlayJournals`, il [controller con fixture](PLAY_EDITOR_STATE
 
 Firma privata, installazione, aggiornamento, checksum e documentazione sono descritti in [PRIVATE_RELEASE.md](PRIVATE_RELEASE.md). La rc1 è stata ritirata dopo il difetto di perdita rete su Android 15; la rc2 corregge il monitor e supera le prove live su API 31 e 35. La rc3 aggiunge le correzioni per font grandi; il [collaudo finale con fixture](FINAL_PC_QA.md) passa su API 35. Le misure non certificano prestazioni su telefoni o autenticazione remota. Restano aperti i criteri esterni.
 
-La versione completa con gestione partite admin richiede prima una decisione sul backend, escluso dal perimetro attuale. Finché queste API mancano, l'editor resta disabilitato. La CI sospesa mantiene aperto il relativo criterio. Queste condizioni impediscono di assegnare una data definitiva alla stabile completa.
+La versione completa con gestione partite admin richiede prima la discussione sul backend scelta dall'utente. Finché le API mancano, l'editor resta disabilitato. La CI è ora autorizzata, ma il suo criterio si chiude soltanto con un'esecuzione riuscita sul checkpoint corrente. API reali e integrazione dell'editor impediscono ancora di assegnare una data definitiva alla stabile completa.
 
 La [gestione della ricreazione](ACTIVITY_LIFECYCLE.md) conserva ora repository, ViewModel figli e bozze dei commenti attraverso le modifiche di configurazione. Le verifiche di accesso e le transizioni a Checking, blocco, logout o altro account continuano a rimuovere lo stato della sessione precedente. Le prove native eseguono la navigazione di produzione in un host debug con account sintetici; non certificano GoTrue remoto o MainActivity con credenziali reali.

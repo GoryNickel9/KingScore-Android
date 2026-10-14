@@ -53,4 +53,4 @@ La RC3 supera aggiornamento 8 → 11, conservazione dei registri, rifiuto della 
 
 APK: `.work/releases/KingScore-0.5.0-rc3-11.apk`, 14.446.050 byte. SHA-256: `7f54b60fdf96d4bf63ca20d653d1d030b2d27a9f799203c5034248edb64e7a31`. Certificato SHA-256: `b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b`.
 
-Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI rimane sospesa secondo le istruzioni dell'utente.
+Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI Android è riattivata dal 14 ottobre 2026 su autorizzazione dell'utente; le prove locali della RC3 precedenti alla riattivazione restano documentate con CI non eseguita.

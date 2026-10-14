@@ -4,7 +4,7 @@ Definito il 14 ottobre 2026. Il piano è salvato soltanto in KingScore-Android e
 
 ## Stato verificato e fonti
 
-La candidata locale implementa cinque RPC, transazioni, ricevute e revisioni per partita. Il checkpoint 75a6c04 conserva 21 casi di accettazione superati, 1.592 confronti di ranking e 39 controlli Node. Risultati: [local-atomic-validation.json](evidence/local-atomic-validation.json). Questi risultati non certificano consumer reali o job ELO; la candidata SQL non è una migrazione pronta da applicare in produzione. La CI è attualmente sospesa per istruzione dell'utente.
+La candidata locale implementa cinque RPC, transazioni, ricevute e revisioni per partita. Il checkpoint 75a6c04 conserva 21 casi di accettazione superati, 1.592 confronti di ranking e 39 controlli Node. Risultati: [local-atomic-validation.json](evidence/local-atomic-validation.json). Questi risultati non certificano consumer reali o job ELO; la candidata SQL non è una migrazione pronta da applicare in produzione. Il 14 ottobre 2026 l'utente ha riattivato la CI Android e scelto di discutere prima le modifiche necessarie a web e backend.
 
 La candidata Android attuale è 0.5.0-rc3, versionCode 11: APK firmato, login e Internet obbligatori, consultazione e commenti propri. Adattatori RPC, editability, journal cifrato, controller e schermata editor sono preparati e verificati con fixture; mancano factory e collegamento alla navigazione/sessione. L'editor reale resta disabilitato e le RPC risultano indisponibili secondo AGENTS.md; non sono state interrogate nuovamente nel cloud. Il collaudo della consultazione e dei commenti non certifica il percorso completo dell'editor admin: [STABILITY.md](STABILITY.md), [PLAY_EDITOR_STATE.md](PLAY_EDITOR_STATE.md), [final-pc-qa-validation.json](evidence/final-pc-qa-validation.json).
 
@@ -106,7 +106,7 @@ I casi sotto sono pianificati, non eseguiti. Si aggiungono ai 21 test della cand
 | Chiusura legacy | Vecchia scheda browser, DML diretto, replace_play_scores e service_role dopo revoca | Vecchi accessi rifiutati; messaggio di aggiornamento; writer nuovi e job autorizzati funzionano |
 | Regressioni | Letture, commenti propri, metadati importati, owner storico e cascade | Funzioni esistenti conservate; nessun nuovo comando ELO Android |
 
-Il workflow CI definisce controlli Node, JVM, lint e APK, ma oggi non viene eseguito. Le prove native PostgreSQL/PostgREST e i percorsi con emulatore/browser si eseguono sul PC. Il rilascio reale richiederà una procedura concordata per verificare disponibilità delle API e permessi; questo piano non propone Supabase come ambiente di prova.
+Il workflow CI esegue controlli Node, JVM, lint e APK ed è ora autorizzato. Le prove native PostgreSQL/PostgREST e i percorsi con emulatore/browser si eseguono sul PC. Il rilascio reale richiederà una procedura concordata per verificare disponibilità delle API e permessi; questo piano non propone Supabase come ambiente di prova.
 
 ## Preparazione del rilascio, senza eseguirlo
 
@@ -126,4 +126,4 @@ L'intervallo in cui vecchi e nuovi writer convivono non offre ancora la garanzia
 
 Encoder/decoder, trasporto RPC, recupero cifrato, ViewModel e UI editor sono preparati. Il collegamento ad Application, navigazione e sessione rimane da implementare e collaudare: non è completato dalla ricreazione delle schermate di consultazione. L'inventario attuale non basta per una stima affidabile dei job server o del rollout.
 
-Prima di proseguire con il backend serve la discussione prevista da [AGENTS.md](../AGENTS.md): «Se una funzionalità richiede modifiche fuori da questa repo o non può funzionare entro i vincoli, discuterne con l'utente prima dell'implementazione». La discussione deve stabilire come ottenere le API reali e chi adeguerà writer web e job; non autorizza automaticamente migrazioni, deploy o test su Supabase remoto. La riattivazione della CI richiede inoltre una nuova istruzione esplicita. Fino ad allora la RC3 resta una candidata e l'editor rimane disabilitato.
+Prima di proseguire con il backend serve la discussione prevista da [AGENTS.md](../AGENTS.md): «Se una funzionalità richiede modifiche fuori da questa repo o non può funzionare entro i vincoli, discuterne con l'utente prima dell'implementazione». L'utente ha scelto questa discussione: deve stabilire come ottenere le API reali e chi adeguerà writer web e job; non autorizza automaticamente migrazioni, deploy o test su Supabase remoto. La CI Android è invece già autorizzata. La RC3 resta una candidata e l'editor rimane disabilitato.

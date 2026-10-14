@@ -330,3 +330,23 @@ La prova nativa esegue AppContent e la navigazione di produzione in un host del 
 Il primo run completo API 31 esegue 74 test con un errore No compose hierarchies nel dialogo di cancellazione, CommentsUiTest.kt:113; i quattro nuovi casi di ricreazione passano. Dopo la correzione della pulizia dell'orientamento, il run completo API 31 passa in 188,586 secondi. La causa del primo errore non è stata dimostrata in modo conclusivo. API 35 passa in 316,468 secondi. Sono tempi di collaudo, non benchmark.
 
 Le probe di recupero scrivono/leggono nei PID 8281/8325 su API 31 e 7601/7680 su API 35. Non verificano un invio remoto completo dopo morte del processo. MainActivity viene compilata e analizzata dal lint; la revalidazione del suo AppViewModel è testata separatamente con Auth sintetica. Nessuna credenziale reale, richiesta al backend remoto, firma di rilascio o modifica fuori repo. CI sospesa; editor admin disabilitato. Dettagli: [ACTIVITY_LIFECYCLE.md](ACTIVITY_LIFECYCLE.md); risultati e hash: [activity-recreation-validation.json](evidence/activity-recreation-validation.json).
+
+## Candidata privata firmata e rete reale dell'emulatore, 14 ottobre 2026
+
+| Controllo | Esito | Ambito |
+| --- | --- | --- |
+| JVM release | 225 test superati, zero errori | Quattro nuovi casi per callback rete, perdita e ordine degli eventi |
+| Lint release e build | Zero errori, 24 warning; build in 3 minuti e 3 secondi | Raccomandazioni di aggiornamento dipendenze/plugin e quattro UseKtx; nessun errore di correttezza segnalato |
+| Contratti Node | 39 controlli superati | Evidenze salvate e payload V1 |
+| Firma e APK | RSA 3072, v2/v3, certificato corrispondente, allineamento ZIP a 16 KiB | APK non debuggabile; host/probe di test assenti da manifest e DEX |
+| Aggiornamento API 31 e 35 | Superato su entrambe | Baseline privata sintetica 8 → candidata 10, UID invariato, registri partite/commenti cifrati conservati |
+| Controlli negativi | Superati | Firma debug rifiutata senza cambiare app/dati; run-as negato; DEX alterato rifiutato; rigenerazione implicita della chiave rifiutata |
+| MainActivity release | Superata su entrambe le versioni | Avvio offline, login a freddo senza credenziali, disconnessione/riconnessione live senza riavvio |
+
+La rc1 superava firma e aggiornamento, ma il collaudo API 35 ha riprodotto un difetto reale: rete predefinita assente mentre il login restava visibile dopo disconnessione. Il monitor rileggeva uno snapshot sincrono dentro le callback. La rc2 usa la rete e le capacità ricevute, blocca subito sulla perdita e ignora gli eventi precedenti. Quattro test JVM e il collaudo live sulle due versioni verificano la correzione. La rc1 non è distribuita. Dettagli: [NETWORK_MONITOR.md](NETWORK_MONITOR.md).
+
+La prima build offline non aveva tre dipendenze release in cache; sono state scaricate le versioni già fissate, senza aggiornamenti. La prima firma consumava due volte il file password: ora PKCS12 riusa la password del keystore e la chiave originale è conservata. Il runner legge l'XML salvato da uiautomator, accetta userId/appId e avvia un processo nuovo dopo le probe prima del collaudo UI. Un'istanza API 35 aveva ADB bloccato con porta console non disponibile; la riconnessione mirata falliva. Solo quell'istanza di prova è stata chiusa e riavviata su una porta supportata. Nessun tentativo fallito viene conteggiato come successo.
+
+La candidata finale è .work/releases/KingScore-0.5.0-rc2-10.apk, versionCode 10, 14.446.050 byte, SHA-256 9aee9c8245e0583f10f475069b15c7e150261cca55847dc756be708fa4c89afa. Il certificato SHA-256 è b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b. Le sei schermate finali sono state controllate visivamente. I segmenti ELF delle librerie grafiche dei quattro ABI hanno allineamento 16.384 byte; non è una prova runtime su hardware ARM o pagine da 16 KiB.
+
+Le probe sono firmate con la stessa chiave soltanto per questo collaudo; non entrano nell'APK prodotto e non vanno distribuite. Usano record sintetici e non verificano sessioni con JWT reali o un salvataggio HTTP/RPC completo. Il login usa un archivio sessione vuoto e non invia credenziali: il percorso Auth termina prima dell'HTTP. Nessun test su Supabase remoto, modifica fuori repo o esecuzione CI. I 74 test Compose del checkpoint precedente restano evidenza della navigazione con fixture; questo incremento esegue le prove release su MainActivity. Risultati, hash e log: [private-release-validation.json](evidence/private-release-validation.json).

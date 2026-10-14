@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "scope": "private-signed-release-candidate-and-upgrade",
+  "status": "PASS",
+  "stable": false,
+  "baseCommit": "b5ad4cb1335d9f9fb4235e43b99b29ca7ac16b2c",
+  "sourceDirtyAtBuild": true,
+  "versionName": "0.5.0-rc2",
+  "versionCode": 10,
+  "applicationId": "app.kingscore.android",
+  "apk": ".work/releases/KingScore-0.5.0-rc2-10.apk",
+  "apkBytes": 14446050,
+  "apkSha256": "9aee9c8245e0583f10f475069b15c7e150261cca55847dc756be708fa4c89afa",
+  "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
+  "remoteDatabaseContacted": false,
+  "remoteAccountAuthenticationTested": false,
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "androidEditorEnabled": false,
+  "jvm": {
+    "tests": 225,
+    "failures": 0,
+    "errors": 0
+  },
+  "node": {
+    "tests": 39,
+    "failures": 0,
+    "log": ".work/private-release-node.log"
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 24
+  },
+  "build": {
+    "elapsed": "3m 3s",
+    "tasks": [
+      ":app:testReleaseUnitTest",
+      ":app:lintRelease",
+      ":app:assembleRelease"
+    ],
+    "status": "PASS",
+    "log": ".work/releases/KingScore-0.5.0-rc2-10.apk.build.log"
+  },
+  "signature": {
+    "zipAlignment16KiB": true,
+    "tamperedDexRejected": true,
+    "keyRegenerationRefused": true,
+    "rsaBits": 3072,
+    "testHooksExcluded": true,
+    "debuggable": false,
+    "keyStoredOutsideGit": true,
+    "nativeAbis": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "x86",
+      "x86_64"
+    ],
+    "schemes": [
+      "v2",
+      "v3"
+    ],
+    "nativeElfLoadSegmentAlignmentBytes": 16384
+  },
+  "android": [
+    {
+      "api": 31,
+      "serial": "emulator-5576",
+      "status": "PASS",
+      "report": ".work/private-apk/9c90ecba577e4a449a440f8b750a091e/report.json",
+      "baselineVersion": 8,
+      "candidateVersion": 10,
+      "applicationUid": 10145,
+      "wrongSignerRejected": true,
+      "encryptedRecordsPreserved": true,
+      "offlineBlocked": true,
+      "coldLoginVisible": true,
+      "liveDisconnectBlocked": true,
+      "liveReconnectRestored": true,
+      "debuggingDenied": true,
+      "settingsRestored": true,
+      "offlineColdStartMs": 1737,
+      "onlineColdStartMs": 2311,
+      "screenshotSha256": {
+        ".work\\private-apk\\9c90ecba577e4a449a440f8b750a091e\\live-disconnect.png": "a15b7086021017b07e71e4090ec82c560ae8c3ec75179bc7e278a55ecb853695",
+        ".work\\private-apk\\9c90ecba577e4a449a440f8b750a091e\\cold-login.png": "9eee930486206da35bf81ad503d835867d9ec8798784f5af9b03ce8fa2a81c83",
+        ".work\\private-apk\\9c90ecba577e4a449a440f8b750a091e\\offline.png": "9c295bb10b4be03f5f34dff735d356f32f3dd0d129d05847e72e34518e13e1c3"
+      }
+    },
+    {
+      "api": 35,
+      "serial": "emulator-5578",
+      "status": "PASS",
+      "report": ".work/private-apk/bc845dc0d0c841e2bb5dd92858101bd4/report.json",
+      "baselineVersion": 8,
+      "candidateVersion": 10,
+      "applicationUid": 10209,
+      "wrongSignerRejected": true,
+      "encryptedRecordsPreserved": true,
+      "offlineBlocked": true,
+      "coldLoginVisible": true,
+      "liveDisconnectBlocked": true,
+      "liveReconnectRestored": true,
+      "debuggingDenied": true,
+      "settingsRestored": true,
+      "offlineColdStartMs": 1569,
+      "onlineColdStartMs": 1538,
+      "screenshotSha256": {
+        ".work\\private-apk\\bc845dc0d0c841e2bb5dd92858101bd4\\live-disconnect.png": "209f67ba915ec3d2e53420afeee2985c636a286904bc8a3146de34d993f5abdc",
+        ".work\\private-apk\\bc845dc0d0c841e2bb5dd92858101bd4\\cold-login.png": "d63ef3e91a17249163af7b4210c07d398b499f8d0d443a06efe03ad5e468858d",
+        ".work\\private-apk\\bc845dc0d0c841e2bb5dd92858101bd4\\offline.png": "09eba86753ea2a56c6b318773db71638a5211b31846abd775472279a642e5e9c"
+      }
+    }
+  ],
+  "normalizedUtf8LfSha256": {
+    "app/build.gradle.kts": "fec4e9fad8b78824cf17b45673f5c5083d6c089901694e598a4dda28c615b39a",
+    "scripts/build-private-apk.ps1": "abd24c0f6bb97ac90fab9fe8106207f279319aaba5859ee6ecccc63567e1f2ee",
+    "scripts/sign-private-apk.ps1": "1da9758bbbfb5596ab6222a295186d496efdadd4a7a5af37674815147b281121",
+    "scripts/test-private-apk.ps1": "66bf9cc2c80028103e823895a734c301352cd2969ad8e0639f4890e8a4913440",
+    "app/src/main/AndroidManifest.xml": "a7fa66d90995e43f00ef2a0c2d4a07a691a2515f931c425e2225afbcff34afe6",
+    "app/src/main/java/app/kingscore/android/KingScoreApplication.kt": "623c690c5ef18e9b6afe05bb40763e886dd8ccd64824dc7b87a664a3ff502ad1",
+    "app/src/main/java/app/kingscore/android/core/network/NetworkMonitor.kt": "2ee8cfba05e8f66d1011c500dcde9ad754ecd0518b176adddfa87d31be6b075f",
+    "app/src/test/java/app/kingscore/android/core/network/ValidatedDefaultNetworkTest.kt": "df2bab12616fa5403a92ecb6e586eb08f773bc1bffc2867ac56e033e83246749"
+  },
+  "githubCi": {
+    "executed": false,
+    "reason": "Suspended by latest user instructions; commit uses [skip ci]"
+  },
+  "priorAttempts": [
+    "Invalid HTTP release endpoint was rejected before compilation.",
+    "First offline release build lacked release-variant dependencies; downloaded the same pinned versions from library repositories.",
+    "First signing command consumed the same password file twice; PKCS12 key/store now share one password read, existing key preserved.",
+    "First API 31 smoke passed update/storage checks but UI runner read no XML from /dev/tty; changed to read the saved XML file and full rerun passed.",
+    "First API 35 smoke installed the baseline but dumpsys uses appId instead of userId; parser now accepts both.",
+    "API 35 retry remained offline in ADB, console port unavailable; target reconnect failed. Restarted only the owned test VM on a supported port.",
+    "RC1 reproduced a real Android 15 network-monitor defect: active default network was none but login remained visible after disconnection. Replaced synchronous snapshot re-queries with callback-owned state, added four JVM tests, withdrew RC1 and rebuilt RC2 with the same key. Full native smoke now includes live disconnect/reconnect."
+  ],
+  "limitations": [
+    "Admin editor disabled: real atomic RPCs and writer integration unavailable.",
+    "Native data-preservation probes use synthetic encrypted records, not authenticated HTTP or full RPC/SQL integration.",
+    "Cold login uses an empty session and submits no credentials; no remote Auth/RLS certification.",
+    "Baseline versionCode 8 is a newly signed test fixture, not an upgrade-compatible copy of the historical debug preview.",
+    "Release tested on x86_64 emulators API 31/35; ELF/ZIP alignment checked statically, no ARM or 16-KiB runtime device test.",
+    "Cold-start times are single diagnostic observations per state, not a benchmark or performance guarantee.",
+    "Signing key and password require a protected backup; neither is committed or uploaded."
+  ]
+}

@@ -1,5 +1,6 @@
 import java.util.Properties
 import java.util.Base64
+import java.net.URI
 
 plugins {
     alias(libs.plugins.android.application)
@@ -14,6 +15,10 @@ val supabaseProperties = Properties().apply {
 fun config(name: String): String = System.getenv(name) ?: supabaseProperties.getProperty(name, "")
 fun quoted(value: String): String = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r") + "\""
 val publicKey = config("SUPABASE_PUBLIC_KEY")
+val supabaseUrl = config("SUPABASE_URL")
+val apkVersionCode = providers.gradleProperty("kingScoreVersionCode").orElse("10").get().toInt()
+val apkVersionName = providers.gradleProperty("kingScoreVersionName").orElse("0.5.0-rc2").get()
+require(apkVersionCode > 0 && apkVersionName.matches(Regex("[0-9A-Za-z.+_-]{1,64}"))) { "Versione APK non valida" }
 if (publicKey.isNotBlank()) {
     val legacyPayload = runCatching {
         Base64.getUrlDecoder().decode(publicKey.split('.')[1]).toString(Charsets.UTF_8)
@@ -30,15 +35,21 @@ android {
         applicationId = "app.kingscore.android"
         minSdk = 26
         targetSdk = 36
-        versionCode = 8
-        versionName = "0.4.0"
+        versionCode = apkVersionCode
+        versionName = apkVersionName
         testInstrumentationRunner = "app.kingscore.android.data.local.PendingRecoveryProbe"
-        buildConfigField("String", "SUPABASE_URL", quoted(config("SUPABASE_URL")))
+        buildConfigField("String", "SUPABASE_URL", quoted(supabaseUrl))
         buildConfigField("String", "SUPABASE_PUBLIC_KEY", quoted(publicKey))
     }
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+    buildTypes {
+        release {
+            isDebuggable = false
+            isMinifyEnabled = false
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -49,6 +60,16 @@ android {
     packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
     testOptions { unitTests.isReturnDefaultValues = true }
     lint { abortOnError = true }
+}
+
+tasks.matching { it.name == "preReleaseBuild" }.configureEach {
+    doFirst {
+        val endpoint = runCatching { URI(supabaseUrl) }.getOrNull()
+        require(endpoint != null && endpoint.scheme == "https" && endpoint.host != null && endpoint.userInfo == null &&
+            endpoint.query == null && endpoint.fragment == null && endpoint.path in listOf("", "/") && publicKey.isNotBlank()) {
+            "La release richiede URL Supabase HTTPS e chiave pubblica configurati localmente"
+        }
+    }
 }
 
 dependencies {

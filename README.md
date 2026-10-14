@@ -1,6 +1,6 @@
 # KingScore Android
 
-App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-Score. La build 0.4.0 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, creazione/modifica/eliminazione dei commenti propri, statistiche essenziali e classifiche/storico ELO. Login e Internet rimangono obbligatori. L'editor partite admin richiede ancora le RPC atomiche della fase 4.
+App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-Score. La candidata privata 0.5.0-rc2 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e classifiche/storico ELO. Login e Internet rimangono obbligatori. Conserva gli esiti incerti dopo chiusura del processo e le bozze durante la rotazione. L'editor partite admin richiede ancora le RPC atomiche della fase 4.
 
 Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Score sono state annullate con il commit `a5e5dd6`; Vercel pubblica il codice ripristinato. Nessuna delle nuove migrazioni è stata applicata a Supabase. I documenti delle fasi 4.1 e 4.2 conservano risultati storici, non descrivono funzioni backend attualmente disponibili.
 
@@ -18,6 +18,9 @@ Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Sco
 | --- | --- |
 | [ROADMAP.md](ROADMAP.md) | Fasi, stime e stato corrente |
 | [docs/STABILITY.md](docs/STABILITY.md) | Obiettivo stabile, criteri di uscita e lavoro autonomo residuo |
+| [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md) | Firma privata, chiave locale, checksum, installazione e aggiornamento |
+| [docs/ACTIVITY_LIFECYCLE.md](docs/ACTIVITY_LIFECYCLE.md) | Rotazione, ricreazione e pulizia della sessione |
+| [CHANGELOG.md](CHANGELOG.md) | Modifiche della candidata di rilascio |
 | [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md) | Schema reale, RLS e limiti delle verifiche |
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | API esistenti, DTO e RPC proposte |
 | [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Contratti V1 e candidata locale dei salvataggi, senza deploy |
@@ -46,11 +49,13 @@ I modelli in `contracts/v1/Rows.kt` derivano dai tipi SQL e dalla nullabilità d
 Con Android SDK 36 e JDK 17 o successivo disponibili:
 
 ```powershell
-./scripts/configure-local.ps1
+# Configurare prima local.properties e supabase.properties in questa repo.
 ./gradlew.bat :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
 ```
 
-Lo script riusa URL e chiave pubblica del repository web; le configurazioni locali sono escluse da Git. Per una configurazione manuale vedere [docs/PHASE2.md](docs/PHASE2.md). APK: `app/build/outputs/apk/debug/app-debug.apk`, firmato con la chiave di debug. La release privata con firma definitiva appartiene alla fase 5.
+Lo script di configurazione iniziale legge URL e chiave pubblica dal repository web; le configurazioni locali sono escluse da Git. Nel perimetro corrente usare la configurazione già presente oppure impostare manualmente SUPABASE_URL e SUPABASE_PUBLIC_KEY: [docs/PHASE2.md](docs/PHASE2.md). APK debug: `app/build/outputs/apk/debug/app-debug.apk`.
+
+La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e limiti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI è sospesa secondo le ultime istruzioni dell'utente.
 
 Per verificare le evidenze salvate: `node --test scripts/check-evidence.test.mjs`. Per compilare ed eseguire i test Kotlin: `./scripts/check-contracts.ps1` con Kotlin e Java 17 o successivo disponibili.
 

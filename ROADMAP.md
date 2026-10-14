@@ -96,7 +96,7 @@ Criterio di uscita: APK installabile su emulatore e telefono; login, logout, ses
 
 ### Stato della fase 2
 
-Implementazione completata: progetto nativo, Auth, sessione cifrata, controllo rete, navigazione, adattatori JSON e pipeline CI. APK debug installato su emulatore API 31. La verifica con un account reale e su un telefono fisico resta aperta. La CI ha superato i controlli sul commit 2d14b4f della fase 3; le schermate dati sono descritte nella sezione successiva. Dettagli della build iniziale: [docs/PHASE2.md](docs/PHASE2.md).
+Implementazione completata: progetto nativo, Auth, sessione cifrata, controllo rete, navigazione, adattatori JSON e pipeline CI. APK debug installato su emulatore API 31. Le verifiche correnti restano sul PC, con account sintetici: account remoti e telefoni non sono certificati. La CI storica ha superato i controlli sul commit 2d14b4f della fase 3; oggi è sospesa. Dettagli della build iniziale: [docs/PHASE2.md](docs/PHASE2.md).
 ### Fase 3 Consultazione online
 
 1. Implementare storico paginato con ricerca e filtri, dettaglio partita, punteggi, vincitori, risultato cooperativo, note e commenti in lettura. Conservare la distinzione fra punteggio zero e assente.
@@ -110,7 +110,7 @@ Criterio di uscita: stesso risultato del web sulle fixture, nessun troncamento c
 
 ### Stato dello storico e dettaglio della fase 3
 
-Implementati pagine da 50 con cursori, dettaglio, punteggi e commenti in lettura. La build 0.3.1 aggiunge Home, statistiche essenziali, classifiche generali/per gioco e storico ELO; la 0.3.2 aggiunge ricerca letterale in gioco o note e filtri combinabili per gioco, partecipante, modalità e date. La 0.3.3 aggiunge il dettaglio gioco; la 0.3.4 aggiunge il dettaglio giocatore con identità account e storico del partecipante paginato, conservando tutti i punteggi. La 0.3.5 aggiunge immagini e avatar con fallback e retry, loader limitato all'account connesso e senza cache persistente. Le richieste verificano l'utente online; perdita di accesso e cambio account cancellano ViewModel, filtri, cataloghi e loader immagini. Le prove con TalkBack e telefoni rientrano nel collaudo della fase 5. Risultati e limiti: [docs/PHASE3.md](docs/PHASE3.md), [docs/PHASE3_SEARCH.md](docs/PHASE3_SEARCH.md), [docs/PHASE3_GAME.md](docs/PHASE3_GAME.md), [docs/PHASE3_PLAYER.md](docs/PHASE3_PLAYER.md), [docs/PHASE3_IMAGES.md](docs/PHASE3_IMAGES.md).
+Implementati pagine da 50 con cursori, dettaglio, punteggi e commenti in lettura. La build 0.3.1 aggiunge Home, statistiche essenziali, classifiche generali/per gioco e storico ELO; la 0.3.2 aggiunge ricerca letterale in gioco o note e filtri combinabili per gioco, partecipante, modalità e date. La 0.3.3 aggiunge il dettaglio gioco; la 0.3.4 aggiunge il dettaglio giocatore con identità account e storico del partecipante paginato, conservando tutti i punteggi. La 0.3.5 aggiunge immagini e avatar con fallback e retry, loader limitato all'account connesso e senza cache persistente. Le richieste verificano l'utente online; perdita di accesso e cambio account cancellano ViewModel, filtri, cataloghi e loader immagini. Le prove di accessibilità della fase 5 restano sugli emulatori del PC. Risultati e limiti: [docs/PHASE3.md](docs/PHASE3.md), [docs/PHASE3_SEARCH.md](docs/PHASE3_SEARCH.md), [docs/PHASE3_GAME.md](docs/PHASE3_GAME.md), [docs/PHASE3_PLAYER.md](docs/PHASE3_PLAYER.md), [docs/PHASE3_IMAGES.md](docs/PHASE3_IMAGES.md).
 
 ### Fase 4 Commenti e scritture admin
 
@@ -129,13 +129,13 @@ Criterio di uscita: timeout dopo commit e doppio invio non duplicano partite; pa
 
 1. Eseguire test unitari di repository e ViewModel, test di integrazione Auth/RLS/RPC e test Compose dei percorsi principali. Confrontare statistiche e rating con le fixture del web.
 2. Provare rete lenta, perdita di connessione durante lettura o salvataggio, backend irraggiungibile con Wi-Fi attivo, scadenza sessione, rotazione, terminazione del processo e cambio account. Verificare che riconnettersi non reinvii operazioni ambigue o duplicati.
-3. Misurare avvio, prima pagina dello storico, fluidità di scorrimento, memoria e numero di richieste su un dispositivo reale. Registrare modello, Android, dataset, rete, commit e build; fissare le soglie dopo la prima misurazione.
-4. Produrre APK firmato per beta privata, mantenendo la stessa chiave per gli aggiornamenti. Gestire la chiave di firma fuori dal repository, versioni, checksum, note di rilascio e istruzioni per installare l'APK e aggiornarlo senza disinstallazione.
+3. Misurare avvio, prima pagina dello storico, fluidità di scorrimento, memoria e numero di richieste sul PC con emulatori e dati sintetici. Registrare emulatore, Android, dataset, rete, commit e build; fissare le soglie dopo la prima misurazione. Non usare Supabase remoto come ambiente di test.
+4. Produrre APK firmato per beta privata, mantenendo la stessa chiave per gli aggiornamenti. Gestire la chiave di firma fuori da Git, dentro il perimetro locale autorizzato, con versioni, checksum, note di rilascio e istruzioni per gli aggiornamenti.
 5. Consegnare l'APK tramite un canale privato concordato, documentare i dati usati dall'app e raccogliere feedback sui percorsi consultazione, commento e inserimento partita. La prima versione non comprende AAB o pubblicazione su Google Play.
 
 File previsti: `app/src/test/`, `app/src/androidTest/`, `docs/BENCHMARKS.md`, `docs/RELEASE.md`, `CHANGELOG.md` e pipeline di rilascio.
 
-Criterio di uscita: build ripetibile, controlli CI superati, nessun bug noto che comprometta dati o permessi, installazione e aggiornamento verificati su telefono. I benchmark saranno risultati misurati durante questa fase.
+Criterio di uscita: build ripetibile, controlli locali e CI superati, nessun bug noto che comprometta dati o permessi, installazione e aggiornamento verificati sugli emulatori del PC. La CI è sospesa e il suo criterio resta aperto: non eseguirla finché l'utente non la autorizza di nuovo. La verifica remota con account reali e le prove su telefoni non sono consentite dal perimetro corrente; non sostituirle con dichiarazioni non verificate. I benchmark devono distinguere dati misurati e casi non collaudati.
 
 ## Dopo la prima versione
 
@@ -185,6 +185,6 @@ Il contratto dei salvataggi e le cinque RPC candidate sono implementati soltanto
 
 Il piano è definito in [docs/WRITER_INTEGRATION.md](docs/WRITER_INTEGRATION.md): mappa dei writer da verificare, contratti comuni, coerenza dei job su più partite, test dei consumer e ordine del rilascio. King-Score e rilasci Vercel/Supabase restano esclusi. Il test del cutover e l'adattatore server sono soltanto locali; nessun consumer reale è integrato. Le scritture partite Android restano disabilitate.
 
-Il client RPC Android con encoder/decoder e test JVM locali è implementato, disabilitato per default e non collegato alla UI: [PHASE4_ANDROID_RPC_CLIENT.md](docs/PHASE4_ANDROID_RPC_CLIENT.md). Il successivo incremento prepara il journal cifrato per richieste incerte e conferme dopo chiusura del processo. La prossima attività è il ViewModel editor con fixture e journal condiviso per account, senza invii reali. Il trattamento dei dati storici incompatibili resta conservativo: lettura completa e modifica bloccata.
+Il client RPC Android, il journal cifrato, il controller e la schermata editor con fixture sono implementati: [PHASE4_ANDROID_RPC_CLIENT.md](docs/PHASE4_ANDROID_RPC_CLIENT.md) e [PLAY_EDITOR_STATE.md](docs/PLAY_EDITOR_STATE.md). I percorsi reali restano disabilitati. La candidata firmata 0.5.0-rc2 e la pipeline locale di aggiornamento sono descritte in [PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md). Il trattamento dei dati storici incompatibili resta conservativo: lettura completa e modifica bloccata.
 
 L'obiettivo autonomo è ora la prima versione stabile, con commit e push nei passaggi principali. Stato e criteri di uscita: [STABILITY.md](docs/STABILITY.md). Non vengono chieste conferme per il lavoro già autorizzato nella repo; le dipendenze esterne restano esplicite.

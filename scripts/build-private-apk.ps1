@@ -25,7 +25,7 @@ try {
     if ($LASTEXITCODE -ne 0 -or $badging -notmatch "package: name='app.kingscore.android' versionCode='$VersionCode' versionName='$([Regex]::Escape($VersionName))'" -or $badging -match 'application-debuggable') { throw 'Release package/version/debuggability verification failed' }
     $manifest=(& $aapt dump xmltree $unsigned 'AndroidManifest.xml' 2>&1|Out-String)
     if ($LASTEXITCODE -ne 0 -or $manifest -match 'DebugRecreationActivity|PendingRecoveryProbe|ComposeTestActivity|PlayEditorRpcRecoveryTest|E: instrumentation') { throw 'Test entry point detected in release manifest' }
-    if ($manifest -notmatch 'android:usesCleartextTraffic[^\r\n]*=0x0' -or $manifest -match 'networkSecurityConfig') { throw 'Release network policy differs from the verified HTTPS-only manifest' }
+    if ($manifest -notmatch 'android:usesCleartextTraffic[^\r\n]*=\(type 0x12\)0x0(?:\s|$)' -or $manifest -match 'networkSecurityConfig') { throw 'Release network policy differs from the verified HTTPS-only manifest' }
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $archive=[IO.Compression.ZipFile]::OpenRead($unsigned)
     try {

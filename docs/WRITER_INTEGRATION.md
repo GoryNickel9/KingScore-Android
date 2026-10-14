@@ -179,6 +179,8 @@ Il preflight non verifica tutte le FK/default, Auth, grant o correttezza semanti
 
 ## Migrazione predisposta e collaudata sul PC
 
+Il collaudo Android integrato del 15 ottobre usa questa fonte SQL congelata senza modificarla. Il percorso Compose → client HTTP → RPC locale → journal cifrato supera due arresti del processo, replay, recupero della conferma, modifica e cancellazione. Il database finale conserva tre receipt e nessuna partita o punteggio sintetici. [Protocollo e limiti](EDITOR_RPC_PC_QA.md): Auth e rete sono simulati; il test non rende disponibili le API remote e non risolve il cutover dei writer legacy.
+
 Il checkpoint web locale `f697efc` aggiunge `scripts/atomic-play-migrations/01-install-rpcs.sql`, fuori dallo storico di deploy Supabase. Installa le cinque RPC V1 soltanto su uno schema compatibile, senza creare Auth o ruoli, convertire date o correggere dati storici. Aggiunge le quattro colonne opzionali mancanti come text NULL e ripara soltanto il trigger score orfano verificato. Conserva trigger validi, owner, score ID e metadati; i profili non supportati fanno fallire l'intera transazione.
 
 La UNIQUE ordinaria esatta sui partecipanti viene resa DEFERRABLE INITIALLY IMMEDIATE per consentire lo scambio con UPDATE bulk, conservando nome, ordine e commenti. La conversione ricostruisce l'indice e ne cambia l'uso come arbiter ON CONFLICT: il test verifica questo effetto. Vincoli o indici con proprietà non preservabili e FK dipendenti sono rifiutati. Non è una conversione applicata al backend reale.

@@ -11,6 +11,20 @@ const http = await readJson('../docs/evidence/http-probes.json');
 const comparison = await readJson('../docs/evidence/schema-comparison.json');
 const column = (table, name) => audit.columns.find(c => c.table_name === table && c.column_name === name);
 
+test('the HTTP test exception is restricted to debug loopback and absent from release sources', async () => {
+  const main = await readFile(new URL('../app/src/main/AndroidManifest.xml', import.meta.url), 'utf8');
+  const policy = await readFile(new URL('../app/src/debug/res/xml/local_test_network.xml', import.meta.url), 'utf8');
+  assert.match(main, /android:usesCleartextTraffic="false"/);
+  assert.doesNotMatch(main, /networkSecurityConfig/);
+  assert.match(policy, /<base-config cleartextTrafficPermitted="false"\s*\/>/);
+  const domains = [...policy.matchAll(/<domain\b[^>]*>([^<]+)<\/domain>/g)];
+  assert.equal(domains.length, 1);
+  assert.equal(domains[0][1], '127.0.0.1');
+  assert.match(domains[0][0], /includeSubdomains="false"/);
+  const app = await readFile(new URL('../app/src/main/java/app/kingscore/android/KingScoreApplication.kt', import.meta.url), 'utf8');
+  assert.match(app, /ATOMIC_PLAY_EDITOR_ENABLED = false/);
+});
+
 test('remote audit was read-only and every exposed table has RLS', () => {
   assert.equal(audit.read_only, 'on');
   assert.equal(audit.tables.length, 10);

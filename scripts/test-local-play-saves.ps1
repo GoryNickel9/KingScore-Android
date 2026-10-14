@@ -4,10 +4,16 @@ param(
     [string]$PostgresBin = 'C:\Program Files\PostgreSQL\17\bin',
     [string]$PostgrestBin = (Join-Path $PSScriptRoot '../.work/undone-external-files/postgrest-14.1/postgrest.exe'),
     [switch]$Atomic,
-    [string]$WebMigrationDirectory
+    [string]$WebMigrationDirectory,
+    [switch]$AndroidEditor,
+    [string]$Serial = 'emulator-5578',
+    [string]$Adb = (Join-Path $env:LOCALAPPDATA 'Android/Sdk/platform-tools/adb.exe')
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if ($AndroidEditor -and (-not $Atomic -or $Serial -notmatch '^emulator-[0-9]+$')) {
+    throw 'Android editor tests require -Atomic and a dedicated emulator serial'
+}
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $workRoot = Join-Path $repo '.work/local-play-tests'
 $runDirectory = Join-Path $workRoot ([Guid]::NewGuid().ToString('N'))
@@ -104,38 +110,54 @@ try {
     Invoke-LocalProcess 'create-database' $binaries.psql ($connection + @('-d','postgres','-c','CREATE DATABASE kingscore_local_tests'))
     Invoke-LocalProcess 'mark-database' $binaries.psql ($connection + @('-d','postgres','-c',"ALTER DATABASE kingscore_local_tests SET kingscore.local_test = 'isolated-fixture-v1'"))
     Invoke-LocalProcess 'fixture' $binaries.psql ($connection + @('-d','kingscore_local_tests','-f',$fixture))
-    Invoke-LocalProcess 'http-tests' $node @((Join-Path $repo 'local-tests/baseline-http.mjs'),[IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin)
-    $http = Get-Content -LiteralPath (Join-Path $runDirectory 'http-report.json') -Raw | ConvertFrom-Json
-    if ($http.status -ne 'PASS' -or -not $http.ownGatewayStopped) { throw 'HTTP gateway did not complete and stop' }
+    if (-not $AndroidEditor) {
+        Invoke-LocalProcess 'http-tests' $node @((Join-Path $repo 'local-tests/baseline-http.mjs'),[IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin)
+        $http = Get-Content -LiteralPath (Join-Path $runDirectory 'http-report.json') -Raw | ConvertFrom-Json
+        if ($http.status -ne 'PASS' -or -not $http.ownGatewayStopped) { throw 'HTTP gateway did not complete and stop' }
+    }
     if ($Atomic) {
         if ($WebMigrationDirectory) {
-            Invoke-LocalProcess 'web-migration-profiles' $node @((Join-Path $repo 'local-tests/web-migration-profiles.mjs'),
-                [IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin,$runMigrationDirectory) 180
-            $profiles = Get-Content -LiteralPath (Join-Path $runDirectory 'web-migration-profiles-report.json') -Raw | ConvertFrom-Json
-            if ($profiles.status -ne 'PASS') { throw 'Prepared web migration compatibility checks failed' }
-            if ($profiles.migrationSha256 -ne $preparedMigrationSha256) { throw 'Compatibility test SQL differs from frozen installation input' }
+            if (-not $AndroidEditor) {
+                Invoke-LocalProcess 'web-migration-profiles' $node @((Join-Path $repo 'local-tests/web-migration-profiles.mjs'),
+                    [IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin,$runMigrationDirectory) 180
+                $profiles = Get-Content -LiteralPath (Join-Path $runDirectory 'web-migration-profiles-report.json') -Raw | ConvertFrom-Json
+                if ($profiles.status -ne 'PASS') { throw 'Prepared web migration compatibility checks failed' }
+                if ($profiles.migrationSha256 -ne $preparedMigrationSha256) { throw 'Compatibility test SQL differs from frozen installation input' }
+            }
             Invoke-LocalProcess 'web-migration' $binaries.psql ($connection + @('-d','kingscore_local_tests','-f',(Join-Path $runMigrationDirectory '01-install-rpcs.sql')))
             # Synthetic position writer is exclusively a local acceptance fixture, never part of web SQL.
-            Invoke-LocalProcess 'synthetic-position-adapter' $binaries.psql ($connection + @('-d','kingscore_local_tests','-f',(Join-Path $repo 'local-tests/web-migration-local-adapter.sql')))
+            if (-not $AndroidEditor) {
+                Invoke-LocalProcess 'synthetic-position-adapter' $binaries.psql ($connection + @('-d','kingscore_local_tests','-f',(Join-Path $repo 'local-tests/web-migration-local-adapter.sql')))
+            }
         } else {
             Invoke-LocalProcess 'candidate' $binaries.psql ($connection + @('-d','kingscore_local_tests','-f',(Join-Path $repo 'local-tests/candidate.sql')))
         }
         $report.futureContractImplemented = $true
-        Invoke-LocalProcess 'atomic-acceptance' $node @((Join-Path $repo 'local-tests/atomic-acceptance.mjs'),[IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin) 180
-        $acceptance = Get-Content -LiteralPath (Join-Path $runDirectory 'acceptance-report.json') -Raw | ConvertFrom-Json
-        if ($acceptance.status -ne 'PASS' -or $acceptance.cases.Count -ne 21 -or -not $acceptance.ownGatewayStopped) {
-            throw 'Atomic acceptance incomplete or own gateway did not stop'
+        if ($AndroidEditor) {
+            Invoke-LocalProcess 'android-editor-integration' $node @((Join-Path $repo 'local-tests/android-editor-integration.mjs'),
+                [IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin,$Serial,[IO.Path]::GetFullPath($Adb)) 600
+            $integration = Get-Content -LiteralPath (Join-Path $runDirectory 'android-editor-report.json') -Raw | ConvertFrom-Json
+            if ($integration.status -ne 'PASS' -or -not $integration.ownGatewayStopped -or -not $integration.ownBridgeStopped) {
+                throw 'Android editor integration incomplete or services did not stop'
+            }
+        } else {
+            Invoke-LocalProcess 'atomic-acceptance' $node @((Join-Path $repo 'local-tests/atomic-acceptance.mjs'),[IO.Path]::GetFullPath($PostgresBin),[string]$port,$runDirectory,$PostgrestBin) 180
+            $acceptance = Get-Content -LiteralPath (Join-Path $runDirectory 'acceptance-report.json') -Raw | ConvertFrom-Json
+            if ($acceptance.status -ne 'PASS' -or $acceptance.cases.Count -ne 21 -or -not $acceptance.ownGatewayStopped) {
+                throw 'Atomic acceptance incomplete or own gateway did not stop'
+            }
         }
         $report.mode = 'local-atomic-acceptance'
         if ($WebMigrationDirectory) {
             $report.mode = 'local-prepared-web-migration-acceptance'
             $report.webMigrationDirectory = $WebMigrationDirectory
             $report.webMigrationSha256 = $preparedMigrationSha256
-            $report.compatibilityCases = $profiles.cases.Count
+            if (-not $AndroidEditor) { $report.compatibilityCases = $profiles.cases.Count }
             if ((Get-FileHash -LiteralPath (Join-Path $WebMigrationDirectory '01-install-rpcs.sql') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $preparedMigrationSha256) {
                 throw 'Prepared SQL source changed during local validation; rerun on current input'
             }
         }
+        if ($AndroidEditor) { $report.mode = 'local-android-editor-integration'; $report.androidProcessRecoveryVerified = $true }
     }
     $report.status = 'PASS'
 } catch {

@@ -1,0 +1,379 @@
+{
+  "version": 1,
+  "date": "2026-10-15",
+  "scope": "Android editor with local PostgreSQL/PostgREST and Keystore across process death",
+  "status": "PASS",
+  "baselineCommit": "64439da82f394633e204d520a8d61f0ee9ee5f89",
+  "productionEditorEnabled": false,
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "remoteDatabaseContacted": false,
+  "githubCiExecuted": false,
+  "githubCiSkippedByCommit": true,
+  "realSupabaseAuthVerified": false,
+  "networkMonitorInjected": true,
+  "signedReleaseBuilt": false,
+  "currentSignedCandidate": "0.5.0-rc3 (previous source checkpoint)",
+  "build": {
+    "unitTestTaskUpToDate": true,
+    "jvmFailures": 0,
+    "seconds": 151,
+    "lintErrors": 0,
+    "maxWorkers": 2,
+    "jvmErrors": 0,
+    "log": ".work/editor-rpc-recovery-final-build.log",
+    "jvmTests": 231,
+    "result": "BUILD SUCCESSFUL",
+    "lintWarnings": 24
+  },
+  "node": {
+    "fail": 0,
+    "tests": 40,
+    "pass": 40,
+    "log": ".work/editor-rpc-node-checkpoint.log"
+  },
+  "run": {
+    "status": "PASS",
+    "mode": "local-android-editor-integration",
+    "host": "127.0.0.1",
+    "database": "kingscore_local_tests",
+    "runDirectory": "C:\\Users\\GoryNickel\\Documents\\GitHub\\KingScore-Android\\.work\\local-play-tests\\9f8193086180497b92c546f25d3f66e6",
+    "startedAtUtc": "2026-10-14T23:27:28.0913416Z",
+    "finishedAtUtc": "2026-10-14T23:30:11.9491462Z",
+    "postgresPort": 63831,
+    "exitCodes": {
+      "contract-tests": 0,
+      "generate-fixture": 0,
+      "initdb": 0,
+      "start": 0,
+      "create-database": 0,
+      "mark-database": 0,
+      "fixture": 0,
+      "web-migration": 0,
+      "android-editor-integration": 0,
+      "stop": 0
+    },
+    "serverStopped": true,
+    "remoteContacted": false,
+    "futureContractImplemented": true,
+    "githubCiExecuted": false,
+    "failure": null,
+    "webMigrationDirectory": "C:\\Users\\GoryNickel\\Documents\\GitHub\\KingScore-Android\\.work\\King-Score-atomic\\scripts\\atomic-play-migrations",
+    "webMigrationSha256": "f0b4e4a28ba4bcc89c164627de8e9db2275b9aaaf1c51a083cfdbaebf8305047",
+    "androidProcessRecoveryVerified": true
+  },
+  "integration": {
+    "status": "PASS",
+    "remoteDatabaseContacted": false,
+    "authIsSynthetic": true,
+    "realGoTrueVerified": false,
+    "serial": "emulator-5578",
+    "ownGatewayStopped": true,
+    "ownBridgeStopped": true,
+    "reverseRemoved": true,
+    "phases": [
+      {
+        "stage": "pending",
+        "pid": 4672,
+        "requestId": "68d15b7b-b541-42d5-b198-7eca1e63de07",
+        "forceStopVerified": true,
+        "log": ".work\\local-play-tests\\9f8193086180497b92c546f25d3f66e6\\android-6-editor-pending.log",
+        "expectedInstrumentTermination": true
+      },
+      {
+        "stage": "confirmed",
+        "pid": 4761,
+        "requestId": "68d15b7b-b541-42d5-b198-7eca1e63de07",
+        "forceStopVerified": true,
+        "log": ".work\\local-play-tests\\9f8193086180497b92c546f25d3f66e6\\android-10-editor-confirmed.log",
+        "expectedInstrumentTermination": true
+      },
+      {
+        "stage": "final",
+        "pid": 4839,
+        "requestId": "68d15b7b-b541-42d5-b198-7eca1e63de07",
+        "log": ".work\\local-play-tests\\9f8193086180497b92c546f25d3f66e6\\android-14-editor-final.log"
+      }
+    ],
+    "mutations": [
+      {
+        "rpc": "create_play_v1",
+        "requestId": "68d15b7b-b541-42d5-b198-7eca1e63de07",
+        "bodySha256": "97bc66d04a7916c4c71309ee55b76268087855d65f36a5583fddaad7e280c7b5",
+        "status": 200,
+        "response": {
+          "play_id": "ab1e9d4c-1e21-4636-8b86-0b9e07777775",
+          "replayed": false,
+          "revision": "v1:2d0767ee5377d92730cedc10d075c2a032e374e5d64bd3a4435ffd85a87c759e"
+        },
+        "actor": "00000000-0000-0000-0000-000000009301"
+      },
+      {
+        "rpc": "create_play_v1",
+        "requestId": "68d15b7b-b541-42d5-b198-7eca1e63de07",
+        "bodySha256": "97bc66d04a7916c4c71309ee55b76268087855d65f36a5583fddaad7e280c7b5",
+        "status": 200,
+        "response": {
+          "play_id": "ab1e9d4c-1e21-4636-8b86-0b9e07777775",
+          "replayed": true,
+          "revision": "v1:2d0767ee5377d92730cedc10d075c2a032e374e5d64bd3a4435ffd85a87c759e"
+        },
+        "actor": "00000000-0000-0000-0000-000000009301"
+      },
+      {
+        "rpc": "update_play_v1",
+        "requestId": "1ff51c41-eba1-41a4-9b2f-f95094ac8f7c",
+        "bodySha256": "ff8fd0188b58473ea29ba0e18e0213b687aba4478789d257469a0391f87325da",
+        "status": 200,
+        "response": {
+          "play_id": "ab1e9d4c-1e21-4636-8b86-0b9e07777775",
+          "replayed": false,
+          "revision": "v1:a317b36bcb3bd588ba16136b54c3ab9ed6dbf05c740ee2f6158b4e68d0a621b2"
+        },
+        "actor": "00000000-0000-0000-0000-000000009301"
+      },
+      {
+        "rpc": "delete_play_v1",
+        "requestId": "e67a13a9-e6ff-423e-84d0-3178d7f5cdfb",
+        "bodySha256": "d0d1e82b7d23f9da1f207ce7835b3877e8ef956991e02ea953e0d27746bd244a",
+        "status": 200,
+        "response": {
+          "deleted": true,
+          "play_id": "ab1e9d4c-1e21-4636-8b86-0b9e07777775",
+          "replayed": false
+        },
+        "actor": "00000000-0000-0000-0000-000000009301"
+      }
+    ],
+    "reads": [
+      {
+        "resource": "plays",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "plays",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "games",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "players",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "plays",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "plays",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "games",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "players",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "plays",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "plays",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "games",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "players",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "plays",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "play_comments",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "games",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "players",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "rpc/get_play_editor_v1",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "plays",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "play_comments",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "games",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "players",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "rpc/get_play_editor_v1",
+        "status": 200,
+        "error": null
+      },
+      {
+        "resource": "plays",
+        "status": 200,
+        "error": null
+      }
+    ],
+    "fixtureErrors": [],
+    "authRequests": 45,
+    "readRequests": 23,
+    "failure": null,
+    "nativeStopped": true
+  },
+  "sourceHashes": {
+    "app/src/debug/AndroidManifest.xml": "47ce535a8e14127020614a0ffb9ef8ed7c319e7b6ff9f2479db861fff0478458",
+    "scripts/test-local-play-saves.ps1": "34f6eaaab40fbf6621bd988f465b0ca2c60bb9227ea769734cf62872e930c2a3",
+    "scripts/check-evidence.test.mjs": "31495c0a9a36af932bd3f339b41b79af63612751f41e1d3a4f738b514739b44c",
+    "app/src/debug/res/xml/local_test_network.xml": "355040bde7e74f93c4ab0adbf8208ac331ae84f6448beb494a977217672f8a13",
+    "app/src/androidTest/java/app/kingscore/android/ui/PlayEditorRpcRecoveryTest.kt": "ec7d95068de78c30f66470c3e791e9fe8b7b5ec0974fbe3e6c36ff23c1b24d4a",
+    "app/src/androidTest/java/app/kingscore/android/data/local/PendingRecoveryProbe.kt": "e8d74df8bcb48020fc40348df05f9a2da0d21e3c3af1dca43f14fe4f1c92e3d8",
+    "local-tests/android-editor-integration.mjs": "3c03d65a1b2f856d2386b4669042e42c77edaca5f90fd170c22f887052352c85"
+  },
+  "priorFailedAttempts": [
+    {
+      "run": "122b1ba2aec8497a81474137c83c9830",
+      "status": "FAIL",
+      "failure": "The input did not match the regular expression /OK \\(1 test\\)/. Input:\n\n'INSTRUMENTATION_STATUS: class=app.kingscore.android.ui.PlayEditorRpcRecoveryTest\\r\\n' +\n  'INSTRUMENTATION_STATUS: current=1\\r\\n' +\n  'INSTRUMENTATION_STATUS: id=AndroidJUnitRunner\\r\\n' +\n  'INSTRUMENTATION_STATUS: numtests=1\\r\\n' +\n  'INSTRUMENTATION_STATUS: stream=\\r\\n' +\n  'app.kingscore.android.ui.PlayEditorRpcRecoveryTest:\\r\\n' +\n  'INSTRUMENTATION_STATUS: test=editorUsesHttpAndEncryptedJournalAcrossRealProcessDeaths\\r\\n' +\n  'INSTRUMENTATION_STATUS_CODE: 1\\r\\n' +\n  'INSTRUMENTATION_STATUS: class=app.kingscore.android.ui.PlayEditorRpcRecoveryTest\\r\\n' +\n  'INSTRUMENTATION_STATUS: current=1\\r\\n' +\n  'INSTRUMENTATION_STATUS: id=AndroidJUnitRunner\\r\\n' +\n  'INSTRUMENTATION_STATUS: numtests=1\\r\\n' +\n  \"INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: Failed: performScrollToNode(TestTag = 'manage-play')\\r\\n\" +\n  \"Reason: Expected exactly '1' node but could not find any node that satisfies: (TestTag = 'detail-content')\\r\\n\" +\n  '\\r\\n' +\n  '\\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow(SemanticsNodeInteraction.kt:178)\\r\\n' +\n  '\\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow$default(SemanticsNodeInteraction.kt:150)\\r\\n' +\n  '\\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchSemanticsNode(SemanticsNodeInteraction.kt:84)\\r\\n' +\n  '\\tat androidx.compose.ui.test.ActionsKt.scrollToMatchingDescendantOrReturnScrollable(Actions.kt:281)\\r\\n' +\n  '\\tat androidx.compose.ui.test.ActionsKt.performScrollToNode(Actions.kt:240)\\r\\n' +\n  '\\tat app.kingscore.android.ui.PlayEditorRpcRecoveryTest$editorUsesHttpAndEncryptedJournalAcrossRealProcessDeaths$1.invokeSuspend(PlayEditorRpcRecoveryTest.kt:196)\\r\\n' +\n  '\\tat kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)\\r\\n' +\n  '\\tat kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)\\r\\n' +\n  '\\tat kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)\\r\\n' +\n  '\\tat kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source:1)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking$default(Builders.kt:48)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt.runBlocking$default(Unknown Source:1)\\r\\n' +\n  '\\tat app.kingscore.android.ui.PlayEditorRpcRecoveryTest.editorUsesHttpAndEncryptedJournalAcrossRealProcessDeaths(PlayEditorRpcRecoveryTest.kt:149)\\r\\n' +\n  '\\r\\n' +\n  'INSTRUMENTATION_STATUS: stream=\\r\\n' +\n  'Error in editorUsesHttpAndEncryptedJournalAcrossRealProcessDeaths(app.kingscore.android.ui.PlayEditorRpcRecoveryTest):\\r\\n' +\n  \"java.lang.AssertionError: Failed: performScrollToNode(TestTag = 'manage-play')\\r\\n\" +\n  \"Reason: Expected exactly '1' node but could not find any node that satisfies: (TestTag = 'detail-content')\\r\\n\" +\n  '\\r\\n' +\n  '\\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow(SemanticsNodeInteraction.kt:178)\\r\\n' +\n  '\\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow$default(SemanticsNodeInteraction.kt:150)\\r\\n' +\n  '\\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchSemanticsNode(SemanticsNodeInteraction.kt:84)\\r\\n' +\n  '\\tat androidx.compose.ui.test.ActionsKt.scrollToMatchingDescendantOrReturnScrollable(Actions.kt:281)\\r\\n' +\n  '\\tat androidx.compose.ui.test.ActionsKt.performScrollToNode(Actions.kt:240)\\r\\n' +\n  '\\tat app.kingscore.android.ui.PlayEditorRpcRecoveryTest$editorUsesHttpAndEncryptedJournalAcrossRealProcessDeaths$1.invokeSuspend(PlayEditorRpcRecoveryTest.kt:196)\\r\\n' +\n  '\\tat kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)\\r\\n' +\n  '\\tat kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)\\r\\n' +\n  '\\tat kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)\\r\\n' +\n  '\\tat kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source:1)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking$default(Builders.kt:48)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt.runBlocking$default(Unknown Source:1)\\r\\n' +\n  '\\tat app.kingscore.android.ui.PlayEditorRpcRecoveryTest.editorUsesHttpAndEncryptedJournalAcrossRealProcessDeaths(PlayEditorRpcRecoveryTest.kt:149)\\r\\n' +\n  '\\r\\n' +\n  'INSTRUMENTATION_STATUS: test=editorUsesHttpAndEncryptedJournalAcrossRealProcessDeaths\\r\\n' +\n  'INSTRUMENTATION_STATUS_CODE: -2\\r\\n' +\n  'INSTRUMENTATION_RESULT: stream=\\r\\n' +\n  '\\r\\n' +\n  'Time: 12.824\\r\\n' +\n  'There was 1 failure:\\r\\n' +\n  '1) editorUsesHttpAndEncryptedJournalAcrossRealProcessDeaths(app.kingscore.android.ui.PlayEditorRpcRecoveryTest)\\r\\n' +\n  \"java.lang.AssertionError: Failed: performScrollToNode(TestTag = 'manage-play')\\r\\n\" +\n  \"Reason: Expected exactly '1' node but could not find any node that satisfies: (TestTag = 'detail-content')\\r\\n\" +\n  '\\r\\n' +\n  '\\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow(SemanticsNodeInteraction.kt:178)\\r\\n' +\n  '\\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow$default(SemanticsNodeInteraction.kt:150)\\r\\n' +\n  '\\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchSemanticsNode(SemanticsNodeInteraction.kt:84)\\r\\n' +\n  '\\tat androidx.compose.ui.test.ActionsKt.scrollToMatchingDescendantOrReturnScrollable(Actions.kt:281)\\r\\n' +\n  '\\tat androidx.compose.ui.test.ActionsKt.performScrollToNode(Actions.kt:240)\\r\\n' +\n  '\\tat app.kingscore.android.ui.PlayEditorRpcRecoveryTest$editorUsesHttpAndEncryptedJournalAcrossRealProcessDeaths$1.invokeSuspend(PlayEditorRpcRecoveryTest.kt:196)\\r\\n' +\n  '\\tat kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)\\r\\n' +\n  '\\tat kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)\\r\\n' +\n  '\\tat kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)\\r\\n' +\n  '\\tat kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source:1)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking$default(Builders.kt:48)\\r\\n' +\n  '\\tat kotlinx.coroutines.BuildersKt.runBlocking$default(Unknown Source:1)\\r\\n' +\n  '\\tat app.kingscore.android.ui.PlayEditorRpcRecoveryTest.editorUsesHttpAndEncryptedJournalAcrossRealProcessDeaths(PlayEditorRpcRecoveryTest.kt:149)\\r\\n' +\n  '\\r\\n' +\n  'FAILURES!!!\\r\\n' +\n  'Tests run: 1,  Failures: 1\\r\\n' +\n  '\\r\\n' +\n  '\\r\\n' +\n  'INSTRUMENTATION_CODE: -1\\r\\n'\n",
+      "bridgeStopped": true,
+      "gatewayStopped": true,
+      "serverStopped": true
+    },
+    {
+      "run": "2510701a8f1e4baa94a9a1a37389c922",
+      "status": "FAIL",
+      "failure": "Instrumentation ended before confirmed; inspect its log",
+      "bridgeStopped": true,
+      "gatewayStopped": true,
+      "serverStopped": true
+    },
+    {
+      "run": "3ab50b14758a47e69ec51124c41c3925",
+      "status": "FAIL",
+      "failure": "The input did not match the regular expression /^KingScoreStable35\\r?\\n/. Input:\n\n'KingScoreStable35\\r\\r\\nOK\\r\\r\\n'\n",
+      "bridgeStopped": false,
+      "gatewayStopped": true,
+      "serverStopped": true
+    },
+    {
+      "run": "726496af9ce94064b1d3f3207fee73ef",
+      "status": "FAIL",
+      "failure": "Instrumentation ended before pending; inspect its log",
+      "bridgeStopped": true,
+      "gatewayStopped": true,
+      "serverStopped": true
+    },
+    {
+      "run": "9ee478e31de646968c31c0bbe89eb79c",
+      "status": "FAIL",
+      "failure": "Instrumentation ended before pending; inspect its log",
+      "bridgeStopped": true,
+      "gatewayStopped": true,
+      "serverStopped": true
+    },
+    {
+      "run": "b87159dd723749abbee36938e540c376",
+      "status": "FAIL",
+      "failure": "Instrumentation ended before pending; inspect its log",
+      "bridgeStopped": true,
+      "gatewayStopped": true,
+      "serverStopped": true
+    }
+  ],
+  "regressionAttempt": {
+    "failureTests": [
+      "largeHistoryMeasuresPaginationMemoryAndScrollWithoutDuplicateFetches: No scroll frames collected",
+      "largeFontCommentWithVisibleKeyboardKeepsSaveAndCancelReachable: keyboard visibility timeout"
+    ],
+    "run": ".work/pending-recovery/eacd3c03c02e4b88a0c6078afc055795",
+    "assumptionsSkipped": 1,
+    "settingsRestored": true,
+    "targetedRecheckPending": false,
+    "failures": 2,
+    "status": "FAIL",
+    "passed": 85,
+    "testsDiscovered": 88,
+    "targetedRecheck": {
+      "tests": 3,
+      "status": "FAIL",
+      "failures": 2,
+      "run": ".work/final-pc-qa/ddcccc96cbf64e37a9354692c3a6343c"
+    },
+    "emulatorDiagnosis": {
+      "observedFocus": "Application Not Responding: com.android.systemui",
+      "device": "emulator-5578",
+      "fullRecheckPending": false,
+      "ownedEmulatorRestarted": true,
+      "screenshot": ".work/editor-rpc-emulator-screen.png",
+      "otherEmulatorModified": false
+    }
+  },
+  "regressionRecheck": {
+    "integratedTestExecutedSeparately": true,
+    "log": ".work/editor-rpc-regression-restarted.log",
+    "assumptionsSkipped": 1,
+    "run": ".work/pending-recovery/b14fa328306948b5b4cd964f938ddb89",
+    "testsPassed": 87,
+    "report": {
+      "status": "PASS",
+      "serial": "emulator-5578",
+      "remoteDatabaseContacted": false,
+      "androidTests": 88,
+      "writeProcess": 4274,
+      "readProcess": 4316,
+      "forceStopVerified": true,
+      "commentRecoveryVerified": true,
+      "settingsRestored": true,
+      "failure": null
+    }
+  },
+  "ownedEmulatorStopped": true
+}

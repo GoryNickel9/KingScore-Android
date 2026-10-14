@@ -13,7 +13,7 @@ class PendingRecoveryProbe : AndroidJUnitRunner() {
     private var mode: String? = null
     override fun onCreate(arguments: Bundle?) { mode = arguments?.getString("mode"); super.onCreate(arguments) }
     override fun onStart() {
-        if (mode == null) { super.onStart(); return }
+        if (mode == null || mode!!.startsWith("editor-")) { super.onStart(); return }
         val result = Bundle()
         try {
             runBlocking {

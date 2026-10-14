@@ -1,8 +1,8 @@
 #requires -Version 7.0
 [CmdletBinding()]
 param(
-    [ValidateRange(1,2147483647)][int]$VersionCode=11,
-    [ValidatePattern('^[0-9A-Za-z.+_-]{1,64}$')][string]$VersionName='0.5.0-rc3',
+    [ValidateRange(1,2147483647)][int]$VersionCode=12,
+    [ValidatePattern('^[0-9A-Za-z.+_-]{1,64}$')][string]$VersionName='0.5.0-rc4',
     [switch]$InitializeSigningKey,
     [switch]$Offline,
     [string]$AndroidSdk=(Join-Path $env:LOCALAPPDATA 'Android/Sdk')
@@ -24,14 +24,16 @@ try {
     $badging=(& $aapt dump badging $unsigned 2>&1|Out-String)
     if ($LASTEXITCODE -ne 0 -or $badging -notmatch "package: name='app.kingscore.android' versionCode='$VersionCode' versionName='$([Regex]::Escape($VersionName))'" -or $badging -match 'application-debuggable') { throw 'Release package/version/debuggability verification failed' }
     $manifest=(& $aapt dump xmltree $unsigned 'AndroidManifest.xml' 2>&1|Out-String)
-    if ($LASTEXITCODE -ne 0 -or $manifest -match 'DebugRecreationActivity|PendingRecoveryProbe|ComposeTestActivity|E: instrumentation') { throw 'Test entry point detected in release manifest' }
+    if ($LASTEXITCODE -ne 0 -or $manifest -match 'DebugRecreationActivity|PendingRecoveryProbe|ComposeTestActivity|PlayEditorRpcRecoveryTest|E: instrumentation') { throw 'Test entry point detected in release manifest' }
+    if ($manifest -notmatch 'android:usesCleartextTraffic[^\r\n]*=0x0' -or $manifest -match 'networkSecurityConfig') { throw 'Release network policy differs from the verified HTTPS-only manifest' }
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $archive=[IO.Compression.ZipFile]::OpenRead($unsigned)
     try {
+        if ($null -ne $archive.GetEntry('res/xml/local_test_network.xml')) { throw 'Debug loopback network policy detected in release resources' }
         foreach($entry in $archive.Entries|Where-Object FullName -Match '^classes[0-9]*\.dex$') {
             $stream=$entry.Open();$bytes=[IO.MemoryStream]::new()
             try { $stream.CopyTo($bytes);$text=[Text.Encoding]::Latin1.GetString($bytes.ToArray())
-                if($text -match 'DebugRecreationActivity|PendingRecoveryProbe|ComposeTestActivity') {throw 'Test-only class detected in release DEX'}
+                if($text -match 'DebugRecreationActivity|PendingRecoveryProbe|ComposeTestActivity|PlayEditorRpcRecoveryTest') {throw 'Test-only class detected in release DEX'}
             } finally { $stream.Dispose();$bytes.Dispose() }
         }
     } finally { $archive.Dispose() }

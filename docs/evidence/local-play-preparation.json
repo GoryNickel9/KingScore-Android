@@ -1,0 +1,257 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "scope": "play-save-contract-and-PC-test-preparation",
+  "status": "PASS",
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "remoteDatabaseContacted": false,
+  "futureAtomicContractImplemented": false,
+  "androidEditorEnabled": false,
+  "apkBuiltLocally": false,
+  "localRun": {
+    "status": "PASS",
+    "mode": "local-baseline-and-contract-preparation",
+    "host": "127.0.0.1",
+    "database": "kingscore_local_tests",
+    "runDirectory": "C:\\Users\\GoryNickel\\Documents\\GitHub\\KingScore-Android\\.work\\local-play-tests\\205b952149b14921aa3d2bf28e78f3da",
+    "startedAtUtc": "2026-10-14T10:38:16.919304Z",
+    "finishedAtUtc": "2026-10-14T10:38:39.9594705Z",
+    "postgresPort": 54234,
+    "exitCodes": {
+      "contract-tests": 0,
+      "generate-fixture": 0,
+      "initdb": 0,
+      "start": 0,
+      "create-database": 0,
+      "mark-database": 0,
+      "fixture": 0,
+      "http-tests": 0,
+      "stop": 0
+    },
+    "serverStopped": true,
+    "remoteContacted": false,
+    "futureContractImplemented": false,
+    "githubCiExecuted": false,
+    "failure": null
+  },
+  "http": {
+    "status": "PASS",
+    "mode": "baseline-characterisation",
+    "node": "v24.19.0",
+    "host": "127.0.0.1",
+    "cases": [
+      {
+        "name": "anonymous cannot create",
+        "method": "POST",
+        "status": 401,
+        "code": "42501"
+      },
+      {
+        "name": "ordinary account cannot create",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "user metadata cannot grant admin",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "bad JWT signature rejected",
+        "method": "POST",
+        "status": 401,
+        "code": "PGRST301"
+      },
+      {
+        "name": "expired JWT rejected",
+        "method": "POST",
+        "status": 401,
+        "code": "PGRST303"
+      },
+      {
+        "name": "first create request commits parent",
+        "method": "POST",
+        "status": 201
+      },
+      {
+        "name": "second create request fails score FK",
+        "method": "POST",
+        "status": 409,
+        "code": "23503"
+      },
+      {
+        "name": "partial create leaves parent without scores",
+        "method": "GET",
+        "status": 200
+      },
+      {
+        "name": "insert exact numeric score and metadata",
+        "method": "POST",
+        "status": 201
+      },
+      {
+        "name": "metadata edit commits separately",
+        "method": "PATCH",
+        "status": 200
+      },
+      {
+        "name": "score replacement fails and rolls back its own transaction",
+        "method": "POST",
+        "status": 409,
+        "code": "23503"
+      },
+      {
+        "name": "partial edit keeps new notes and old score",
+        "method": "GET",
+        "status": 200
+      },
+      {
+        "name": "ordinary account rejected by legacy RPC",
+        "method": "POST",
+        "status": 403,
+        "code": "42501"
+      },
+      {
+        "name": "legacy replacement discards supplied metadata and ID",
+        "method": "POST",
+        "status": 200
+      },
+      {
+        "name": "direct score UPDATE fails incompatible trigger",
+        "method": "PATCH",
+        "status": 400,
+        "code": "42703"
+      },
+      {
+        "name": "concurrent edit A accepted without revision",
+        "method": "PATCH",
+        "status": 200
+      },
+      {
+        "name": "concurrent edit B accepted without revision",
+        "method": "PATCH",
+        "status": 200
+      },
+      {
+        "name": "create repetition A",
+        "method": "POST",
+        "status": 201
+      },
+      {
+        "name": "create repetition B creates another ID",
+        "method": "POST",
+        "status": 201
+      },
+      {
+        "name": "legacy RPC permits empty participant list",
+        "method": "POST",
+        "status": 200
+      },
+      {
+        "name": "comment fixture for cascade",
+        "method": "POST",
+        "status": 201
+      },
+      {
+        "name": "other admin changes target after displayed snapshot",
+        "method": "PATCH",
+        "status": 200
+      },
+      {
+        "name": "stale delete still accepted by existing backend",
+        "method": "DELETE",
+        "status": 200
+      },
+      {
+        "name": "delete removes parent",
+        "method": "GET",
+        "status": 200
+      },
+      {
+        "name": "get_play_editor_v1 is not implemented in baseline",
+        "method": "POST",
+        "status": 404,
+        "code": "PGRST202"
+      },
+      {
+        "name": "create_play_v1 is not implemented in baseline",
+        "method": "POST",
+        "status": 404,
+        "code": "PGRST202"
+      },
+      {
+        "name": "update_play_v1 is not implemented in baseline",
+        "method": "POST",
+        "status": 404,
+        "code": "PGRST202"
+      },
+      {
+        "name": "delete_play_v1 is not implemented in baseline",
+        "method": "POST",
+        "status": 404,
+        "code": "PGRST202"
+      },
+      {
+        "name": "import_bga_play_v1 is not implemented in baseline",
+        "method": "POST",
+        "status": 404,
+        "code": "PGRST202"
+      }
+    ],
+    "futureContractImplemented": false,
+    "goTrueLoginTested": false,
+    "remoteContacted": false,
+    "ownGatewayStopped": true,
+    "postgres": "PostgreSQL 17.4 on x86_64-windows, compiled by msvc-19.42.34436, 64-bit",
+    "postgrest": "PostgREST 14.1",
+    "gatewayPort": 54267,
+    "ratingSentinelUnchanged": true,
+    "problemsReproduced": [
+      "partial-create",
+      "partial-update",
+      "lost-score-metadata-and-ids",
+      "broken-score-update-trigger",
+      "no-revision-conflict",
+      "duplicate-create",
+      "stale-delete"
+    ],
+    "caseCount": 29
+  },
+  "nodeChecks": {
+    "command": "node --test scripts/check-evidence.test.mjs contracts/tests/play-save-contracts.test.mjs",
+    "contractTests": 28,
+    "auditTests": 10,
+    "passed": 38,
+    "exitCode": 0
+  },
+  "toolPreflightGuard": {
+    "outsideRepositoryPostgrestRejected": true,
+    "serversStarted": false
+  },
+  "acceptance": {
+    "status": "pending-implementation",
+    "cases": 21,
+    "path": "local-tests/acceptance-cases.json"
+  },
+  "sourceSha256": {
+    "docs/evidence/supabase-audit.json": "79205aba4f1136da2cd4e5ff4ccff8497edfc24725f2a066fe76559516008905",
+    "contracts/v1/play-saves.json": "af86eff0b38c2733021b3c035e5fd0409c4b5ba0f02ada69fdf7f7793b0c10f5",
+    "contracts/tests/play-save-validation.mjs": "8299b04f5c4ed865f405fb7cc225a3fdd8bb6cefed56a87db06a9142ecf1bea6",
+    "contracts/tests/play-save-contracts.test.mjs": "1309dbb76488dcc7bc900757fffb39f996fa4b950586235cb583cbac826ebfaa",
+    "local-tests/generate-baseline.mjs": "b3b244006a0a24e228dd5f858426c68bd8451c988733a1181f36fac12c42587f",
+    "local-tests/baseline-http.mjs": "4cdd74359f928edffc1b7c411077f516dbe690b566cb1fd7a0bab052d8caa5b6",
+    "local-tests/acceptance-cases.json": "0d38c7d7b26c50b8a678ed01aad14b22ea7750c9fdcbd815a2e1b3f4e6676309",
+    "scripts/test-local-play-saves.ps1": "9c8bc752ccc95e5b5cbd2c3e3dc067bd2d28dedb011d4b342d88a0bd48e29570"
+  },
+  "generatedFixtureSha256": "5036e362b532c06fc382684a5355b15c6036dd340672321989b40b13ba7a2e02",
+  "limitations": [
+    "PASS reproduces the known legacy defects; it does not mean they are fixed.",
+    "Auth and accounts are synthetic; Supabase GoTrue, cloud settings and real session revocation are untested.",
+    "Web and Android consumers are not exercised in this preparation.",
+    "Historical values outside the proposed input contract require explicit editor decisions before implementation."
+  ]
+}

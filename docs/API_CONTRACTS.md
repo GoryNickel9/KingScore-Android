@@ -68,6 +68,8 @@ La modifica commento non dispone attualmente di un controllo optimistic locking:
 
 Queste funzioni **non sono disponibili**. Le migrazioni e le modifiche web preparate nelle fasi 4.1 e 4.2 sono state annullate su richiesta dell'utente; nessuna migrazione era stata deployata. I documenti [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md) e [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRITERS.md) restano registri storici. Gli input Kotlin in `Commands.kt` descrivono una proposta, senza autorizzare fallback sulle scritture dirette. Il lavoro è limitato alla repo Android e l'editor partite mantiene le scritture disabilitate.
 
+La nuova definizione del 14 ottobre, preparata esclusivamente per prove sul PC, è in [PLAY_SAVE_CONTRACT.md](PLAY_SAVE_CONTRACT.md) e [play-saves.json](../contracts/v1/play-saves.json). Specifica un wire format comune con score decimali testuali, comprende l'import BGA per il web e separa i test del backend attuale dai casi di accettazione ancora pending. L'import non è abilitato nell'app Android.
+
 | RPC proposta | Argomenti | Risultato |
 | --- | --- | --- |
 | `get_play_editor_v1` | `p_play_id: uuid` | `{detail,revision}` per admin; detail è la composizione PlayDetail |
@@ -91,7 +93,7 @@ Esempio di argomenti per creazione, con soli identificatori sintetici:
     "is_cooperative": false,
     "team_won": null,
     "scores": [
-      {"id": null, "player_id": "00000000-0000-0000-0000-000000000002", "score": 0, "winner": true, "color": null, "role": null}
+      {"id": null, "player_id": "00000000-0000-0000-0000-000000000002", "score": "0", "winner": true, "color": null, "role": null}
     ]
   }
 }
@@ -118,4 +120,4 @@ La revisione è opaca e viene letta dal server; non esiste oggi una colonna su c
 | `PT409`, HTTP 409 | Revisione diversa o chiave riusata: rileggere il dettaglio e chiedere una nuova modifica esplicita |
 | Payload/FK/vincolo invalido | Errore di validazione, senza modifica parziale |
 
-La migrazione fissa `PT404` e `PT409` secondo la [mappatura custom di PostgREST](https://docs.postgrest.org/en/v12/references/errors.html), `22023` per input invalido e `23503` per gioco/giocatore assente. Le prove SQL verificano i codici; la verifica HTTP nel Supabase isolato resta necessaria. Non considerare HTTP 200 prova di aver modificato una riga; controllare il risultato restituito.
+Il contratto propone `PT404` e `PT409` per target assente e conflitto; input e riferimenti invalidi dovranno essere esposti come HTTP 400. L'implementazione e questi codici restano da verificare nel database locale. La replica del backend attuale conserva invece la mappatura legacy, compreso HTTP 409 per una FK invalida. Non considerare HTTP 200 prova di aver modificato una riga; controllare il risultato restituito. Nessuna prova viene eseguita su Supabase remoto.

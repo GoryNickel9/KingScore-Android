@@ -181,4 +181,6 @@ La dipendenza delle scritture admin resta irrisolta: le RPC proposte e i writer 
 
 ## Prossima attività
 
-Dal 14 ottobre 2026 la CI GitHub Android è nuovamente autorizzata. Riattivare il workflow e verificare contratti, test JVM, lint e build sull'ultimo commit. Il piano discusso prevede di correggere prima i salvataggi nella web app e nel backend, poi collegare Android ai contratti verificati. Questa repo resta limitata al lavoro Android: modifiche a King-Score e rilasci Vercel/Supabase richiedono un ambito di lavoro esplicito prima dell'esecuzione. Le scritture partite Android restano disabilitate.
+La CI Android è stata riattivata e supera il commit 47d468e del 14 ottobre 2026. Il contratto dei salvataggi è ora definito in [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md); [local-tests/README.md](local-tests/README.md) prepara la replica PostgreSQL/HTTP sul PC e riproduce i difetti del backend attuale. Non sono presenti nuove RPC atomiche.
+
+Il prossimo incremento è un'implementazione candidata nel database locale, con i 21 casi di accettazione ancora pending. Le prove usano esclusivamente il PC, senza Supabase remoto come ambiente di test. Modifiche a King-Score e rilasci Vercel/Supabase restano fuori dall'ambito corrente; le scritture partite Android restano disabilitate.

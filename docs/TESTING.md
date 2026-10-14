@@ -212,3 +212,11 @@ Le prove della fase 4.1 usano claim SQL simulate. L'incremento 4.2 aggiunge un g
 Il cluster PostgreSQL 17.4 usa schema e account sintetici. Il gateway verifica firma HS256 e scadenza; l'emissione dei token è locale, senza login GoTrue. Le tabelle ELO sentinella restano invariate. PostgreSQL e PostgREST sono arrestati al termine. I callback React non verificano DOM, focus o accessibilità; non sono stati eseguiti test browser reali. L'APK Android resta alla 0.4.0 e l'editor partite resta disabilitato.
 
 Risultati e hash dei sorgenti: [evidence/phase42-web-writers-validation.json](evidence/phase42-web-writers-validation.json). Procedura e limiti: [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRITERS.md). Il rollout remoto e il collaudo con account Supabase reali restano aperti; il database del sito non è stato modificato.
+
+## Contratti e base locale, 14 ottobre 2026
+
+La nuova preparazione usa soltanto questa repo e il PC. Il cluster PostgreSQL 17.4 e il gateway PostgREST 14.1 replicano il catalogo pubblico già auditato, con Auth SQL e JWT sintetici. Non è un progetto Supabase; nessun test contatta Supabase remoto o Vercel. Le RPC atomiche proposte non sono implementate e la verifica dei loro 21 casi di accettazione resta pending.
+
+Il runner verifica i payload e poi riproduce via HTTP i difetti della base attuale: creazione/modifica parziale, metadati e ID persi, UPDATE incompatibile, assenza di revisioni, duplicati e stale delete. PASS certifica la riproduzione dei problemi, senza dichiararli risolti. Procedura: [local-tests/README.md](../local-tests/README.md); definizione: [PLAY_SAVE_CONTRACT.md](PLAY_SAVE_CONTRACT.md). Risultati e hash: [evidence/local-play-preparation.json](evidence/local-play-preparation.json).
+
+I primi avvii hanno fatto correggere tre errori del nuovo runner: selezione di più eseguibili Node, pipe Windows trattenute dal PostgreSQL in background e punto e virgola assente dopo le definizioni delle funzioni nel generatore. Il run completo finale arresta entrambi i server e conserva i log locali. Nessun codice dell'app o repository web è stato modificato; nessun nuovo APK, login reale o benchmark mobile viene certificato da queste prove.

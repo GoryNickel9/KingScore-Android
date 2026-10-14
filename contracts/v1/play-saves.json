@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "status": "proposed-not-implemented-not-deployed",
+  "scope": "shared-play-save-contract",
+  "clientScope": {"android": ["get_play_editor_v1", "create_play_v1", "update_play_v1", "delete_play_v1"], "importBga": "web-only"},
+  "authentication": "verified-account-with-app_metadata.role-admin",
+  "limits": {
+    "participants": 63,
+    "payloadJsonbBytes": 1048576,
+    "revisionCharacters": 160,
+    "bgaTableIdCharacters": 256
+  },
+  "wire": {
+    "score": "decimal-string-or-null",
+    "decimalPattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+    "playedAt": "YYYY-MM-DD-year-0001-through-9999",
+    "revision": "opaque-printable-ASCII",
+    "requestId": "UUID-reused-only-with-identical-request"
+  },
+  "rpc": {
+    "get_play_editor_v1": ["p_play_id"],
+    "create_play_v1": ["p_request_id", "p_payload"],
+    "update_play_v1": ["p_request_id", "p_play_id", "p_expected_revision", "p_payload"],
+    "delete_play_v1": ["p_request_id", "p_play_id", "p_expected_revision"],
+    "import_bga_play_v1": ["p_request_id", "p_payload", "p_metadata", "p_positions"]
+  },
+  "payloadFields": ["game_id", "played_at", "duration_minutes", "source", "notes", "is_cooperative", "team_won", "scores"],
+  "scoreFields": ["id", "player_id", "score", "winner", "color", "role"],
+  "metadataFields": ["location", "bga_table_id"],
+  "responses": {
+    "editor": ["detail", "revision"],
+    "editorScoreEncoding": "decimal-string-or-null",
+    "mutation": ["play_id", "revision", "replayed"],
+    "delete": ["play_id", "deleted", "replayed"],
+    "import": ["play_id", "revision", "replayed", "skipped"]
+  },
+  "preservedOnUpdate": ["user_id", "location", "bga_table_id", "created_at", "retained-score-ids", "color", "role"],
+  "idempotency": {
+    "key": ["verified-actor-id", "request-id"],
+    "requestIncludes": ["operation", "target-id", "expected-revision", "full-payload", "import-metadata-and-positions"],
+    "receiptAndMutation": "same-database-transaction",
+    "roleCheckedBeforeReplay": true,
+    "sameKeyDifferentRequest": "HTTP409",
+    "replayAfterTargetDeletion": true,
+    "automaticRetry": false
+  },
+  "concurrency": {
+    "updateAndDeleteRequireRevision": true,
+    "revisionIncludes": ["all-play-columns", "all-score-columns"],
+    "revisionExcludes": ["catalog-display-names", "images", "comments", "ratings"],
+    "allWritersMustCooperate": true,
+    "staleRevision": "HTTP409-before-any-mutation"
+  },
+  "ranking": {
+    "rule": "preserve-current-site-behaviour-including-null-comparison",
+    "metadataOnlyUpdate": "preserve-existing-positions",
+    "bgaImport": "preserve-explicit-external-positions",
+    "eloRecalculation": false
+  },
+  "errors": {
+    "unauthenticated": 401,
+    "permissionDenied": 403,
+    "missingTarget": 404,
+    "conflict": 409,
+    "validation": 400,
+    "unknownOutcome": "transport-timeout-or-uninterpretable-success-no-new-request-id"
+  }
+}

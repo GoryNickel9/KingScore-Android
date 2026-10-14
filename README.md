@@ -19,6 +19,8 @@ Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Sco
 | [ROADMAP.md](ROADMAP.md) | Fasi, stime e stato corrente |
 | [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md) | Schema reale, RLS e limiti delle verifiche |
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | API esistenti, DTO e RPC proposte |
+| [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Nuovi contratti proposti per i salvataggi, senza deploy |
+| [local-tests/README.md](local-tests/README.md) | PostgreSQL e HTTP sul PC, difetti riprodotti e test futuri |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Moduli e flusso dati Android |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Decisioni tecniche e vincoli |
 | [docs/TESTING.md](docs/TESTING.md) | Comandi di verifica e controlli ancora necessari |

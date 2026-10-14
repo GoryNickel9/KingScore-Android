@@ -1,0 +1,28 @@
+{
+  "stage": "future-atomic-implementation",
+  "status": "pending-implementation",
+  "environment": "PC-loopback-only",
+  "cases": [
+    {"id":"create-rollback","expect":"Invalid participant or score leaves no parent, scores or receipt"},
+    {"id":"update-rollback","expect":"Invalid payload leaves all previous metadata, scores and receipt state intact"},
+    {"id":"delete-rollback","expect":"Deletion and receipt commit together; a failure leaves parent and children intact"},
+    {"id":"permission","expect":"Anon and ordinary JWTs are denied before lookup or receipt replay; user_metadata cannot grant admin"},
+    {"id":"global-admin","expect":"Admin can edit another historical owner; owner and noneditable metadata stay unchanged"},
+    {"id":"score-metadata","expect":"Retained score IDs, color and role survive updates"},
+    {"id":"numeric-wire","expect":"Null, zero, negatives and decimals above JavaScript integer precision remain exact"},
+    {"id":"jsonb-size","expect":"SQL jsonb::text byte boundaries match the contract validator, including Unicode and escaped text"},
+    {"id":"snapshot-revision","expect":"Detail and revision come from one snapshot and are independent of session timezone"},
+    {"id":"stale-update-delete","expect":"Stale revision returns HTTP409 before mutation"},
+    {"id":"parallel-update","expect":"Two different updates on one revision produce one commit and one HTTP409"},
+    {"id":"parallel-create-replay","expect":"Same actor/request/payload produces one create and one replay"},
+    {"id":"same-key-other-request","expect":"Different operation, target, revision or payload with same key returns HTTP409"},
+    {"id":"replay-after-delete","expect":"Update and delete receipts remain replayable after the target is removed"},
+    {"id":"role-before-replay","expect":"A new token without admin cannot replay a former admin receipt"},
+    {"id":"ranking","expect":"Current NULL, winner, tie and cooperative behaviour is preserved; metadata-only edits keep positions"},
+    {"id":"bga-import","expect":"Metadata and nullable external positions commit with scores; duplicate actor/table does not create another play"},
+    {"id":"elo-sentinels","expect":"Ratings and recalc runs stay unchanged; only existing play-deletion cascades affect linked history"},
+    {"id":"legacy-writers","expect":"After a separately tested local cutover, direct DML and old score RPC cannot bypass atomic writers"},
+    {"id":"writer-cooperation","expect":"Imports and server jobs cannot overwrite newer scores using an obsolete snapshot"},
+    {"id":"legacy-values","expect":"Historical manual/null source, null game or winner and unsupported participant counts are shown explicitly; no silent conversion or truncation on edit"}
+  ]
+}

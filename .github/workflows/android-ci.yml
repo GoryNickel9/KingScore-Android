@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: '24'
       - name: Validate recorded contracts
-        run: node --test scripts/check-evidence.test.mjs
+        run: node --test scripts/check-evidence.test.mjs contracts/tests/*.test.mjs
       - name: Build, unit tests and lint
         run: bash gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4

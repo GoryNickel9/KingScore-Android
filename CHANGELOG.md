@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0-rc3 — 14 ottobre 2026
+
+- Profilo scorrevole: logout raggiungibile con font a 1,8× su display da 320 dp.
+- Altezza della barra di navigazione proporzionata al font e fino a tre righe per le etichette.
+- Collaudo locale di storico da 1.200 partite, paginazione senza richieste duplicate e commenti con tastiera visibile; protocollo ripetibile per avvio e memoria della release.
+- Test del login porta il pulsante in vista con la tastiera aperta e verifica il contenuto inviato e la cancellazione della password.
+- Stessa chiave privata; versionCode 11. Editor admin disabilitato e CI sospesa.
+
 ## 0.5.0-rc2 — 14 ottobre 2026
 
 - Corretto il blocco senza Internet: le callback della rete predefinita usano le capacità ricevute e la perdita esplicita della rete, senza rileggere uno snapshot sincrono obsoleto.

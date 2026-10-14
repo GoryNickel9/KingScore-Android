@@ -350,3 +350,24 @@ La prima build offline non aveva tre dipendenze release in cache; sono state sca
 La candidata finale è .work/releases/KingScore-0.5.0-rc2-10.apk, versionCode 10, 14.446.050 byte, SHA-256 9aee9c8245e0583f10f475069b15c7e150261cca55847dc756be708fa4c89afa. Il certificato SHA-256 è b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b. Le sei schermate finali sono state controllate visivamente. I segmenti ELF delle librerie grafiche dei quattro ABI hanno allineamento 16.384 byte; non è una prova runtime su hardware ARM o pagine da 16 KiB.
 
 Le probe sono firmate con la stessa chiave soltanto per questo collaudo; non entrano nell'APK prodotto e non vanno distribuite. Usano record sintetici e non verificano sessioni con JWT reali o un salvataggio HTTP/RPC completo. Il login usa un archivio sessione vuoto e non invia credenziali: il percorso Auth termina prima dell'HTTP. Nessun test su Supabase remoto, modifica fuori repo o esecuzione CI. I 74 test Compose del checkpoint precedente restano evidenza della navigazione con fixture; questo incremento esegue le prove release su MainActivity. Risultati, hash e log: [private-release-validation.json](evidence/private-release-validation.json).
+
+## RC3: collaudo finale sul PC, 14 ottobre 2026
+
+| Controllo | Esito | Ambito |
+| --- | --- | --- |
+| JVM release, lint e APK | 225 test superati; zero errori lint, 24 warning; build 3m 29s | Release code 11, stesso certificato privato, host di test esclusi |
+| Contratti Node | 39 controlli superati | Contratti ed evidenze locali; nessuna verifica RLS remota aggiunta |
+| Suite Android API 35 | 77 test superati in 211,612 s | Include i tre nuovi casi di storico/font/tastiera; recupero partite/commenti fra PID 12837 e 12879, impostazioni ripristinate |
+| Font Android a 1,8× | Tre casi mirati superati in 101,615 s | Rafforzamento successivo della stessa classe: configurazione di sistema verificata, dialogo e logout raggiungibili, valore 1,0 ripristinato |
+| Aggiornamento RC3 API 31 | Superato | Baseline 8 → 11, UID 10145 invariato, registri cifrati, firma debug rifiutata, run-as negato, blocco/ripresa rete live |
+| Avvio RC3 API 35 | Sette campioni validi | Mediana 3.288 ms, p95 4.439 ms; PSS 61.068–63.343 KiB; login senza credenziali |
+
+Il primo run da 77 casi fallisce soltanto in AccessUiTest: il driver cliccava il login senza portare il pulsante in vista con l'IME aperto. Il test originale fallisce anche nel run mirato. Dopo scorrimento e sincronizzazione del callback, i tre casi AccessUiTest e la suite completa passano; il test verifica email/password inviate e rimozione della password. Un controllo intermedio sul testo del campo includeva l'etichetta Email e falliva pur con EditableText corretto: è stato corretto con assertTextContains.
+
+Le prime prove mirate terminavano durante l'avvio dell'instrumentation; in una è osservato un ANR, nell'altra la causa non è conclusiva. Un run successivo viene fermato esplicitamente dopo l'errore del Profilo non scorrevole e il costo del driver di paginazione. Il driver ora salta direttamente all'indice atteso e la suite mirata passa. Il controllo del font è poi rafforzato con l'impostazione Android reale, perché il dialogo ha un owner separato dall'host; questi tre casi vengono rieseguiti, senza attribuire alla suite precedente il controllo aggiunto successivamente. Le due immagini finali sono state controllate visivamente: la cattura del dialogo mostra l'invio; annullamento viene verificato dopo un altro scorrimento.
+
+Il primo protocollo di avvio release fallisce nella connessione UiAutomation. Il processo dell'app rimane presente e una nuova lettura mostra il login. I sette campioni vengono raccolti sulla stessa installazione nuova e vuota con un driver locale di ripresa; il tentativo iniziale resta registrato. Lo script permanente aggiunge letture UI con retry limitati e conserva il rifiuto di installazioni preesistenti. Una nuova istanza dell'emulatore resta offline senza porta console aperta e fallisce anche la riconnessione mirata: vengono verificati e chiusi soltanto i suoi PID, poi il controllo font passa su una porta libera. L'altro emulatore presente sul PC non viene modificato.
+
+La RC3 non ha un nuovo collaudo completo di aggiornamento API 35: quello della RC2 rimane evidenza separata. I tempi dello storico includono instrumentation e fixture preallocate, senza HTTP, JSON o immagini; il renderer software non consente una promessa di 60 fps. Limiti e protocollo: [FINAL_PC_QA.md](FINAL_PC_QA.md) e [BENCHMARKS.md](BENCHMARKS.md). Risultati e hash: [final-pc-qa-validation.json](evidence/final-pc-qa-validation.json).
+
+CI sospesa, editor admin disabilitato, nessun account o database remoto usato per i test. Questa evidenza chiude il checkpoint locale della candidata; non dichiara completati i requisiti esterni della stabile.

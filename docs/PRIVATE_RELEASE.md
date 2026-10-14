@@ -1,6 +1,6 @@
 # APK privato firmato
 
-La versione 0.5.0-rc2 è una candidata privata. Mantiene login e Internet obbligatori, consultazione e commenti propri. L'editor partite admin resta disabilitato perché le API atomiche reali non sono disponibili. Non dichiarare questa candidata la stabile completa. La rc1 è stata ritirata dopo un difetto del monitor rete riprodotto su Android 15.
+La versione 0.5.0-rc3 è una candidata privata. Mantiene login e Internet obbligatori, consultazione e commenti propri. L'editor partite admin resta disabilitato perché le API atomiche reali non sono disponibili. Non dichiarare questa candidata la stabile completa. La rc1 è stata ritirata dopo un difetto del monitor rete riprodotto su Android 15; la rc2 lo corregge. La rc3 rende raggiungibile il logout con font grandi e adatta l'altezza delle etichette di navigazione.
 
 ## Build e firma sul PC Windows
 
@@ -34,9 +34,9 @@ Installare l'APK da una fonte privata autorizzata e verificare SHA-256. Per gli 
 
 ## Collaudo locale
 
-scripts/test-private-apk.ps1 rifiuta telefoni fisici ed emulatori con l'app già installata. Non cancella dati preesistenti. Il collaudo usa un APK baseline con versionCode 8 firmato con la nuova chiave, la candidata con code 10, la vecchia firma debug e una probe del solo APK di test firmata con la stessa chiave privata.
+scripts/test-private-apk.ps1 rifiuta telefoni fisici ed emulatori con l'app già installata. Non cancella dati preesistenti. Il collaudo usa un APK baseline con versionCode 8 firmato con la nuova chiave, la candidata, la firma debug e una probe del solo APK di test firmata con la stessa chiave privata.
 
-La probe crea dati sintetici cifrati nel contesto dell'app. Il collaudo verifica il rifiuto della firma debug, la conservazione dei dati dopo quel rifiuto, l'aggiornamento 8 → 10 con UID invariato e il recupero di entrambi i registri cifrati. Controlla il rifiuto di run-as, avvia MainActivity senza Internet e poi verifica il modulo login a freddo con sessione vuota. Spegne e riaccende le connessioni con l'app aperta, verificando blocco e ripresa senza riavvio. Non inserisce credenziali e non autentica un account remoto: il percorso con archivio sessione vuoto termina prima dell'HTTP Auth.
+La probe crea dati sintetici cifrati nel contesto dell'app. Il collaudo verifica il rifiuto della firma debug, la conservazione dei dati dopo quel rifiuto, l'aggiornamento dalla baseline con UID invariato e il recupero di entrambi i registri cifrati. Controlla il rifiuto di run-as, avvia MainActivity senza Internet e poi verifica il modulo login a freddo con sessione vuota. Spegne e riaccende le connessioni con l'app aperta, verificando blocco e ripresa senza riavvio. Non inserisce credenziali e non autentica un account remoto: il percorso con archivio sessione vuoto termina prima dell'HTTP Auth.
 
 Con la chiave già inizializzata e un emulatore nuovo avviato:
 
@@ -44,9 +44,13 @@ Con la chiave già inizializzata e un emulatore nuovo avviato:
 pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 8 -VersionName 0.4.0-upgrade-fixture
 ./gradlew.bat :app:assembleDebug :app:assembleDebugAndroidTest
 pwsh -NoProfile -File scripts/sign-private-apk.ps1 -InputApk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk -OutputApk .work/releases/qa-probe.apk
-pwsh -NoProfile -File scripts/test-private-apk.ps1 -BaselineApk .work/releases/KingScore-0.4.0-upgrade-fixture-8.apk -CandidateApk .work/releases/KingScore-0.5.0-rc2-10.apk -ProbeApk .work/releases/qa-probe.apk -WrongSignerApk app/build/outputs/apk/debug/app-debug.apk -Serial emulator-5582
+pwsh -NoProfile -File scripts/test-private-apk.ps1 -BaselineApk .work/releases/KingScore-0.4.0-upgrade-fixture-8.apk -CandidateApk .work/releases/KingScore-0.5.0-rc3-11.apk -ProbeApk .work/releases/qa-probe.apk -WrongSignerApk app/build/outputs/apk/debug/app-debug.apk -Serial emulator-5576
 ```
 
 La baseline non è la vecchia anteprima debug: è un APK di collaudo, firmato con la nuova chiave privata. La probe e la baseline non vanno distribuite. Il runner conserva report JSON, output ADB e screenshot in .work/private-apk; legge l'XML salvato da uiautomator e accetta userId/appId secondo la versione Android.
+
+La RC3 supera aggiornamento 8 → 11, conservazione dei registri, rifiuto della firma debug, avvio offline e disconnessione/riconnessione live su API 31. Su API 35 sono misurati sette avvii della RC3 con login a sessione vuota; il collaudo completo di aggiornamento/rete della RC2 resta documentato separatamente. Non attribuire alla RC3 prove di aggiornamento API 35 eseguite solo sulla RC2.
+
+APK: `.work/releases/KingScore-0.5.0-rc3-11.apk`, 14.446.050 byte. SHA-256: `7f54b60fdf96d4bf63ca20d653d1d030b2d27a9f799203c5034248edb64e7a31`. Certificato SHA-256: `b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b`.
 
 Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI rimane sospesa secondo le istruzioni dell'utente.

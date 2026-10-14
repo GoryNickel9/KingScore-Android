@@ -5,11 +5,14 @@ import android.content.ActivityNotFoundException
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.automirrored.outlined.EventNote
@@ -35,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -69,6 +73,7 @@ private val destinations = listOf(
     Destination("elo", "ELO", Icons.Outlined.EmojiEvents),
     Destination("account", "Profilo", Icons.Outlined.PersonOutline),
 )
+private const val BASE_NAVIGATION_HEIGHT_DP = 80f
 
 @Composable
 fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
@@ -77,6 +82,7 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
     val navigation = rememberNavController()
     val entry by navigation.currentBackStackEntryAsState()
     val context = LocalContext.current
+    val navigationHeight = (BASE_NAVIGATION_HEIGHT_DP * LocalDensity.current.fontScale.coerceAtLeast(1f)).dp
     var browserUnavailable by remember { mutableStateOf(false) }
     val resourcesModel: AuthenticatedResources = viewModel(factory = modelFactory { AuthenticatedResources() })
     val resources = remember(resourcesModel, account.id) { resourcesModel.acquire(account.id, playsFactory, statisticsFactory, ratingsFactory) }
@@ -90,7 +96,7 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
     CompositionLocalProvider(LocalViewModelStoreOwner provides resources) {
         Scaffold(
             bottomBar = {
-                NavigationBar {
+                NavigationBar(modifier = Modifier.heightIn(min = navigationHeight)) {
                     destinations.forEach { destination ->
                         NavigationBarItem(
                             selected = entry?.destination?.route == destination.route ||
@@ -103,7 +109,7 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                                 }
                             },
                             icon = { Icon(destination.icon, contentDescription = null) },
-                            label = { Text(destination.label, maxLines = 2) },
+                            label = { Text(destination.label, maxLines = 3) },
                         )
                     }
                 }
@@ -124,7 +130,7 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                         } else if (destination.route == "elo" && ratings != null) {
                             RatingsRoute(account, ratings, onAccessFailure)
                         } else {
-                            Column(Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                                 Text(destination.label, style = MaterialTheme.typography.headlineLarge)
                                 if (destination.route == "account") {
                                     Text(account.name, style = MaterialTheme.typography.titleLarge)

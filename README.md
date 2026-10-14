@@ -1,6 +1,6 @@
 # KingScore Android
 
-App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-Score. La candidata privata 0.5.0-rc2 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e classifiche/storico ELO. Login e Internet rimangono obbligatori. Conserva gli esiti incerti dopo chiusura del processo e le bozze durante la rotazione. L'editor partite admin richiede ancora le RPC atomiche della fase 4.
+App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-Score. La candidata privata 0.5.0-rc3 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e classifiche/storico ELO. Login e Internet rimangono obbligatori. Conserva gli esiti incerti dopo chiusura del processo e le bozze durante la rotazione. L'editor partite admin richiede ancora le RPC atomiche della fase 4.
 
 Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Score sono state annullate con il commit `a5e5dd6`; Vercel pubblica il codice ripristinato. Nessuna delle nuove migrazioni è stata applicata a Supabase. I documenti delle fasi 4.1 e 4.2 conservano risultati storici, non descrivono funzioni backend attualmente disponibili.
 

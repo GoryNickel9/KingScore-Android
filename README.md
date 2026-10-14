@@ -20,6 +20,7 @@ Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Sco
 | [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md) | Schema reale, RLS e limiti delle verifiche |
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | API esistenti, DTO e RPC proposte |
 | [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Contratti V1 e candidata locale dei salvataggi, senza deploy |
+| [docs/WRITER_INTEGRATION.md](docs/WRITER_INTEGRATION.md) | Piano dei writer web/server, test locali e dipendenze dell'editor Android |
 | [local-tests/README.md](local-tests/README.md) | PostgreSQL e HTTP sul PC, difetti riprodotti e 21 casi atomici |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Moduli e flusso dati Android |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Decisioni tecniche e vincoli |

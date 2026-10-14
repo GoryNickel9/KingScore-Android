@@ -6,7 +6,7 @@ Definito il 14 ottobre 2026. Il piano è salvato soltanto in KingScore-Android e
 
 La candidata locale implementa cinque RPC, transazioni, ricevute e revisioni per partita. Il commit 75a6c04 supera 21 casi di accettazione, 1.592 confronti di ranking e 39 controlli Node; la CI Android supera test JVM, lint e APK. Risultati: [local-atomic-validation.json](evidence/local-atomic-validation.json). Questi risultati non certificano consumer reali o job ELO.
 
-L'app 0.4.0 ha login, rete obbligatoria, consultazione e commenti propri. `Account.isAdmin` esiste già; `PlaysRepository` non espone scritture partite. `Commands.kt` contiene input proposti, ma mancano adattatori RPC, editability nei DTO e schermate editor. Le RPC non sono disponibili sul backend reale.
+L'app 0.4.0 ha login, rete obbligatoria, consultazione e commenti propri. `Account.isAdmin` esiste già; `PlaysRepository` non espone scritture partite. Il successivo incremento aggiunge adattatori RPC e editability nei DTO, con client disabilitato per default e non collegato all'app: [PHASE4_ANDROID_RPC_CLIENT.md](PHASE4_ANDROID_RPC_CLIENT.md). Le schermate editor restano da implementare e le RPC non sono disponibili sul backend reale.
 
 La mappa web deriva dai documenti storici [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRITERS.md) e [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md), relativi a modifiche annullate. In questa attività non è stato riletto il repository King-Score né interrogato il cloud. I nomi AddPlay, EditPlay e PlayDetail identificano percorsi da verificare, non una lista aggiornata e completa di file. Il catalogo SQL salvato non contiene l'implementazione dei job applicativi né una verifica aggiornata dei cron.
 
@@ -124,4 +124,4 @@ L'intervallo in cui vecchi e nuovi writer convivono non offre ancora la garanzia
 
 ## Prossimo incremento entro l'ambito attuale
 
-Implementare encoder/decoder e interfaccia di trasporto RPC Android con test JVM locali, mantenendo navigazione e writer reali disabilitati. Stima preliminare: 6–10 ore di lavoro, da aggiornare dopo le prime prove di trasporto. L'inventario attuale basta per questo incremento; non basta per una stima affidabile dei job server o del rollout.
+Encoder/decoder e trasporto RPC Android sono implementati e verificati localmente, mantenendo navigazione e writer reali disabilitati. Prima del ViewModel editor, definire il ciclo di vita e il recupero delle richieste incerte. L'inventario attuale non basta per una stima affidabile dei job server o del rollout.

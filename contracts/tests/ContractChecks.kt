@@ -90,5 +90,19 @@ fun main() {
         check(PlaySource.IRL.wireValue == "offline")
         check(PlaySource.ONLINE.wireValue == "online")
     }
+    test("play text rejects NUL and unpaired surrogate characters") {
+        for (text in listOf("a\u0000b", "\uD800", "\uDC00")) {
+            rejects { input().copy(notes = text) }
+            rejects { score().copy(color = text) }
+            rejects { score().copy(role = text) }
+        }
+    }
+    test("opaque revisions are bounded and editability flags are consistent") {
+        for (value in listOf("", " ", "à", "x".repeat(161))) rejects { validatePlayRevision(value) }
+        validatePlayRevision("v1:opaque")
+        PlayEditability(true, emptyList())
+        PlayEditability(false, listOf("missing-game"))
+        rejects { PlayEditability(false, emptyList()) }
+    }
     println("$checks contract checks passed")
 }

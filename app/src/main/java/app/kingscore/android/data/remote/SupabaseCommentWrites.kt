@@ -26,7 +26,8 @@ fun interface CommentTransport : AutoCloseable {
 }
 
 /** A write is never replayed by the HTTP engine, including a 503 Retry-After response. */
-class NoRetryCommentTransport : CommentTransport {
+class NoRetryCommentTransport(private val captureErrorCode: Boolean = false) : CommentTransport {
+    private val maxErrorCodeBytes = 8192L
     private val closed = AtomicBoolean(false)
     private val client = OkHttpClient.Builder().retryOnConnectionFailure(false)
         .followRedirects(false).followSslRedirects(false).cache(null)
@@ -45,11 +46,23 @@ class NoRetryCommentTransport : CommentTransport {
             override fun onFailure(call: Call, e: IOException) { continuation.resumeWithException(CommentFailure(CommentProblem.UNCERTAIN)) }
             override fun onResponse(call: Call, response: Response) {
                 val result = try {
-                    response.use { CommentHttpResponse(it.code, if (it.isSuccessful) it.body?.string().orEmpty() else "") }
+                    response.use { CommentHttpResponse(it.code, if (it.isSuccessful) it.body?.string().orEmpty()
+                        else if (captureErrorCode) errorCode(it) else "") }
                 } catch (_: IOException) { continuation.resumeWithException(CommentFailure(CommentProblem.UNCERTAIN)); return }
                 continuation.resume(result)
             }
         })
+    }
+    private fun errorCode(response: Response): String {
+        val source = response.body?.source() ?: return ""
+        source.request(maxErrorCodeBytes + 1)
+        if (source.buffer.size > maxErrorCodeBytes) return ""
+        val body = source.readUtf8()
+        val code = runCatching { Json.parseToJsonElement(body).jsonObject["code"]?.jsonPrimitive
+            ?.takeIf { it.isString }?.content }.getOrNull() ?: return ""
+        if (!Regex("^[A-Z0-9]{5,16}$").matches(code)) return ""
+        // Share only the bounded machine code, never server messages or diagnostic details.
+        return buildJsonObject { put("code", code) }.toString()
     }
     override fun close() {
         closed.set(true)

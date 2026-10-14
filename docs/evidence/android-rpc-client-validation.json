@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "scope": "disabled-Android-play-RPC-client",
+  "status": "PASS",
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "remoteDatabaseContacted": false,
+  "androidEditorEnabled": false,
+  "applicationWriterWired": false,
+  "clientEnabledByDefault": false,
+  "versionName": "0.4.0",
+  "build": {
+    "log": ".work/rpc-client-build-verified.log",
+    "result": "BUILD SUCCESSFUL",
+    "exitCode": 0,
+    "tasks": [
+      "testDebugUnitTest",
+      "lintDebug",
+      "assembleDebug"
+    ],
+    "seconds": 593,
+    "localWorkaround": "Ignored tcp-only javaagent, JBR 21 and dedicated daemon registry; not included in APK or CI"
+  },
+  "jvm": {
+    "errors": 0,
+    "tests": 165,
+    "suites": [
+      {
+        "errors": 0,
+        "tests": 8,
+        "name": "app.kingscore.android.core.auth.SupabaseAuthRepositoryTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 10,
+        "name": "app.kingscore.android.core.images.ImagePolicyTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 10,
+        "name": "app.kingscore.android.data.remote.CommentWritesTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 3,
+        "name": "app.kingscore.android.data.remote.GameRepositoryTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 7,
+        "name": "app.kingscore.android.data.remote.HistoryFiltersRepositoryTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 4,
+        "name": "app.kingscore.android.data.remote.PlayerRepositoryTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 9,
+        "name": "app.kingscore.android.data.remote.PlaySaveJsonTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 18,
+        "name": "app.kingscore.android.data.remote.PlayWritesTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 5,
+        "name": "app.kingscore.android.data.remote.RowDecodersTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 6,
+        "name": "app.kingscore.android.data.remote.SupabasePlaysRepositoryTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 9,
+        "name": "app.kingscore.android.data.remote.SupabaseRatingsRepositoryTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 8,
+        "name": "app.kingscore.android.data.remote.SupabaseReaderTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 6,
+        "name": "app.kingscore.android.data.remote.SupabaseStatisticsRepositoryTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 12,
+        "name": "app.kingscore.android.feature.auth.AppViewModelTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 5,
+        "name": "app.kingscore.android.feature.games.GameDetailViewModelTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 5,
+        "name": "app.kingscore.android.feature.players.PlayerDetailViewModelTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 14,
+        "name": "app.kingscore.android.feature.plays.CommentViewModelTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 14,
+        "name": "app.kingscore.android.feature.plays.PlaysViewModelTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 6,
+        "name": "app.kingscore.android.feature.ratings.RatingsViewModelTest",
+        "failures": 0
+      },
+      {
+        "errors": 0,
+        "tests": 6,
+        "name": "app.kingscore.android.feature.stats.StatisticsViewModelTest",
+        "failures": 0
+      }
+    ],
+    "failures": 0,
+    "newTests": 27
+  },
+  "kotlinChecks": {
+    "exitCode": 0,
+    "log": ".work/rpc-contracts.log",
+    "passed": 13
+  },
+  "nodeChecks": {
+    "exitCode": 0,
+    "passed": 39
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 16
+  },
+  "apk": {
+    "signing": "debug",
+    "sha256": "408327062b983062c6993150279e7dee57dd2c649dee676e7731b11bf611ba37",
+    "path": "app/build/outputs/apk/debug/app-debug.apk"
+  },
+  "sourceHashNormalization": "UTF-8, LF line endings, no leading BOM",
+  "sourceSha256": {
+    "contracts/v1/Commands.kt": "6f602602af4e671d874c5a82d191c0ee61503866b90b9090106bd5c86bc93825",
+    "contracts/tests/ContractChecks.kt": "a498f40bb640161576d1db06a8612e2680ba96e3878b861cca60a65d8f5bf237",
+    "contracts/v1/play-saves.json": "b6bc5948d443f3a292a18d67f87f620da566afa1de3d57690918d10b2c93c880",
+    "app/src/main/java/app/kingscore/android/data/remote/PlaySaveJson.kt": "a72d995103740d32c9a59d759a380dab6f319036d939a0e0b533b1177074d773",
+    "app/src/main/java/app/kingscore/android/data/remote/SupabasePlayWrites.kt": "7795db1e812d26989bcca1c61e68e8905128529c5616346c821b75e37cb7d7a9",
+    "app/src/main/java/app/kingscore/android/data/remote/SupabaseCommentWrites.kt": "1633c6321c969ee80d80e10c5ec8e50c6bab68d5bb64dc28f830a8d161ec5cdb",
+    "app/src/main/java/app/kingscore/android/data/repository/PlayWrites.kt": "ce0e9bf9acacfe9f548a6217cb80546523e9fa57c37994e4bec571c84acc246c",
+    "app/src/test/java/app/kingscore/android/data/remote/PlayWriteFixtures.kt": "e1de79ef8fe9e6d7d03b99830de35870ca8d95f3058f8b2cb350552e8afd6916",
+    "app/src/test/java/app/kingscore/android/data/remote/PlaySaveJsonTest.kt": "a3072d641eab437bf39bcc85434814551f9df150242a175f80fdcf47f8e690e4",
+    "app/src/test/java/app/kingscore/android/data/remote/PlayWritesTest.kt": "298159e26c52a16370a78e1da80d20a1e532e3eb54595427857acfbfd1328f81"
+  },
+  "limitations": [
+    "Auth uses MockEngine; no real Supabase identity, token or database mutation.",
+    "Native TCP tests use 127.0.0.1; this client is not exercised against the SQL candidate.",
+    "No Compose editor, physical-device or process-restart recovery tests; client state is instance-local and in memory.",
+    "No BGA import, ELO operation, offline queue or automatic reconnect replay is added.",
+    "Legacy non-finite NUMERIC values cannot be represented by the BigDecimal DTO and fail explicitly."
+  ]
+}

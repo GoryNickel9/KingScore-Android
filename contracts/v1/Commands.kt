@@ -43,6 +43,8 @@ data class ScoreInput(
     val role: String?,
 ) {
     init {
+        validatePlayText(color)
+        validatePlayText(role)
         // V1 compares like the web's Number while storing the original NUMERIC.
         if (score != null) {
             val webValue = score.toDouble()
@@ -65,6 +67,7 @@ data class PlayInput(
     val scores: List<ScoreInput>,
 ) {
     init {
+        validatePlayText(notes)
         require(duration_minutes == null || duration_minutes >= 0) { "Negative duration" }
         require(is_cooperative || team_won == null) { "Competitive play cannot contain a team result" }
         require(played_at.year in 1..9999) { "Date must use a four-digit positive year" }
@@ -89,16 +92,36 @@ data class UpdatePlayCommand(
     val expected_revision: String,
     val payload: PlayInput,
 ) {
-    init { require(expected_revision.isNotBlank()) { "Revision required" } }
+    init { validatePlayRevision(expected_revision) }
 }
 
 data class DeletePlayCommand(val request_id: UUID, val play_id: UUID, val expected_revision: String) {
-    init { require(expected_revision.isNotBlank()) { "Revision required" } }
+    init { validatePlayRevision(expected_revision) }
 }
 
 data class PlayDetail(val play: PlayRow, val game: GameRow?, val scores: List<ScoreWithPlayer>)
 data class ScoreWithPlayer(val score: PlayScoreRow, val player: PlayerRow?)
-data class PlayEditorResult(val detail: PlayDetail, val revision: String)
+data class PlayEditability(val editable: Boolean, val issues: List<String>) {
+    init { require(editable == issues.isEmpty()) { "Inconsistent editability" } }
+}
+data class PlayEditorResult(val detail: PlayDetail, val revision: String, val editability: PlayEditability)
+
+fun validatePlayRevision(value: String) {
+    require(value.length in 1..160 && value.all { it.code in 33..126 }) { "Invalid opaque revision" }
+}
+
+private fun validatePlayText(value: String?) {
+    if (value == null) return
+    require(value.length <= 1048576 && '\u0000' !in value) { "Invalid PostgreSQL text" }
+    var index = 0
+    while (index < value.length) {
+        val char = value[index++]
+        if (Character.isHighSurrogate(char)) {
+            require(index < value.length && Character.isLowSurrogate(value[index])) { "Unpaired surrogate" }
+            index++
+        } else require(!Character.isLowSurrogate(char)) { "Unpaired surrogate" }
+    }
+}
 
 /** Proposed mutation response. revision is opaque; Android never computes ELO. */
 data class PlayMutationResult(val play_id: UUID, val revision: String, val replayed: Boolean)

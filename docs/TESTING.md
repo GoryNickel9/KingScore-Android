@@ -238,3 +238,21 @@ Il run completo dura 78,115 secondi; è un tempo di collaudo, non un benchmark d
 Durante la preparazione un gateway è terminato all'avvio senza log diagnostici: il runner ora conserva stdout/stderr. Una prova Unicode falliva perché psql su Windows perdeva caratteri nell'argomento `-c`: le query passano ora da file UTF-8. Un initdb ha superato il limite di 60 secondi; il runner usa 120 secondi e conserva i log anche in caso di timeout. Il collaudo finale completo passa dopo queste correzioni.
 
 Procedura: `pwsh -NoProfile -File scripts/test-local-play-saves.ps1 -Atomic`. Report, versioni, 21 risultati e hash dei sorgenti: [local-atomic-validation.json](evidence/local-atomic-validation.json). La CI verifica contratti Node, test JVM, lint e APK; i test PostgreSQL/HTTP restano sul PC. Non sono verificati GoTrue reale, revoca remota, consumer web/Android o rollout. L'APK resta 0.4.0 e l'editor partite disabilitato. Nessuna modifica a King-Score, Vercel o Supabase remoto.
+
+## Client RPC Android disabilitato, 14 ottobre 2026
+
+| Controllo eseguito | Esito | Ambito |
+| --- | --- | --- |
+| Suite JVM completa | 165 superati, zero errori | 27 nuovi test: nove encoder/decoder e 18 client/trasporto |
+| Contratti Kotlin separati | 13 gruppi superati | Due nuovi gruppi per Unicode delle partite, revisione ed editability |
+| Contratti ed evidenze Node | 39 superati | Payload V1 e catalogo salvato |
+| Lint debug | Zero errori, 16 warning | Nessun warning sui nuovi file del client RPC |
+| APK debug | Build superata in 9 minuti e 53 secondi | Versione 0.4.0; client non collegato e disabilitato per default |
+
+Le prove verificano richieste immutabili, punteggi testuali esatti, limiti JSONB e rifiuto di scale numeriche enormi prima dell'allocazione. HTTP simulato distingue conflitto, permesso, RPC mancante ed esito incerto; un solo rinnovo 401 conserva corpo e UUID. Timeout, annullamento, rete persa e chiusura mantengono l'incertezza; un successivo errore di sessione o permesso non la cancella. Le prove TCP loopback controllano 503, redirect, connessione interrotta e filtraggio dei codici errore.
+
+Il primo test TCP contava anche una connessione senza richiesta HTTP; il controllo corretto conta soltanto richieste ricevute. Nella revisione è stata aggiunta la lettura limitata del codice errore per distinguere PGRST202: il comportamento predefinito del trasporto commenti resta invariato e la suite completa passa dopo questa modifica.
+
+La build locale riusa il workaround Java TCP ignorato e un registro daemon dedicato, con JBR 21. L'avvio senza workaround falliva prima della compilazione; il tentativo con JDK 17 non caricava l'agent locale già compilato per Java 21. Questi strumenti non entrano nell'APK o nella CI. Il tempo riportato è quello della build, non un benchmark del client.
+
+Implementazione e limiti: [PHASE4_ANDROID_RPC_CLIENT.md](PHASE4_ANDROID_RPC_CLIENT.md). Risultati e hash: [android-rpc-client-validation.json](evidence/android-rpc-client-validation.json). Nessuna nuova prova SQL, richiesta Supabase reale, schermata editor o test su dispositivo. Le richieste pendenti restano nella sola istanza del client; il recupero dopo morte del processo e la gestione del ciclo di vita UI restano da definire.

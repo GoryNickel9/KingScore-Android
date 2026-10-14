@@ -4,9 +4,9 @@ Definito il 14 ottobre 2026. Il piano è salvato soltanto in KingScore-Android e
 
 ## Stato verificato e fonti
 
-La candidata locale implementa cinque RPC, transazioni, ricevute e revisioni per partita. Il commit 75a6c04 supera 21 casi di accettazione, 1.592 confronti di ranking e 39 controlli Node; la CI Android supera test JVM, lint e APK. Risultati: [local-atomic-validation.json](evidence/local-atomic-validation.json). Questi risultati non certificano consumer reali o job ELO.
+La candidata locale implementa cinque RPC, transazioni, ricevute e revisioni per partita. Il checkpoint 75a6c04 conserva 21 casi di accettazione superati, 1.592 confronti di ranking e 39 controlli Node. Risultati: [local-atomic-validation.json](evidence/local-atomic-validation.json). Questi risultati non certificano consumer reali o job ELO; la candidata SQL non è una migrazione pronta da applicare in produzione. La CI è attualmente sospesa per istruzione dell'utente.
 
-L'app 0.4.0 ha login, rete obbligatoria, consultazione e commenti propri. `Account.isAdmin` esiste già; `PlaysRepository` non espone scritture partite. Il successivo incremento aggiunge adattatori RPC e editability nei DTO, con client disabilitato per default e non collegato all'app: [PHASE4_ANDROID_RPC_CLIENT.md](PHASE4_ANDROID_RPC_CLIENT.md). Le schermate editor restano da implementare e le RPC non sono disponibili sul backend reale.
+La candidata Android attuale è 0.5.0-rc3, versionCode 11: APK firmato, login e Internet obbligatori, consultazione e commenti propri. Adattatori RPC, editability, journal cifrato, controller e schermata editor sono preparati e verificati con fixture; mancano factory e collegamento alla navigazione/sessione. L'editor reale resta disabilitato e le RPC risultano indisponibili secondo AGENTS.md; non sono state interrogate nuovamente nel cloud. Il collaudo della consultazione e dei commenti non certifica il percorso completo dell'editor admin: [STABILITY.md](STABILITY.md), [PLAY_EDITOR_STATE.md](PLAY_EDITOR_STATE.md), [final-pc-qa-validation.json](evidence/final-pc-qa-validation.json).
 
 La mappa web deriva dai documenti storici [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRITERS.md) e [PHASE4_ADMIN_RPC.md](PHASE4_ADMIN_RPC.md), relativi a modifiche annullate. In questa attività non è stato riletto il repository King-Score né interrogato il cloud. I nomi AddPlay, EditPlay e PlayDetail identificano percorsi da verificare, non una lista aggiornata e completa di file. Il catalogo SQL salvato non contiene l'implementazione dei job applicativi né una verifica aggiornata dei cron.
 
@@ -16,7 +16,7 @@ La mappa web deriva dai documenti storici [PHASE4_WEB_WRITERS.md](PHASE4_WEB_WRI
 2. Dopo autorizzazione per King-Score, inventariare tutti i writer e adeguare creazione, modifica, eliminazione e import; provarli sul PC.
 3. Definire e verificare il salvataggio coerente dei risultati dei processi server, incluse aggiunte ed eliminazioni concorrenti.
 4. Preparare migrazione e passaggio ai nuovi permessi; eseguirli sul backend reale soltanto dopo autorizzazione separata.
-5. Abilitare l'editor Android dopo disponibilità delle API, chiusura dei vecchi accessi e collaudo degli account, poi verificare i percorsi su telefono.
+5. Collegare e abilitare l'editor Android dopo disponibilità delle API, chiusura dei vecchi accessi e verifiche concordate dei permessi. Collaudare i percorsi sul PC con emulatori e account sintetici; non usare Supabase remoto come ambiente di prova.
 
 Le prime prove Android possono usare server HTTP simulati o il gateway PostgreSQL locale. Un editor di test non deve diventare accessibile nella build collegata al backend reale.
 
@@ -106,7 +106,7 @@ I casi sotto sono pianificati, non eseguiti. Si aggiungono ai 21 test della cand
 | Chiusura legacy | Vecchia scheda browser, DML diretto, replace_play_scores e service_role dopo revoca | Vecchi accessi rifiutati; messaggio di aggiornamento; writer nuovi e job autorizzati funzionano |
 | Regressioni | Letture, commenti propri, metadati importati, owner storico e cascade | Funzioni esistenti conservate; nessun nuovo comando ELO Android |
 
-La CI Android esegue Node, JVM, lint e APK. Le prove native PostgreSQL/PostgREST e i percorsi con emulatore/browser si eseguono sul PC. Il rilascio reale richiederà controlli di autenticazione e permessi con account reali secondo una procedura da concordare; questo piano non propone Supabase come ambiente di prova.
+Il workflow CI definisce controlli Node, JVM, lint e APK, ma oggi non viene eseguito. Le prove native PostgreSQL/PostgREST e i percorsi con emulatore/browser si eseguono sul PC. Il rilascio reale richiederà una procedura concordata per verificare disponibilità delle API e permessi; questo piano non propone Supabase come ambiente di prova.
 
 ## Preparazione del rilascio, senza eseguirlo
 
@@ -124,4 +124,6 @@ L'intervallo in cui vecchi e nuovi writer convivono non offre ancora la garanzia
 
 ## Prossimo incremento entro l'ambito attuale
 
-Encoder/decoder e trasporto RPC Android sono implementati e verificati localmente, mantenendo navigazione e writer reali disabilitati. Prima del ViewModel editor, definire il ciclo di vita e il recupero delle richieste incerte. L'inventario attuale non basta per una stima affidabile dei job server o del rollout.
+Encoder/decoder, trasporto RPC, recupero cifrato, ViewModel e UI editor sono preparati. Il collegamento ad Application, navigazione e sessione rimane da implementare e collaudare: non è completato dalla ricreazione delle schermate di consultazione. L'inventario attuale non basta per una stima affidabile dei job server o del rollout.
+
+Prima di proseguire con il backend serve la discussione prevista da [AGENTS.md](../AGENTS.md): «Se una funzionalità richiede modifiche fuori da questa repo o non può funzionare entro i vincoli, discuterne con l'utente prima dell'implementazione». La discussione deve stabilire come ottenere le API reali e chi adeguerà writer web e job; non autorizza automaticamente migrazioni, deploy o test su Supabase remoto. La riattivazione della CI richiede inoltre una nuova istruzione esplicita. Fino ad allora la RC3 resta una candidata e l'editor rimane disabilitato.

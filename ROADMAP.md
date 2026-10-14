@@ -181,4 +181,4 @@ La dipendenza delle scritture admin resta irrisolta: le RPC proposte e i writer 
 
 ## Prossima attività
 
-Proseguire soltanto nel codice Android, mantenendo le scritture partite disabilitate finché non esiste un contratto server disponibile. Nessun rollout web o database è autorizzato. La CI GitHub rimane sospesa su richiesta dell'utente.
+Dal 14 ottobre 2026 la CI GitHub Android è nuovamente autorizzata. Riattivare il workflow e verificare contratti, test JVM, lint e build sull'ultimo commit. Il piano discusso prevede di correggere prima i salvataggi nella web app e nel backend, poi collegare Android ai contratti verificati. Questa repo resta limitata al lavoro Android: modifiche a King-Score e rilasci Vercel/Supabase richiedono un ambito di lavoro esplicito prima dell'esecuzione. Le scritture partite Android restano disabilitate.

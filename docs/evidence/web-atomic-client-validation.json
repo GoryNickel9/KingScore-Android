@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "status": "PASS",
+  "scope": "local-web-client-preparation",
+  "stable": false,
+  "webBranch": "codex/atomic-play-writers",
+  "webClientCommit": "2c58f49d310213fb5b8735005939307c60faecfc",
+  "webCommitPushed": false,
+  "validation": {
+    "testCommand": "npm test",
+    "files": 6,
+    "tests": 97,
+    "failures": 0,
+    "requestPreparationTests": 16,
+    "transportJournalAndIdentityTests": 35,
+    "applicationAndScriptsTypecheck": "PASS",
+    "eslintNewServiceFiles": "PASS",
+    "viteBuild": { "status": "PASS", "commit": "f2a3d1c", "afterConfirmationChange": false }
+  },
+  "realHttp": "loopback-redirect-rejection-only",
+  "identityTests": "mock-Auth-only",
+  "browserStorageAndLocksTests": "mock-only-not-real-browser",
+  "confirmedReceiptSurvivesNewClient": true,
+  "pagesWired": false,
+  "rpcMigrationInstalled": false,
+  "remoteDatabaseContacted": false,
+  "deploymentPerformed": false,
+  "androidEditorEnabled": false,
+  "androidCi": {
+    "headSha": "4b35b32a7d0bf0d2f28594fcd28e43c79835f67b",
+    "runId": 38629937535,
+    "conclusion": "success",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38629937535"
+  }
+}

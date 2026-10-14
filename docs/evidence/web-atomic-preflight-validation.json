@@ -1,0 +1,170 @@
+{
+  "status": "PASS",
+  "host": "127.0.0.1",
+  "port": 52404,
+  "runDirectory": "C:\\Users\\GoryNickel\\AppData\\Local\\Temp\\kingscore-atomic-preflight-a46cdbfa9203455fa82981cca85032b7",
+  "startedAtUtc": "2026-10-14T20:30:21.7998193Z",
+  "finishedAtUtc": "2026-10-14T20:32:10.4796452Z",
+  "postgresVersion": "psql (PostgreSQL) 17.4",
+  "serverStopped": true,
+  "remoteContacted": false,
+  "cases": [
+    {
+      "name": "compatible",
+      "status": "PASS",
+      "diagnosticStatus": "compatible",
+      "blockers": 0,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "missing-table",
+      "status": "PASS",
+      "diagnosticStatus": "blocked",
+      "blockers": 13,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "missing-column",
+      "status": "PASS",
+      "diagnosticStatus": "blocked",
+      "blockers": 2,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "timestamp-date",
+      "status": "PASS",
+      "diagnosticStatus": "blocked",
+      "blockers": 1,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "wrong-score-type",
+      "status": "PASS",
+      "diagnosticStatus": "blocked",
+      "blockers": 1,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "numeric-typmod",
+      "status": "PASS",
+      "diagnosticStatus": "blocked",
+      "blockers": 1,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "orphan-trigger",
+      "status": "PASS",
+      "diagnosticStatus": "blocked",
+      "blockers": 1,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "valid-trigger",
+      "status": "PASS",
+      "diagnosticStatus": "compatible",
+      "blockers": 0,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "disabled-trigger",
+      "status": "PASS",
+      "diagnosticStatus": "conditional",
+      "blockers": 0,
+      "conditions": 1,
+      "unchanged": true
+    },
+    {
+      "name": "timestamp-without-trigger",
+      "status": "PASS",
+      "diagnosticStatus": "conditional",
+      "blockers": 0,
+      "conditions": 1,
+      "unchanged": true
+    },
+    {
+      "name": "participant-unique",
+      "status": "PASS",
+      "diagnosticStatus": "conditional",
+      "blockers": 0,
+      "conditions": 1,
+      "unchanged": true
+    },
+    {
+      "name": "reversed-unique",
+      "status": "PASS",
+      "diagnosticStatus": "conditional",
+      "blockers": 0,
+      "conditions": 1,
+      "unchanged": true
+    },
+    {
+      "name": "bga-duplicates",
+      "status": "PASS",
+      "diagnosticStatus": "blocked",
+      "blockers": 1,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "bga-distinct-owners",
+      "status": "PASS",
+      "diagnosticStatus": "compatible",
+      "blockers": 0,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "ownerless-bga",
+      "status": "PASS",
+      "diagnosticStatus": "conditional",
+      "blockers": 0,
+      "conditions": 1,
+      "unchanged": true
+    },
+    {
+      "name": "catalog-cascades",
+      "status": "PASS",
+      "diagnosticStatus": "conditional",
+      "blockers": 0,
+      "conditions": 2,
+      "unchanged": true
+    },
+    {
+      "name": "foreign-table",
+      "status": "PASS",
+      "diagnosticStatus": "blocked",
+      "blockers": 13,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "inherited-foreign-child",
+      "status": "PASS",
+      "diagnosticStatus": "blocked",
+      "blockers": 12,
+      "conditions": 0,
+      "unchanged": true
+    },
+    {
+      "name": "rls-limited-visibility",
+      "status": "PASS",
+      "diagnosticStatus": "conditional",
+      "blockers": 0,
+      "conditions": 1,
+      "unchanged": true
+    }
+  ],
+  "failure": null,
+  "webCommit": "ddd9968c0ab47574431fdb5bbf80eeb926218700",
+  "sqlSha256": "a254fcda0ddf1e6708c91c25a9d8e46b087d9025bb3b3db49d5ed6dc062e4f94",
+  "harnessSha256": "4ec420cde6498882231108f2bb321a0c9b2d7cf98859020595bb17c69f3df066",
+  "migrationInstalled": false
+}

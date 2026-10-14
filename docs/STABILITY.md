@@ -10,6 +10,8 @@ La stabile mantiene il perimetro concordato: login e Internet obbligatori, consu
 | Commenti propri | Implementati, registro cifrato nell'Application; recupero dopo arresto del processo e percorsi di sessione verificati | Rilettura completa e conferma manuale prima di nuove scritture; nessuna promessa di idempotenza server |
 | Contratti e salvataggi atomici | Candidata locale con 21 casi superati | API reali e writer web/server coerenti, oggi indisponibili |
 | Client RPC Android | Preparato, disabilitato per default | Integrazione nell'editor dopo le condizioni backend |
+| Writer web locale | Preparatore, trasporto mutazioni, journal con conferme e verifica account; 97 test web, typecheck/lint superati | Pagine, conflitti, collaudo browser e integrazione SQL ancora da completare; nessuna pubblicazione |
+| Compatibilità SQL | Preflight read-only: 19 casi sintetici passati su PostgreSQL 17.4 | Migrazione additiva e verifica delle RPC reali restano da completare; nessuna modifica cloud |
 | Recupero salvataggi | Journal cifrato preparato; account verificato prima del recupero | Collegamento al ciclo di vita dell'editor e collaudo dei percorsi completi |
 | Editor partite | Controller, bozza e schermata Compose preparati con fixture | Factory, navigazione/sessione, rotazione dell'Activity e recupero completo dopo arresto del processo |
 | APK privato e aggiornamenti | RC3 firmata, non debuggabile; aggiornamento 8 → 11, registri cifrati e rete verificati su API 31; sette avvii release misurati su API 35 | Conservare la chiave privata; la RC2 ha anche il collaudo aggiornamento/rete API 35; nessuna verifica Auth remota |

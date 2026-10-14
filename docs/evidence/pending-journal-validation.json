@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "scope": "encrypted-play-journal-preparation",
+  "status": "PASS",
+  "remoteDatabaseContacted": false,
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "androidEditorEnabled": false,
+  "encryptedStoreWiredToApplication": false,
+  "versionName": "0.4.0",
+  "jvm": {
+    "tests": 175,
+    "newTests": 10,
+    "failures": 0,
+    "errors": 0
+  },
+  "android": {
+    "status": "PASS",
+    "serial": "emulator-5582",
+    "remoteDatabaseContacted": false,
+    "androidTests": 48,
+    "writeProcess": 8468,
+    "readProcess": 8514,
+    "forceStopVerified": true,
+    "settingsRestored": true,
+    "failure": null
+  },
+  "androidRun": ".work/pending-recovery/a000ad7bc1a44f78a3adedf28f9059d8",
+  "androidSeconds": 166.806,
+  "nodeTests": 39,
+  "lint": {
+    "errors": 0,
+    "warnings": 16
+  },
+  "build": {
+    "workaround": "Ignored JBR21 tcp-only javaagent and isolated daemon registry; max-workers=2",
+    "status": "BUILD SUCCESSFUL",
+    "seconds": 231,
+    "tasks": [
+      "testDebugUnitTest",
+      "lintDebug",
+      "assembleDebug",
+      "assembleDebugAndroidTest"
+    ],
+    "log": ".work/pending-verified-build.log"
+  },
+  "apkSha256": "557317d3bceb9cc369d41e24976585b35f46f257bf701569e7e86a3ee164c937",
+  "testApkSha256": "1481f5bcf43fbf547196752e1e22ed1f00a305cdacb8ba884de3eb75c6982e25",
+  "sourceHashNormalization": "UTF-8, LF line endings, no leading BOM",
+  "sourceSha256": {
+    "app/build.gradle.kts": "806803f26c0c3830b0072f76a9c8708a68daf4d831b811199f28d5795f9f7661",
+    "app/src/main/java/app/kingscore/android/data/repository/PlayWriteJournal.kt": "c8203b7d10f8b2cb1b69e6f7e4f128403fee47d03c8458fc1a70f3fc4820819a",
+    "app/src/main/java/app/kingscore/android/data/repository/PlayWrites.kt": "54dff1d134e9fd9b6a05928523534e8d1432c1faabc7fd038f35d62fbf10c98f",
+    "app/src/main/java/app/kingscore/android/data/local/EncryptedPendingPlayStore.kt": "2831316a4ff63e1ca8ea38fef022737ce5921e49dea218becac7aa5f4a3f76ba",
+    "app/src/main/java/app/kingscore/android/data/remote/SupabasePlayWrites.kt": "61ec3a8af6136b0afe2d4752832221122b244ec6aac99a1f26b75fa403c9dc53",
+    "app/src/main/java/app/kingscore/android/data/remote/PlaySaveJson.kt": "dcfaa3b0164984c8621e97b31560a9c5bbda3697611964a9d3d7fc33347322f0",
+    "app/src/test/java/app/kingscore/android/data/remote/PlayWritesTest.kt": "1389b0f05c36f697baa965503a37476ffa6b23fc8e6dc48b1b2dcbd2de7100c4",
+    "app/src/androidTest/java/app/kingscore/android/data/local/EncryptedPendingPlayTest.kt": "ee7e9fcfd5666c2ead57bfec1c835e8a07529c53a3df80b9ea29a561d2382401",
+    "app/src/androidTest/java/app/kingscore/android/data/local/PendingRecoveryProbe.kt": "e61aa51b080b19916b2251b5de4a55f82c56f720e30ad8e350ba9c97df4d4e4a",
+    "scripts/test-pending-recovery.ps1": "cb7753b7804144700613e16e718ff34a936d5db2655a76ad5ff701bb1e804afc"
+  },
+  "limitations": [
+    "Default client remains disabled and in-memory; production editor factory is not wired.",
+    "Process probe verifies encrypted storage independently from mocked client/Auth tests; no complete RPC/SQL process-death integration.",
+    "No real account, physical device, remote backend change or release signing.",
+    "Incomplete first UI run and missing initial probe registration are not counted as passed.",
+    "Power loss, filesystem failure, app-data deletion and device loss are not certified."
+  ]
+}

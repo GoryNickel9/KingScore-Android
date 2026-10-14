@@ -256,3 +256,19 @@ Il primo test TCP contava anche una connessione senza richiesta HTTP; il control
 La build locale riusa il workaround Java TCP ignorato e un registro daemon dedicato, con JBR 21. L'avvio senza workaround falliva prima della compilazione; il tentativo con JDK 17 non caricava l'agent locale già compilato per Java 21. Questi strumenti non entrano nell'APK o nella CI. Il tempo riportato è quello della build, non un benchmark del client.
 
 Implementazione e limiti: [PHASE4_ANDROID_RPC_CLIENT.md](PHASE4_ANDROID_RPC_CLIENT.md). Risultati e hash: [android-rpc-client-validation.json](evidence/android-rpc-client-validation.json). Nessuna nuova prova SQL, richiesta Supabase reale, schermata editor o test su dispositivo. Le richieste pendenti restano nella sola istanza del client; il recupero dopo morte del processo e la gestione del ciclo di vita UI restano da definire.
+
+## Journal cifrato e recupero, 14 ottobre 2026
+
+| Controllo | Esito | Ambito |
+| --- | --- | --- |
+| Suite JVM completa | 175 superati | Dieci nuovi casi per write-ahead, client nuovo, conferma, errori storage e isolamento account |
+| Android API 31 completo | 48 superati | 45 percorsi precedenti e tre nuovi test Keystore/file |
+| Arresto forzato e processo nuovo | Superato | Probe nel solo APK di test: record cifrato scritto, force-stop e lettura da PID diverso |
+| Lint e APK | Zero errori, 16 warning; build debug e test superate | Nessuna abilitazione editor o API reale |
+| Node | 39 superati | Contratti V1 e audit salvato |
+
+`scripts/test-pending-recovery.ps1` installa gli APK debug su un emulatore già avviato, esegue l'intera suite, prova il recupero in due processi e ripristina le impostazioni di animazione. Rifiuta seriali di telefoni fisici. Il runner Android personalizzato delega ad AndroidJUnitRunner quando non riceve il modo probe; non entra nell'APK dell'app.
+
+La prima suite dopo l'avvio a freddo aveva un errore No compose hierarchies nel test di retry dello storico gioco. Quel caso passa da solo e le due successive suite complete passano; nessun crash dell'app risulta dal controllo delle eccezioni runtime. Il primo tentativo della probe separata non era registrato nel manifest generato da Gradle: ora il runner è configurato nel build del solo APK di test e la prova con processo nuovo passa. Questi tentativi non vengono conteggiati come successi.
+
+La prova di processo verifica lo store cifrato; i test JVM verificano separatamente il client con Auth simulata. Non è un collaudo RPC/SQL completo dopo force-stop, non usa account reali e non certifica guasti del filesystem o perdita dei dati dell'app. Lo store cifrato deve ancora essere iniettato nel factory dell'editor. Stato: [STABILITY.md](STABILITY.md); risultati e hash: [pending-journal-validation.json](evidence/pending-journal-validation.json).

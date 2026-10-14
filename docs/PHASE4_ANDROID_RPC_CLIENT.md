@@ -37,7 +37,7 @@ Una mutazione conserva una copia JSON immutabile prima dell'invio. Il token vien
 | Ripetizione incerta rifiutata per sessione o permesso | La vecchia incertezza rimane: il rifiuto attuale non prova che il primo invio non abbia committato |
 | Getter editor | Non crea e non cancella l'incertezza di una mutazione |
 
-La memoria pendente appartiene a questa istanza del client. Non esiste persistenza su disco, outbox o recupero dopo morte del processo. Una nuova istanza non eredita automaticamente la richiesta; prima della UI occorre decidere durata, recupero e ciclo di vita per account. Nessuna riconnessione invia automaticamente dati. Un replay conferma l'esito della vecchia operazione; la UI futura dovrà rileggere lo stato corrente della partita.
+Questo primo incremento conservava la richiesta nella sola istanza del client. Il successivo journal prepara persistenza cifrata, ripristino verificato per account e conservazione della conferma dopo risposta: [STABILITY.md](STABILITY.md). Il client predefinito resta disabilitato e con store in memoria; il factory dell'editor dovrà iniettare lo store cifrato e condividere il journal. Nessuna riconnessione invia automaticamente dati. Un replay o una conferma recuperata riguardano la vecchia operazione; la UI futura dovrà rileggere lo stato corrente della partita.
 
 ## Validazione
 
@@ -47,4 +47,4 @@ Risultati della suite completa, lint, APK e hash: [android-rpc-client-validation
 
 ## Prossima attività
 
-Definire il ciclo di vita e il recupero delle richieste incerte prima di implementare il ViewModel editor, mantenendo disabilitate navigazione e scritture reali.
+Implementare il ViewModel editor con journal condiviso e fixture, mantenendo disabilitate navigazione e scritture reali.

@@ -2,6 +2,9 @@ package app.kingscore.android.data.remote
 
 import java.math.BigDecimal
 import java.util.UUID
+import java.time.LocalDate
+import app.kingscore.android.data.repository.PlayMutationKind
+import app.kingscore.android.data.repository.StoredPlayMutation
 import kingscore.contracts.v1.*
 import kotlinx.serialization.json.*
 
@@ -58,6 +61,43 @@ object PlaySaveJson {
         is JsonObject -> value.entries.joinToString(", ", "{", "}") { "${JsonPrimitive(it.key)}: ${jsonbText(it.value)}" }
         is JsonArray -> value.joinToString(", ", "[", "]") { jsonbText(it) }
         else -> value.toString()
+    }
+
+    /** Validate restored records before replay; endpoints and RPC names never come from storage. */
+    fun validateStored(record: StoredPlayMutation) {
+        val keys = when (record.kind) {
+            PlayMutationKind.CREATE -> setOf("p_request_id", "p_payload")
+            PlayMutationKind.UPDATE -> setOf("p_request_id", "p_play_id", "p_expected_revision", "p_payload")
+            PlayMutationKind.DELETE -> setOf("p_request_id", "p_play_id", "p_expected_revision")
+        }
+        val args = objectBody(record.body, keys)
+        require(uuid(args.getValue("p_request_id")) == UUID.fromString(record.requestId))
+        if (record.kind != PlayMutationKind.CREATE) {
+            require(uuid(args.getValue("p_play_id")) == UUID.fromString(record.playId))
+            validatePlayRevision(text(args.getValue("p_expected_revision")))
+        }
+        if (record.kind != PlayMutationKind.DELETE) {
+            val row = args.getValue("p_payload").jsonObject
+            require(row.keys == setOf("game_id", "played_at", "duration_minutes", "source", "notes", "is_cooperative", "team_won", "scores"))
+            fun nullableText(value: JsonElement) = if (value == JsonNull) null else text(value)
+            val scores = row.getValue("scores").jsonArray.map {
+                val score = it.jsonObject
+                require(score.keys == setOf("id", "player_id", "score", "winner", "color", "role"))
+                val wireScore = nullableText(score.getValue("score"))?.also { value -> require(decimal.matches(value)) }
+                ScoreInput(score.getValue("id").let { value -> if (value == JsonNull) null else uuid(value) },
+                    uuid(score.getValue("player_id")), wireScore?.let(::BigDecimal), boolean(score.getValue("winner")),
+                    nullableText(score.getValue("color")), nullableText(score.getValue("role")))
+            }
+            val duration = row.getValue("duration_minutes").let {
+                if (it == JsonNull) null else it.jsonPrimitive.also { value -> require(!value.isString) }.int
+            }
+            val source = PlaySource.entries.single { it.wireValue == text(row.getValue("source")) }
+            val input = PlayInput(uuid(row.getValue("game_id")), LocalDate.parse(text(row.getValue("played_at"))), duration,
+                source, nullableText(row.getValue("notes")), boolean(row.getValue("is_cooperative")),
+                row.getValue("team_won").let { if (it == JsonNull) null else boolean(it) }, scores)
+            if (record.kind == PlayMutationKind.CREATE) CreatePlayCommand(UUID.fromString(record.requestId), input)
+            payload(input)
+        }
     }
 
     fun editor(body: String, expectedPlay: UUID): PlayEditorResult {

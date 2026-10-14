@@ -8,7 +8,8 @@ import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 import kingscore.contracts.v1.*
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.serialization.json.*
 import okhttp3.Request
 import okhttp3.MediaType.Companion.toMediaType
@@ -33,83 +34,120 @@ class SupabasePlayWrites(
     private val auth: SupabaseAuthRepository, private val network: NetworkMonitor, private val accountId: UUID,
     private val transport: PlayRpcTransport = NoRetryPlayRpcTransport(),
     private val enabled: Boolean = false,
+    private val journal: PlayWriteJournal = PlayWriteJournal(accountId),
 ) : PlayWrites {
-    private data class Prepared(val rpc: String, val body: String, val request: PendingPlayRequest, val deletion: Boolean = false)
+    init { require(journal.accountId == accountId) }
     private val closed = AtomicBoolean(false)
-    private val mutation = Mutex()
-    @Volatile private var pending: Prepared? = null
-    override val pendingRequest: PendingPlayRequest? get() = pending?.request
+    override val pendingRequest: PendingPlayRequest? get() = if (closed.get()) null else journal.pendingRequest
 
+    override suspend fun restorePending(): PendingPlayRequest? {
+        checkAccess()
+        if (!journal.mutex.tryLock()) throw PlayWriteFailure(PlayWriteProblem.BUSY)
+        try {
+            return auth.withVerifiedSession(accountId) { _, _ -> checkAccess(); restoreJournal(); checkAccess(); journal.pendingRequest }
+        } finally { journal.releaseCache(); journal.mutex.unlock() }
+    }
+    override suspend fun restoreCompleted(): PlayWriteResult? {
+        restorePending()
+        checkAccess()
+        return journal.pending?.takeIf { it.confirmedResponse != null }?.let(::confirmedResult)
+    }
     override suspend fun editor(playId: UUID): PlayEditorResult {
         val response = send("get_play_editor_v1", PlaySaveJson.editorArguments(playId).toString())
         return decode(false) { PlaySaveJson.editor(response.body, playId) }.also { checkAccess() }
     }
     override suspend fun create(command: CreatePlayCommand): PlayMutationResult =
-        (write(Prepared("create_play_v1", PlaySaveJson.createArguments(command).toString(), PendingPlayRequest(command.request_id, null))) as PlayWriteResult.Saved).value
+        (write(stored(PlayMutationKind.CREATE, PlaySaveJson.createArguments(command).toString(), command.request_id, null)) as PlayWriteResult.Saved).value
     override suspend fun update(command: UpdatePlayCommand): PlayMutationResult =
-        (write(Prepared("update_play_v1", PlaySaveJson.updateArguments(command).toString(), PendingPlayRequest(command.request_id, command.play_id))) as PlayWriteResult.Saved).value
+        (write(stored(PlayMutationKind.UPDATE, PlaySaveJson.updateArguments(command).toString(), command.request_id, command.play_id)) as PlayWriteResult.Saved).value
     override suspend fun delete(command: DeletePlayCommand): DeletePlayResult =
-        (write(Prepared("delete_play_v1", PlaySaveJson.deleteArguments(command).toString(), PendingPlayRequest(command.request_id, command.play_id), true)) as PlayWriteResult.Deleted).value
-
+        (write(stored(PlayMutationKind.DELETE, PlaySaveJson.deleteArguments(command).toString(), command.request_id, command.play_id)) as PlayWriteResult.Deleted).value
     override suspend fun retryPending(): PlayWriteResult = write(null)
 
-    private suspend fun write(newRequest: Prepared?): PlayWriteResult {
-        checkAccess()
-        if (!mutation.tryLock()) throw PlayWriteFailure(PlayWriteProblem.BUSY)
-        try {
-            if (newRequest != null && pending != null) throw PlayWriteFailure(PlayWriteProblem.UNCERTAIN)
-            val request = newRequest ?: pending ?: throw PlayWriteFailure(PlayWriteProblem.INVALID_INPUT)
-            val response = send(request.rpc, request.body, request, preservePendingOnError = newRequest == null)
-            val result = decode(true) {
-                if (request.deletion) PlayWriteResult.Deleted(PlaySaveJson.deletion(response.body, checkNotNull(request.request.playId)))
-                else PlayWriteResult.Saved(PlaySaveJson.mutation(response.body, request.request.playId))
-            }
-            checkAccess()
-            pending = null
-            return result
-        } finally { mutation.unlock() }
-    }
+    private fun stored(kind: PlayMutationKind, body: String, request: UUID, play: UUID?) =
+        StoredPlayMutation(accountId = accountId.toString(), requestId = request.toString(), playId = play?.toString(), kind = kind, body = body)
 
-    private suspend fun send(rpc: String, body: String, prepared: Prepared? = null, preservePendingOnError: Boolean = false): PlayRpcResponse {
+    private suspend fun restoreJournal() {
+        journal.restore()
+        journal.pending?.let {
+            try {
+                it.copy() // Re-run structural validation after decoding a persisted version.
+                PlaySaveJson.validateStored(it)
+                if (it.confirmedResponse != null) confirmedResult(it)
+            } catch (_: Exception) { throw PlayWriteFailure(PlayWriteProblem.STORAGE) }
+        }
+    }
+    private fun confirmedResult(record: StoredPlayMutation): PlayWriteResult =
+        if (record.kind == PlayMutationKind.DELETE) PlayWriteResult.Deleted(PlaySaveJson.deletion(checkNotNull(record.confirmedResponse), checkNotNull(record.request.playId)), restored = true)
+        else PlayWriteResult.Saved(PlaySaveJson.mutation(checkNotNull(record.confirmedResponse), record.request.playId), restored = true)
+    private suspend fun write(newRequest: StoredPlayMutation?): PlayWriteResult {
+        checkAccess()
+        if (!journal.mutex.tryLock()) throw PlayWriteFailure(PlayWriteProblem.BUSY)
+        try {
+            return auth.withVerifiedSession(accountId) { client, token ->
+                checkAccess(); restoreJournal()
+                val previous = journal.pending
+                if (previous?.confirmedResponse != null && (newRequest == null || previous.requestId == newRequest.requestId)) {
+                    if (newRequest != null && (previous.kind != newRequest.kind || previous.playId != newRequest.playId ||
+                        Json.parseToJsonElement(previous.body) != Json.parseToJsonElement(newRequest.body))) throw PlayWriteFailure(PlayWriteProblem.CONFLICT)
+                    return@withVerifiedSession confirmedResult(previous)
+                }
+                if (newRequest != null && journal.pendingRequest != null) throw PlayWriteFailure(PlayWriteProblem.UNCERTAIN)
+                val request = newRequest ?: journal.pending ?: throw PlayWriteFailure(PlayWriteProblem.INVALID_INPUT)
+                journal.record(request)
+                currentCoroutineContext().ensureActive(); checkAccess()
+                val response = exchange(client.supabaseHttpUrl, client.supabaseKey, token, request.kind.rpc, request.body,
+                    request, preservePendingOnError = newRequest == null)
+                val result = decode(true) {
+                    if (request.kind == PlayMutationKind.DELETE) PlayWriteResult.Deleted(PlaySaveJson.deletion(response.body, checkNotNull(request.request.playId)))
+                    else PlayWriteResult.Saved(PlaySaveJson.mutation(response.body, request.request.playId))
+                }
+                checkAccess(); journal.record(request.copy(confirmedResponse = response.body)); checkAccess()
+                result
+            }
+        } finally { journal.releaseCache(); journal.mutex.unlock() }
+    }
+    private suspend fun send(rpc: String, body: String): PlayRpcResponse {
         checkAccess()
         return auth.withVerifiedSession(accountId) { client, token ->
-            checkAccess()
-            val request = Request.Builder().url("${client.supabaseHttpUrl}/rest/v1/rpc/$rpc")
-                .header("Authorization", "Bearer $token").header("apikey", client.supabaseKey)
-                .header("Accept", "application/json").post(body.toRequestBody("application/json".toMediaType())).build()
-            if (prepared != null) pending = prepared
-            val response = try { transport.send(request) }
-                catch (cancelled: CancellationException) { throw cancelled }
-                catch (failure: PlayWriteFailure) {
-                    if (prepared == null) throw PlayWriteFailure(PlayWriteProblem.INVALID_RESPONSE)
-                    throw failure
-                }
-                catch (_: IOException) { throw PlayWriteFailure(if (prepared == null) PlayWriteProblem.INVALID_RESPONSE else PlayWriteProblem.UNCERTAIN) }
-            checkAccess()
-            when (response.status) {
-                200 -> response
-                401 -> { if (prepared != null && !preservePendingOnError) pending = null; throw AuthFailure(AuthProblem.INVALID_CREDENTIALS) }
-                400, 403, 404, 409, 422 -> {
-                    if (prepared != null && !preservePendingOnError) pending = null
-                    throw PlayWriteFailure(when (response.status) {
-                        403 -> PlayWriteProblem.FORBIDDEN
-                        404 -> if (runCatching { Json.parseToJsonElement(response.body).jsonObject["code"]?.jsonPrimitive?.contentOrNull }.getOrNull() == "PGRST202")
-                            PlayWriteProblem.UNAVAILABLE else PlayWriteProblem.NOT_FOUND
-                        409 -> PlayWriteProblem.CONFLICT
-                        else -> PlayWriteProblem.INVALID_INPUT
-                    })
-                }
-                else -> throw PlayWriteFailure(if (prepared == null) PlayWriteProblem.INVALID_RESPONSE else PlayWriteProblem.UNCERTAIN)
+            checkAccess(); exchange(client.supabaseHttpUrl, client.supabaseKey, token, rpc, body)
+        }
+    }
+    private suspend fun exchange(base: String, key: String, token: String, rpc: String, body: String,
+        prepared: StoredPlayMutation? = null, preservePendingOnError: Boolean = false): PlayRpcResponse {
+        val request = Request.Builder().url("$base/rest/v1/rpc/$rpc")
+            .header("Authorization", "Bearer $token").header("apikey", key)
+            .header("Accept", "application/json").post(body.toRequestBody("application/json".toMediaType())).build()
+        val response = try { transport.send(request) }
+            catch (cancelled: CancellationException) { throw cancelled }
+            catch (failure: PlayWriteFailure) {
+                if (prepared == null) throw PlayWriteFailure(PlayWriteProblem.INVALID_RESPONSE)
+                throw failure
             }
+            catch (_: IOException) { throw PlayWriteFailure(if (prepared == null) PlayWriteProblem.INVALID_RESPONSE else PlayWriteProblem.UNCERTAIN) }
+        checkAccess()
+        return when (response.status) {
+            200 -> response
+            401 -> { if (prepared != null && !preservePendingOnError) journal.record(null); throw AuthFailure(AuthProblem.INVALID_CREDENTIALS) }
+            400, 403, 404, 409, 422 -> {
+                if (prepared != null && !preservePendingOnError) journal.record(null)
+                throw PlayWriteFailure(when (response.status) {
+                    403 -> PlayWriteProblem.FORBIDDEN
+                    404 -> if (runCatching { Json.parseToJsonElement(response.body).jsonObject["code"]?.jsonPrimitive?.contentOrNull }.getOrNull() == "PGRST202")
+                        PlayWriteProblem.UNAVAILABLE else PlayWriteProblem.NOT_FOUND
+                    409 -> PlayWriteProblem.CONFLICT
+                    else -> PlayWriteProblem.INVALID_INPUT
+                })
+            }
+            else -> throw PlayWriteFailure(if (prepared == null) PlayWriteProblem.INVALID_RESPONSE else PlayWriteProblem.UNCERTAIN)
         }
     }
     private inline fun <T> decode(write: Boolean, action: () -> T): T = try { action() }
         catch (_: Exception) { throw PlayWriteFailure(if (write) PlayWriteProblem.UNCERTAIN else PlayWriteProblem.INVALID_RESPONSE) }
-
     private fun checkAccess() {
         if (!enabled) throw PlayWriteFailure(PlayWriteProblem.UNAVAILABLE)
         if (closed.get()) throw PlayWriteFailure(PlayWriteProblem.CLOSED)
         if (!network.connected.value) throw AuthFailure(AuthProblem.NETWORK_UNAVAILABLE)
     }
-    override fun close() { closed.set(true); transport.close() }
+    override fun close() { closed.set(true); transport.close(); journal.forgetOnRelease() }
 }

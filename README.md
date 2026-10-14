@@ -17,6 +17,7 @@ Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Sco
 | File | Contenuto |
 | --- | --- |
 | [ROADMAP.md](ROADMAP.md) | Fasi, stime e stato corrente |
+| [docs/STABILITY.md](docs/STABILITY.md) | Obiettivo stabile, criteri di uscita e lavoro autonomo residuo |
 | [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md) | Schema reale, RLS e limiti delle verifiche |
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | API esistenti, DTO e RPC proposte |
 | [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Contratti V1 e candidata locale dei salvataggi, senza deploy |

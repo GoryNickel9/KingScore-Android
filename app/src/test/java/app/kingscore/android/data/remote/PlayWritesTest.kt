@@ -62,14 +62,16 @@ class PlayWritesTest {
             requests += it
             PlayRpcResponse(200, when (it.url.pathSegments.last()) { "get_play_editor_v1" -> f.editor(); "delete_play_v1" -> f.deleted(); else -> f.saved() })
         }, enabled = true)
-        writer.editor(f.play); writer.create(f.create()); writer.update(f.update()); writer.delete(f.delete())
+        val update = f.update().copy(request_id = UUID(0, 7))
+        val delete = f.delete().copy(request_id = UUID(0, 8))
+        writer.editor(f.play); writer.create(f.create()); writer.update(update); writer.delete(delete)
         assertEquals(listOf("get_play_editor_v1", "create_play_v1", "update_play_v1", "delete_play_v1"), requests.map { it.url.pathSegments.last() })
         requests.forEach {
             assertEquals("POST", it.method); assertEquals("Bearer user-access", it.header("Authorization"))
             assertEquals("public-test-key", it.header("apikey")); assertNull(it.url.query)
         }
         assertEquals(PlaySaveJson.createArguments(f.create()).toString(), body(requests[1]))
-        assertEquals(PlaySaveJson.updateArguments(f.update()).toString(), body(requests[2]))
+        assertEquals(PlaySaveJson.updateArguments(update).toString(), body(requests[2]))
         assertNull(writer.pendingRequest)
     }
     @Test fun `offline missing session and different account never send`() = check { auth, network ->
@@ -123,7 +125,8 @@ class PlayWritesTest {
         rows.clear(); rows += f.score("77")
         assertTrue((writer.retryPending() as PlayWriteResult.Saved).value.replayed)
         assertEquals(body(requests[0]), body(requests[1])); assertNull(writer.pendingRequest)
-        problem(PlayWriteProblem.INVALID_INPUT) { writer.retryPending() }
+        assertTrue((writer.retryPending() as PlayWriteResult.Saved).restored)
+        assertEquals(2, requests.size)
     }
     @Test fun `failed retry retains uncertain request even for confirmed rejection`() = check { auth, network ->
         for (status in listOf(400, 403, 404, 409)) {
@@ -168,7 +171,7 @@ class PlayWritesTest {
         lateinit var writer: SupabasePlayWrites
         writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; writer.close(); PlayRpcResponse(200, f.saved()) }, true)
         problem(PlayWriteProblem.CLOSED) { writer.create(f.create()) }
-        assertNotNull(writer.pendingRequest)
+        assertNull(writer.pendingRequest)
         problem(PlayWriteProblem.CLOSED) { writer.retryPending() }; assertEquals(1, calls)
     }
     @Test fun `concurrent second mutation is rejected before dispatch`() = check { auth, network ->
@@ -207,6 +210,115 @@ class PlayWritesTest {
         assertTrue((writer.retryPending() as PlayWriteResult.Deleted).value.replayed)
         assertNull(writer.pendingRequest)
     }
+    @Test fun `write ahead journal is committed before HTTP and confirmation survives success`() = check { auth, network ->
+        val events = mutableListOf<String>()
+        val memory = MemoryPendingPlayStore()
+        val store = object : PendingPlayStore {
+            override suspend fun load(accountId: UUID) = memory.load(accountId).also { events += "load" }
+            override suspend fun save(accountId: UUID, record: StoredPlayMutation?) { events += if (record?.confirmedResponse != null) "confirmed" else "record"; memory.save(accountId, record) }
+        }
+        val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport {
+            assertNotNull(memory.load(f.account)); events += "send"; PlayRpcResponse(200, f.saved())
+        }, true, PlayWriteJournal(f.account, store))
+        writer.create(f.create())
+        assertEquals(listOf("load", "record", "send", "confirmed"), events); assertNotNull(memory.load(f.account)!!.confirmedResponse)
+    }
+    @Test fun `fresh client restores exact request without sending and manual replay survives restart`() = check { auth, network ->
+        val store = MemoryPendingPlayStore()
+        val bodies = mutableListOf<String>()
+        val first = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { bodies += body(it); throw IOException() }, true, PlayWriteJournal(f.account, store))
+        problem(PlayWriteProblem.UNCERTAIN) { first.create(f.create()) }; first.close()
+        val second = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { bodies += body(it); PlayRpcResponse(200, f.saved(true)) }, true, PlayWriteJournal(f.account, store))
+        assertEquals(f.request, second.restorePending()!!.requestId); assertEquals(1, bodies.size)
+        problem(PlayWriteProblem.UNCERTAIN) { second.create(f.create().copy(request_id = UUID(0, 90))) }
+        second.retryPending(); assertEquals(bodies[0], bodies[1]); assertNotNull(store.load(f.account)!!.confirmedResponse)
+    }
+    @Test fun `journal write failure prevents all dispatch and does not expose storage messages`() = check { auth, network ->
+        var calls = 0
+        val store = object : PendingPlayStore {
+            override suspend fun load(accountId: UUID): StoredPlayMutation? = null
+            override suspend fun save(accountId: UUID, record: StoredPlayMutation?) { throw IOException("private storage details") }
+        }
+        val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; PlayRpcResponse(200, f.saved()) }, true, PlayWriteJournal(f.account, store))
+        problem(PlayWriteProblem.STORAGE) { writer.create(f.create()) }; assertEquals(0, calls)
+    }
+    @Test fun `corrupt restored payload blocks even a new command before HTTP`() = check { auth, network ->
+        val store = MemoryPendingPlayStore()
+        store.save(f.account, StoredPlayMutation(accountId = f.account.toString(), requestId = f.request.toString(), playId = null,
+            kind = PlayMutationKind.CREATE, body = PlaySaveJson.createArguments(f.create()).toString().replace(f.request.toString(), UUID(0, 91).toString())))
+        var calls = 0
+        val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; PlayRpcResponse(200, f.saved()) }, true, PlayWriteJournal(f.account, store))
+        problem(PlayWriteProblem.STORAGE) { writer.restorePending() }
+        problem(PlayWriteProblem.STORAGE) { writer.create(f.create()) }; assertEquals(0, calls); assertNotNull(store.load(f.account))
+    }
+    @Test fun `restoration requires online verified account and another account sees no record`() = check { auth, network ->
+        val store = MemoryPendingPlayStore()
+        val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { throw IOException() }, true, PlayWriteJournal(f.account, store))
+        problem(PlayWriteProblem.UNCERTAIN) { writer.create(f.create()) }; writer.close()
+        val restored = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { fail("No RPC during restore"); PlayRpcResponse(200, "") }, true, PlayWriteJournal(f.account, store))
+        network.connected.value = false
+        authProblem(AuthProblem.NETWORK_UNAVAILABLE) { restored.restorePending() }
+        assertNull(restored.pendingRequest); network.connected.value = true
+        val wrong = SupabasePlayWrites(auth, network, UUID(0, 99), PlayRpcTransport { fail(); PlayRpcResponse(200, "") }, true, PlayWriteJournal(UUID(0, 99), store))
+        authProblem(AuthProblem.INVALID_CREDENTIALS) { wrong.restorePending() }; assertNull(wrong.pendingRequest)
+        assertNotNull(restored.restorePending()); assertNull(store.load(UUID(0, 99)))
+    }
+    @Test fun `shared journal rejects a mutation from another client while first is active`() = check { auth, network ->
+        val journal = PlayWriteJournal(f.account)
+        val started = CompletableDeferred<Unit>(); val release = CompletableDeferred<Unit>()
+        var calls = 0
+        val transport = PlayRpcTransport { calls++; started.complete(Unit); release.await(); PlayRpcResponse(200, f.saved()) }
+        val first = SupabasePlayWrites(auth, network, f.account, transport, true, journal)
+        val second = SupabasePlayWrites(auth, network, f.account, transport, true, journal)
+        coroutineScope {
+            val operation = async { first.create(f.create()) }; started.await()
+            problem(PlayWriteProblem.BUSY) { second.create(f.create()) }
+            release.complete(Unit); operation.await()
+        }
+        assertEquals(1, calls)
+    }
+    @Test fun `confirmed success with failed confirmation storage remains recoverable`() = check { auth, network ->
+        val memory = MemoryPendingPlayStore()
+        var failRemoval = true
+        val store = object : PendingPlayStore {
+            override suspend fun load(accountId: UUID) = memory.load(accountId)
+            override suspend fun save(accountId: UUID, record: StoredPlayMutation?) {
+                if (record?.confirmedResponse != null && failRemoval) throw IOException()
+                memory.save(accountId, record)
+            }
+        }
+        var calls = 0
+        val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; PlayRpcResponse(200, f.saved(calls > 1)) }, true, PlayWriteJournal(f.account, store))
+        problem(PlayWriteProblem.STORAGE) { writer.create(f.create()) }; assertNotNull(writer.pendingRequest)
+        failRemoval = false; writer.retryPending(); assertNotNull(store.load(f.account)!!.confirmedResponse); assertEquals(2, calls)
+    }
+    @Test fun `disabled client does not read persisted data`() = check { auth, network ->
+        val store = object : PendingPlayStore {
+            override suspend fun load(accountId: UUID): StoredPlayMutation? { fail("Storage must remain untouched"); return null }
+            override suspend fun save(accountId: UUID, record: StoredPlayMutation?) { fail() }
+        }
+        val writer = SupabasePlayWrites(auth, network, f.account, enabled = false, journal = PlayWriteJournal(f.account, store))
+        problem(PlayWriteProblem.UNAVAILABLE) { writer.restorePending() }; writer.close()
+    }
+    @Test fun `confirmation recovered after restart never sends another RPC`() = check { auth, network ->
+        val store = MemoryPendingPlayStore()
+        var calls = 0
+        val first = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; PlayRpcResponse(200, f.saved()) }, true, PlayWriteJournal(f.account, store))
+        first.create(f.create()); first.close()
+        val second = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; PlayRpcResponse(200, f.saved()) }, true, PlayWriteJournal(f.account, store))
+        assertNull(second.restorePending())
+        val result = second.restoreCompleted() as PlayWriteResult.Saved
+        assertTrue(result.restored); assertEquals(f.play, result.value.play_id)
+        second.retryPending(); second.create(f.create()); assertEquals(1, calls)
+    }
+    @Test fun `same request ID with changed body conflicts against durable confirmation`() = check { auth, network ->
+        var calls = 0
+        val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; PlayRpcResponse(200, f.saved()) }, true)
+        writer.create(f.create())
+        problem(PlayWriteProblem.CONFLICT) { writer.create(f.create().copy(payload = f.input().copy(notes = "changed"))) }
+        assertEquals(1, calls)
+    }
+
     @Test fun `real loopback transport blocks redirects 503 replay and dropped connection retry`() = runBlocking {
         for (status in listOf("503 Unavailable\r\nRetry-After: 0", "307 Redirect\r\nLocation: /second", "DROP")) {
             val server = ServerSocket(0, 5, InetAddress.getByName("127.0.0.1"))

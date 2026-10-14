@@ -32,7 +32,7 @@ android {
         targetSdk = 36
         versionCode = 8
         versionName = "0.4.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "app.kingscore.android.data.local.PendingRecoveryProbe"
         buildConfigField("String", "SUPABASE_URL", quoted(config("SUPABASE_URL")))
         buildConfigField("String", "SUPABASE_PUBLIC_KEY", quoted(publicKey))
     }

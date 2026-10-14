@@ -1,6 +1,7 @@
 package app.kingscore.android.data.repository
 
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
@@ -27,7 +28,7 @@ data class StoredPlayMutation(
         require(body.toByteArray(Charsets.UTF_8).size <= MAX_BODY_BYTES)
         require(confirmedResponse == null || confirmedResponse.toByteArray(Charsets.UTF_8).size <= 1024)
     }
-    val request: PendingPlayRequest get() = PendingPlayRequest(UUID.fromString(requestId), playId?.let(UUID::fromString))
+    val request: PendingPlayRequest get() = PendingPlayRequest(UUID.fromString(requestId), playId?.let(UUID::fromString), kind)
     override fun toString(): String = "StoredPlayMutation(version=$version, kind=$kind)"
     companion object { const val MAX_BODY_BYTES = 1048576 + 1024 }
 }
@@ -35,6 +36,13 @@ data class StoredPlayMutation(
 interface PendingPlayStore {
     suspend fun load(accountId: UUID): StoredPlayMutation?
     suspend fun save(accountId: UUID, record: StoredPlayMutation?)
+}
+
+/** Keep the same account lock even when a screen/client is recreated or signed out. */
+class AccountPlayJournals(private val store: PendingPlayStore) {
+    private val journals = ConcurrentHashMap<UUID, PlayWriteJournal>()
+    fun forAccount(accountId: UUID): PlayWriteJournal = journals.computeIfAbsent(accountId) { PlayWriteJournal(it, store) }
+    fun clearMemory() { journals.values.forEach { it.forgetOnRelease() } }
 }
 
 /** Default for the still-disabled client; production persistence must be injected explicitly. */

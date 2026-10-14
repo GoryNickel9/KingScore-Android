@@ -5,7 +5,7 @@ import kingscore.contracts.v1.*
 
 enum class PlayWriteProblem { UNAVAILABLE, CLOSED, BUSY, FORBIDDEN, NOT_FOUND, INVALID_INPUT, CONFLICT, INVALID_RESPONSE, UNCERTAIN, STORAGE }
 class PlayWriteFailure(val problem: PlayWriteProblem) : Exception(problem.name)
-data class PendingPlayRequest(val requestId: UUID, val playId: UUID?)
+data class PendingPlayRequest(val requestId: UUID, val playId: UUID?, val kind: PlayMutationKind? = null)
 sealed interface PlayWriteResult {
     data class Saved(val value: PlayMutationResult, val restored: Boolean = false) : PlayWriteResult
     data class Deleted(val value: DeletePlayResult, val restored: Boolean = false) : PlayWriteResult

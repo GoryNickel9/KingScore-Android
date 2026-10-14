@@ -47,4 +47,4 @@ Risultati della suite completa, lint, APK e hash: [android-rpc-client-validation
 
 ## Prossima attività
 
-Implementare il ViewModel editor con journal condiviso e fixture, mantenendo disabilitate navigazione e scritture reali.
+Il [controller editor](PLAY_EDITOR_STATE.md) prepara ora bozze, conflitti, conferma della cancellazione e recupero con fixture. La prossima attività è la schermata Compose e il suo ciclo di vita; navigazione e scritture reali restano disabilitate.

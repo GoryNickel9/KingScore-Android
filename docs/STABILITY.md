@@ -11,7 +11,7 @@ La stabile mantiene il perimetro concordato: login e Internet obbligatori, consu
 | Contratti e salvataggi atomici | Candidata locale con 21 casi superati | API reali e writer web/server coerenti, oggi indisponibili |
 | Client RPC Android | Preparato, disabilitato per default | Integrazione nell'editor dopo le condizioni backend |
 | Recupero salvataggi | Journal cifrato preparato; account verificato prima del recupero | Collegamento al ciclo di vita dell'editor e collaudo dei percorsi completi |
-| Editor partite | Da implementare e provare con fixture | CRUD, conflitti, dati storici incompatibili, rete, logout e rotazione |
+| Editor partite | Controller e bozza preparati con fixture; schermata da implementare | Integrazione Compose, ciclo di vita, conflitti, rete, logout e rotazione |
 | APK privato e aggiornamenti | Firma debug attuale | Firma di rilascio, checksum, installazione e aggiornamento verificati |
 
 ## Ordine del lavoro autonomo
@@ -33,3 +33,5 @@ Il recupero richiede prima rete e verifica dell'identità. Non invia automaticam
 Una risposta valida viene conservata come conferma cifrata, anziché cancellare subito ogni traccia. Questo copre la chiusura dell'app fra risposta server e presentazione del risultato. Il recupero della conferma non esegue HTTP; restituisce un risultato marcato restored, distinto dal campo replayed del server. Una nuova operazione esplicita con un nuovo UUID sostituisce la conferma precedente. Riutilizzare il vecchio UUID con un contenuto diverso produce conflitto.
 
 Il factory dell'editor dovrà condividere un journal per account e iniettare lo store cifrato. Il client predefinito resta disabilitato e usa memoria: non è ancora collegato all'Application. Le garanzie del file riguardano riavvio e arresto del processo; non certificano perdita del dispositivo, cancellazione dei dati dell'app o guasti del filesystem.
+
+Il registro `AccountPlayJournals` e il [controller con fixture](PLAY_EDITOR_STATE.md) preparano ora questa integrazione. Il controller gestisce caricamento, validazione della bozza, conferma della cancellazione, conflitti e recupero esplicito. Restano da collegare le schermate Compose e il ciclo di vita della sessione; i percorsi reali non sono abilitati.

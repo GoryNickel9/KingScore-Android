@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "scope": "disabled-play-editor-controller",
+  "status": "PASS",
+  "baseCommit": "9d1faa1f4c2791cd8280722991664af604b1e71f",
+  "remoteDatabaseContacted": false,
+  "externalRepositoriesModified": false,
+  "vercelModified": false,
+  "supabaseRemoteModified": false,
+  "androidEditorEnabled": false,
+  "encryptedStoreWiredToApplication": false,
+  "versionName": "0.4.0",
+  "jvm": {
+    "errors": 0,
+    "tests": 200,
+    "suites": 22,
+    "failures": 0,
+    "newTests": 25
+  },
+  "node": {
+    "log": ".work/editor-node-tests.log",
+    "tests": 39,
+    "failures": 0
+  },
+  "lint": {
+    "warnings": 16,
+    "errors": 0
+  },
+  "build": {
+    "localWorkaround": "Ignored TCP Java agent, JBR 21 and dedicated daemon registry",
+    "tasks": [
+      ":app:testDebugUnitTest",
+      ":app:lintDebug",
+      ":app:assembleDebug",
+      ":app:assembleDebugAndroidTest"
+    ],
+    "log": ".work/editor-viewmodel-checkpoint-build.log",
+    "status": "PASS",
+    "elapsed": "2m 34s"
+  },
+  "apkSha256": "b165d733f9ccbc12185092305847d2c9c7fdcc5dce201322d6fdc2471be190d8",
+  "android": {
+    "reason": "Controller-only increment; Compose editor and navigation are not present",
+    "executed": false
+  },
+  "normalizedUtf8LfSha256": {
+    "app/src/main/java/app/kingscore/android/feature/playeditor/PlayDraft.kt": "49a8848507843a16d224292827bd329b0a5e16b2f47d1fb3971c6e951ebac437",
+    "app/src/main/java/app/kingscore/android/feature/playeditor/PlayEditorViewModel.kt": "57f08dae9a0961e6fd52e35557b31308ed067b8800d178f53f09326e3fdb34b8",
+    "app/src/main/java/app/kingscore/android/data/repository/PlayWriteJournal.kt": "8e96d2e74d5d78ad79ce9af4cd9ca75213673f5348fc6200416e293c2b640124",
+    "app/src/main/java/app/kingscore/android/data/repository/PlayWrites.kt": "c8512977fae23bdd74de7fc05ae79b7f4ee0caf1a765fdce54741cc53e13f761",
+    "app/src/main/java/app/kingscore/android/data/remote/SupabasePlayWrites.kt": "24cc09a471eb2b4603160521b9d64ddded277cc9fd571075ff6894b173c94464",
+    "app/src/test/java/app/kingscore/android/feature/playeditor/PlayEditorViewModelTest.kt": "84dcdd5f67ba8a055d405ec07d62128b70959a29d58c07c665b8a64ba68204ff",
+    "app/src/test/java/app/kingscore/android/data/remote/AccountPlayJournalsTest.kt": "e261e4c0edea4aefe7bbd60c61ef7fccadcb4de34017a9b3995ce714acc8b961",
+    "app/src/test/java/app/kingscore/android/data/remote/PlayWritesTest.kt": "9d10d05fc8f0a5e7e4f8f04eedc861b651d42e099cb89f20680f68f1c8c3bc17"
+  },
+  "limitations": [
+    "Fixture-only controller; production editor, factory and navigation remain disabled.",
+    "No new SQL, remote Auth, physical-device or release-signing validation.",
+    "No unsent draft persistence or automatic reconnect; uncertain operations require explicit recovery.",
+    "Live atomic RPCs remain unavailable; this increment cannot complete the stable release."
+  ]
+}

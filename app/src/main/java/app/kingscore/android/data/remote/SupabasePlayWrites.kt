@@ -48,9 +48,14 @@ class SupabasePlayWrites(
         } finally { journal.releaseCache(); journal.mutex.unlock() }
     }
     override suspend fun restoreCompleted(): PlayWriteResult? {
-        restorePending()
         checkAccess()
-        return journal.pending?.takeIf { it.confirmedResponse != null }?.let(::confirmedResult)
+        if (!journal.mutex.tryLock()) throw PlayWriteFailure(PlayWriteProblem.BUSY)
+        try {
+            return auth.withVerifiedSession(accountId) { _, _ ->
+                checkAccess(); restoreJournal(); checkAccess()
+                journal.pending?.takeIf { it.confirmedResponse != null }?.let(::confirmedResult)
+            }
+        } finally { journal.releaseCache(); journal.mutex.unlock() }
     }
     override suspend fun editor(playId: UUID): PlayEditorResult {
         val response = send("get_play_editor_v1", PlaySaveJson.editorArguments(playId).toString())

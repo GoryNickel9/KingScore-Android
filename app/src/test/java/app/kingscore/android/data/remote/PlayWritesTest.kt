@@ -273,6 +273,7 @@ class PlayWritesTest {
         coroutineScope {
             val operation = async { first.create(f.create()) }; started.await()
             problem(PlayWriteProblem.BUSY) { second.create(f.create()) }
+            problem(PlayWriteProblem.BUSY) { second.restoreCompleted() }
             release.complete(Unit); operation.await()
         }
         assertEquals(1, calls)
@@ -317,6 +318,26 @@ class PlayWritesTest {
         writer.create(f.create())
         problem(PlayWriteProblem.CONFLICT) { writer.create(f.create().copy(payload = f.input().copy(notes = "changed"))) }
         assertEquals(1, calls)
+    }
+
+    @Test fun `confirmed result is read before deferred journal cache clearing`() = check { auth, network ->
+        lateinit var journal: PlayWriteJournal
+        val record = StoredPlayMutation(accountId = f.account.toString(), requestId = f.request.toString(),
+            playId = null, kind = PlayMutationKind.CREATE, body = PlaySaveJson.createArguments(f.create()).toString(),
+            confirmedResponse = f.saved())
+        val store = object : PendingPlayStore {
+            override suspend fun load(accountId: UUID): StoredPlayMutation {
+                journal.forgetOnRelease()
+                return record
+            }
+            override suspend fun save(accountId: UUID, record: StoredPlayMutation?) { fail("Read only") }
+        }
+        journal = PlayWriteJournal(f.account, store)
+        val writer = SupabasePlayWrites(auth, network, f.account,
+            PlayRpcTransport { fail("No RPC"); PlayRpcResponse(200, "") }, true, journal)
+        val result = writer.restoreCompleted() as PlayWriteResult.Saved
+        assertEquals(f.play, result.value.play_id); assertTrue(result.restored)
+        assertNull(journal.pending)
     }
 
     @Test fun `real loopback transport blocks redirects 503 replay and dropped connection retry`() = runBlocking {

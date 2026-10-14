@@ -272,3 +272,11 @@ Implementazione e limiti: [PHASE4_ANDROID_RPC_CLIENT.md](PHASE4_ANDROID_RPC_CLIE
 La prima suite dopo l'avvio a freddo aveva un errore No compose hierarchies nel test di retry dello storico gioco. Quel caso passa da solo e le due successive suite complete passano; nessun crash dell'app risulta dal controllo delle eccezioni runtime. Il primo tentativo della probe separata non era registrato nel manifest generato da Gradle: ora il runner è configurato nel build del solo APK di test e la prova con processo nuovo passa. Questi tentativi non vengono conteggiati come successi.
 
 La prova di processo verifica lo store cifrato; i test JVM verificano separatamente il client con Auth simulata. Non è un collaudo RPC/SQL completo dopo force-stop, non usa account reali e non certifica guasti del filesystem o perdita dei dati dell'app. Lo store cifrato deve ancora essere iniettato nel factory dell'editor. Stato: [STABILITY.md](STABILITY.md); risultati e hash: [pending-journal-validation.json](evidence/pending-journal-validation.json).
+
+## Controller editor con fixture, 14 ottobre 2026
+
+La suite JVM comprende 200 test, con 25 casi aggiunti: 23 per bozza/controller, uno per il registro dei journal e uno per la lettura della conferma sotto lock. Verifica validazione locale, precisione decimale, budget aggregato del payload, conservazione degli ID, cancellazione esplicita, conflitti, recupero, doppio tocco, perdita rete e risposte tardive dopo distruzione del controller.
+
+I test mantengono leggibili tutti i 64 partecipanti di una fixture storica incompatibile, senza crearne una bozza modificabile. Una richiesta pendente conserva la propria identità anche se il caricamento dei cataloghi fallisce. Lo svuotamento differito della cache non elimina una conferma durante la lettura; il registro conserva lo stesso lock per account.
+
+Node supera 39 controlli; lint riporta zero errori e 16 warning preesistenti. Le build debug e APK di test vengono verificate. Nessun nuovo test Android viene eseguito in questo incremento: non esiste ancora la schermata editor. Nessuna nuova prova SQL o richiesta al backend reale. Descrizione: [PLAY_EDITOR_STATE.md](PLAY_EDITOR_STATE.md); risultati e hash: [editor-viewmodel-validation.json](evidence/editor-viewmodel-validation.json).

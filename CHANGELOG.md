@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.2 — candidata in verifica
+
+- Partite, Statistiche e dettaglio Giocatore riallineati alle proposte approvate. Le card dello storico mostrano tutti i partecipanti e i punteggi, compresi negativi, zero e valori mancanti, senza ricalcolare posizioni o vincitori.
+- Badge dei commenti nelle card, con apertura della sezione Commenti. I conteggi sono letti in batch fino al completamento; un dato non disponibile non diventa zero. Le modifiche confermate dei commenti aggiornano i conteggi senza rileggere l'intero archivio.
+- Aggiornamento trascinando verso il basso dalla cima della pagina, con indicatore e azione equivalente per TalkBack. Rimossi i normali comandi Aggiorna; restano Riprova negli errori e le verifiche degli invii incerti. Home mostra Giochi preferiti prima di Ultime partite e rimuove Classifiche ELO; Rating ELO rimuove il dialogo dello storico punteggio.
+- Pannelli dal basso con ricerca per Scegli gioco e Scegli partecipante; Filtri sostituisce Filtri dello storico. Selezioni, annullamento, campi data e permessi mantengono i controlli esistenti.
+- Riepilogo condiviso in RAM tra Home e Statistiche, lettura statistica con campi ridotti e pagine richieste da 500, pubblicazione ELO riusata nella sessione online. Login, blocco senza Internet, formula ELO e aggiornamenti APK manuali restano invariati. Nessuna modifica web, Vercel o Supabase per questo aggiornamento.
+
+VersionCode previsto: 17. La candidata non è ancora promossa: test, CI, firma e aggiornamento devono essere qualificati. La stabile consegnata resta la 0.5.1/code 16; i risultati delle sezioni seguenti appartengono alle rispettive versioni.
+
 ## 0.5.1 — 15 ottobre 2026
 
 - Home riallineata alla proposta approvata: intestazione KingScore, riepilogo completo, grafico degli ultimi sei mesi, partite recenti e giochi preferiti. I totali compaiono solo al termine della lettura autenticata; errori e caricamento restano distinti da zero partite.

@@ -1,3 +1,21 @@
+# Stato della candidata 0.5.2/code 17
+
+La 0.5.2 è in verifica. La stabile consegnata resta la 0.5.1/code 16, descritta nella sezione seguente. Non sono ancora attribuiti alla candidata esiti positivi di test, CI, build firmata o aggiornamento.
+
+L'implementazione comprende le tre schermate Partite, Statistiche e Giocatore nello stile approvato, card con tutti i partecipanti/punti e badge commenti, menu ricercabili e pannello Filtri. Home mette i preferiti prima delle ultime partite e rimuove Classifiche ELO; Rating ELO rimuove il dialogo dello storico punteggio. L'aggiornamento dei dati avviene trascinando verso il basso dalla cima, oppure con l'azione accessibile; restano i comandi di retry e recupero degli esiti incerti.
+
+Home e Statistiche condividono il riepilogo della sessione in RAM. La lettura statistica richiede pagine da 500 con i soli campi necessari, fino alla pagina vuota; ELO riusa la pubblicazione letta mantenendo il controllo online della sessione. Nessuna misura su telefono dimostra ancora il tempo percepito di questo aggiornamento. Primo accesso, refresh e dati non disponibili richiedono comunque il server.
+
+| Verifica richiesta per code 17 | Stato |
+| --- | --- |
+| JVM, lint e build | Da qualificare sul codice finale |
+| UI nativa, gesture, menu, font grandi e commenti | Da qualificare con fixture sul PC |
+| CI GitHub del commit di consegna | Da verificare |
+| Firma e aggiornamento dalla 0.5.1/code 16 | Da verificare con dati cifrati conservati |
+| Telefono fisico e nuovo collaudo remoto | Non verificati |
+
+Login obbligatorio, blocco senza Internet, commenti propri e permessi admin restano nel perimetro. Nessun ricalcolo ELO, modifica cloud o aggiornamento automatico dell'APK è introdotto dalla candidata. La promozione dovrà identificare il checksum e la fonte dell'APK effettivamente collaudato.
+
 # Stabile privata 0.5.1: aggiornamento delle tre schermate
 
 La 0.5.1, versionCode 16, implementa le proposte approvate per Home, classifica e dettaglio partita. Login e Internet restano obbligatori; gestione admin e commenti propri conservano i permessi precedenti. Formula ELO, web, Vercel e Supabase non cambiano in questo aggiornamento.

@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.*
@@ -17,9 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,9 @@ import app.kingscore.android.ui.GameCover
 import app.kingscore.android.ui.KingScoreHeader
 import app.kingscore.android.ui.WebPanelShape
 import app.kingscore.android.ui.WebBadge
+import app.kingscore.android.ui.OnlinePullRefresh
+import app.kingscore.android.ui.CatalogOption
+import app.kingscore.android.ui.CatalogSelectionSheet
 import app.kingscore.android.feature.navigation.PlayDataRefresh
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -50,7 +54,7 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
     val state by model.ratings.collectAsStateWithLifecycle()
     var game by rememberSaveable { mutableStateOf<String?>(null) }
     var chooseGame by remember { mutableStateOf(false) }
-    var query by remember { mutableStateOf("") }
+    val visibleRanking = state.ranking.takeIf { state.gameId?.toString() == game }
     PlayDataRefresh(model, selection = game, onShow = { model.show(game?.let(UUID::fromString)) },
         onRefresh = { model.refresh(game?.let(UUID::fromString)) })
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -60,20 +64,14 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
             model.refresh()
         }
     }
-    if (chooseGame) AlertDialog(onDismissRequest = { chooseGame = false }, title = { Text("Scegli gioco") },
-        confirmButton = { TextButton(onClick = { chooseGame = false }) { Text("Chiudi") } }, text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(query, { query = it }, label = { Text("Cerca gioco") }, singleLine = true)
-                LazyColumn(Modifier.heightIn(max = 360.dp)) {
-                    items(state.games.filter { it.name.contains(query, ignoreCase = true) }, key = { it.id.toString() }) { item ->
-                        TextButton(onClick = { game = item.id.toString(); chooseGame = false }, modifier = Modifier.fillMaxWidth()) { Text(item.name) }
-                    }
-                }
-            }
-        })
+    if (chooseGame) CatalogSelectionSheet(
+        title = "Scegli gioco", options = state.games.map { CatalogOption(it.id, it.name, imageUrl = it.image_url) },
+        selectedId = game?.let(UUID::fromString), searchLabel = "Cerca gioco", tagPrefix = "rating", modifier = Modifier.testTag("rating-game-picker"),
+        onDismiss = { chooseGame = false }, onChoose = { id -> game = id?.toString(); chooseGame = false })
     Column(Modifier.fillMaxSize()) {
     KingScoreHeader(account.name, onProfile)
-    LazyColumn(Modifier.weight(1f).testTag("ratings-content"), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    OnlinePullRefresh(state.loading, { model.refresh() }, Modifier.weight(1f), enabled = !chooseGame) {
+    LazyColumn(Modifier.fillMaxSize().testTag("ratings-content"), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(Icons.Outlined.EmojiEvents, null, tint = MaterialTheme.colorScheme.primary)
@@ -90,20 +88,24 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
                         modifier = Modifier.weight(1f).heightIn(min = 48.dp)
                             .background(if (game == null) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent, RoundedCornerShape(8.dp))
                             .semantics { selected = game == null }) { Text("Generale") }
-                    TextButton(onClick = { query = ""; chooseGame = true }, enabled = state.games.isNotEmpty(),
+                    TextButton(onClick = { chooseGame = true }, enabled = state.games.isNotEmpty(),
                         shape = RoundedCornerShape(8.dp), modifier = Modifier.weight(1f).heightIn(min = 48.dp)
                             .background(if (game != null) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent, RoundedCornerShape(8.dp))
                             .semantics { selected = game != null }) { Text("Per gioco") }
                 }
                 state.games.firstOrNull { it.id.toString() == game }?.let { selected ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                        GameCover(selected.image_url, selected.name, 56.dp)
-                        Text(selected.name, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleLarge)
+                    Surface(onClick = { chooseGame = true }, shape = WebPanelShape, color = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.fillMaxWidth().testTag("rating-selected-game")) {
+                        Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            GameCover(selected.image_url, selected.name, 44.dp)
+                            Text(selected.name, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                            Icon(Icons.Outlined.KeyboardArrowDown, "Scegli gioco")
+                        }
                     }
                 }
             }
         }
-        if (state.loading) item { CircularProgressIndicator(); Text("Caricamento classifica…") }
+        if ((state.loading || state.gameId?.toString() != game) && visibleRanking == null) item { CircularProgressIndicator(); Text("Caricamento classifica…") }
         state.problem?.let { item {
             Text(when (state.problem) {
                 DataProblem.PUBLICATION_STALE -> "La classifica è in attesa di aggiornamento. Riprova dopo la pubblicazione dei nuovi risultati."
@@ -112,7 +114,7 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
             }, color = MaterialTheme.colorScheme.error)
             Button(onClick = { model.refresh() }) { Text("Riprova") }
         } }
-        state.ranking?.let { ranking ->
+        visibleRanking?.let { ranking ->
             if (ranking.profile == null) item { Text("Profilo giocatore non collegato.", color = MaterialTheme.colorScheme.onSurfaceVariant) }
             if (ranking.entries.isEmpty()) item { Text("Nessun rating pubblicato per questa classifica.") }
             if (ranking.entries.isNotEmpty()) item {
@@ -121,53 +123,29 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
                     Text(if (game == null) "ELO generale" else "Classifica per gioco", style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold)
                 }
-                Text("Tocca un giocatore per vedere lo storico", style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
             }
             val positions = competitionRanks(ranking.entries)
             items(ranking.entries, key = { it.id.toString() }) { rating ->
-                RatingCard(rating, positions[rating.id], rating.player?.account_user_id == account.id, game == null) { model.select(rating) }
+                RatingCard(rating, positions[rating.id], rating.player?.account_user_id == account.id, game == null)
             }
             if (ranking.entries.isNotEmpty()) item {
                 Text("V = vittorie · P = pareggi · S = sconfitte", style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        state.readAt?.let { item { Text("Classifica letta: ${formatTime(it)}", style = MaterialTheme.typography.bodySmall) } }
-        if (!state.loading) item { TextButton(onClick = { model.refresh() }) { Text("Aggiorna classifica") } }
+        state.readAt?.takeIf { visibleRanking != null }?.let { item { Text("Classifica letta: ${formatTime(it)}", style = MaterialTheme.typography.bodySmall) } }
     }
     }
-    state.selected?.let { selected ->
-        AlertDialog(onDismissRequest = model::closeHistory, title = { Text("Storico di ${playerName(selected.player)}") },
-            confirmButton = { TextButton(onClick = model::closeHistory) { Text("Chiudi") } }, text = {
-                LazyColumn(Modifier.heightIn(max = 420.dp).testTag("rating-history"), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(state.history, key = { it.id.toString() }) { item ->
-                        Column {
-                            Text(if (selected.publicationId != null) DateTimeFormatter.ofPattern("d MMM yyyy")
-                                .withZone(java.time.ZoneOffset.UTC).format(item.date) else formatTime(item.date))
-                            Text("${item.rating} · ${if (item.rating_change > 0) "+" else ""}${item.rating_change}")
-                        }
-                    }
-                    if (state.historyLoading) item { CircularProgressIndicator() }
-                    else if (state.historyProblem != null) item {
-                        Text("Storico non disponibile. Riprova.", color = MaterialTheme.colorScheme.error)
-                        Button(onClick = model::retryHistory) { Text("Riprova") }
-                    } else if (state.history.isEmpty()) item { Text("Nessun dato storico pubblicato.") }
-                    if (!state.historyLoading && state.historyProblem == null && state.nextHistory != null) item {
-                        OutlinedButton(onClick = model::moreHistory) { Text("Carica altri risultati") }
-                    }
-                }
-            })
     }
 }
 
 @Composable
-private fun RatingCard(rating: PublishedRating, position: Int?, mine: Boolean, general: Boolean, onClick: () -> Unit) {
+private fun RatingCard(rating: PublishedRating, position: Int?, mine: Boolean, general: Boolean) {
     val highlight = if (general) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
-    Card(onClick, enabled = rating.playerId != null, shape = WebPanelShape,
+    Card(shape = WebPanelShape,
         border = if (mine) BorderStroke(1.dp, highlight.copy(alpha = 0.6f)) else null,
         colors = CardDefaults.cardColors(containerColor = if (mine) highlight.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant),
-        modifier = Modifier.fillMaxWidth().testTag("rating-${rating.id}")) {
+        modifier = Modifier.fillMaxWidth().testTag("rating-${rating.id}").semantics(mergeDescendants = true) {}) {
         BoxWithConstraints(Modifier.fillMaxWidth().padding(12.dp)) {
             val expanded = LocalDensity.current.fontScale > 1.3f || maxWidth < 270.dp || (rating.rating?.toString()?.length ?: 0) > 5
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {

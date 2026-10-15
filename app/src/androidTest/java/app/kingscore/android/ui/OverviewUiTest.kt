@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.test.platform.app.InstrumentationRegistry
 import app.kingscore.android.core.auth.*
 import app.kingscore.android.data.repository.*
@@ -16,45 +17,52 @@ import java.util.UUID
 import kingscore.contracts.v1.*
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Assert.*
 
 class OverviewUiTest {
     @get:Rule val compose = createComposeRule()
     private val access = mutableStateOf<AccessState>(AccessState.Connected(account))
+    private var historyCalls = 0
+    private var rankingCalls = 0
 
-    @Test fun dashboardStatisticsRankingAndHistoryUsePublishedData() {
+    @Test fun dashboardStatisticsRankingUsePublishedDataWithoutRatingHistory() {
         showApp()
         compose.onNodeWithTag("dashboard-content").performScrollToNode(hasTestTag("recent-${play.play.id}"))
         compose.onNodeWithText("Ultime partite").assertExists()
         compose.onNodeWithTag("recent-${play.play.id}").assertTextContains("Azul")
         capture("phase3-dashboard")
         compose.onNodeWithText("Statistiche").performClick()
-        compose.onAllNodesWithText("1051 partite")[0].assertIsDisplayed()
+        compose.onNodeWithText("1051").assertIsDisplayed()
         compose.onNodeWithTag("statistics-content").performScrollToNode(hasText("Durata disponibile per 2 di 1051 partite"))
         compose.onNodeWithText("Durata disponibile per 2 di 1051 partite").assertIsDisplayed()
         capture("phase3-statistics")
         compose.onNodeWithText("ELO").performClick()
-        compose.onNodeWithTag("rating-${id(30)}").assertTextContains("Marta")
+        compose.onNodeWithTag("rating-${id(30)}", useUnmergedTree = true).assert(hasAnyDescendant(hasText("Marta")))
         compose.onAllNodesWithContentDescription("Posizione: 1").assertCountEquals(2)
-        compose.onNodeWithTag("rating-${id(31)}").assertTextContains("Luca")
+        compose.onNodeWithTag("rating-${id(31)}", useUnmergedTree = true).assert(hasAnyDescendant(hasText("Luca")))
         compose.onAllNodesWithText("6 partite · 1V 3P 2S")[0].assertExists()
         capture("phase3-ratings")
-        compose.onNodeWithTag("rating-${id(30)}").performClick()
-        compose.onNodeWithText("1100 · +15").assertIsDisplayed()
-        compose.onNodeWithText("Chiudi").performClick()
+        compose.onNodeWithTag("rating-${id(30)}").assertHasNoClickAction()
+        compose.onNodeWithTag("rating-history").assertDoesNotExist()
+        compose.onNodeWithText("Tocca un giocatore per vedere lo storico").assertDoesNotExist()
+        val beforeRefresh = compose.runOnIdle { rankingCalls }
+        refreshFromAccessibilityAction()
+        compose.runOnIdle { assertEquals(beforeRefresh + 1, rankingCalls); assertEquals(0, historyCalls) }
         compose.onNodeWithTag("ratings-content").performScrollToNode(hasText("Rating non disponibile"))
         compose.onNodeWithText("Rating non disponibile").assertIsDisplayed()
         compose.onNodeWithTag("ratings-content").performScrollToNode(hasText("Per gioco"))
         compose.onNodeWithText("Per gioco").performClick()
-        compose.onNodeWithText("Azul").performClick()
+        compose.onNodeWithTag("rating-option-${game.id}").performClick()
         compose.onNodeWithText("Azul").assertIsDisplayed()
         compose.onNodeWithText("Ricalcola ELO").assertDoesNotExist()
     }
 
-    @Test fun offlineRemovesLoadedStatisticsAndRankingIncludingHistoryDialog() {
+    @Test fun offlineRemovesLoadedStatisticsAndStaticRanking() {
         showApp()
         compose.onNodeWithText("ELO").performClick()
-        compose.onNodeWithTag("rating-${id(30)}").performClick()
-        compose.onNodeWithText("1100 · +15").assertIsDisplayed()
+        compose.onNodeWithTag("rating-${id(30)}").assertHasNoClickAction()
+        compose.onNodeWithTag("rating-${id(30)}", useUnmergedTree = true).assert(hasAnyDescendant(hasText("1100")))
+        compose.runOnIdle { assertEquals(0, historyCalls) }
         compose.runOnIdle { access.value = AccessState.Blocked(AuthProblem.NETWORK_UNAVAILABLE) }
         compose.onNodeWithTag("rating-history").assertDoesNotExist()
         compose.onNodeWithTag("ratings-content").assertDoesNotExist()
@@ -74,10 +82,15 @@ class OverviewUiTest {
     private fun showApp(unlinked: Boolean = false) {
         val ratings = object : RatingsRepository {
             override suspend fun games() = listOf(game)
-            override suspend fun ranking(gameId: UUID?) = Ranking(if (unlinked) null else player,
-                if (unlinked) emptyList() else listOf(rating(30, player, 1100), rating(31, player.copy(id = id(51), name = "Luca", account_user_id = null), 1100), rating(32, null, null)))
-            override suspend fun history(rating: PublishedRating, after: RatingHistoryCursor?) = RatingHistoryPage(listOf(
-                EloHistoryRow(id(60), play.play.id, game.id, player.id, "Marta", 1100, 15, Instant.EPOCH, true, 2, id(99), Instant.EPOCH)), null)
+            override suspend fun ranking(gameId: UUID?): Ranking {
+                rankingCalls++
+                return Ranking(if (unlinked) null else player,
+                    if (unlinked) emptyList() else listOf(rating(30, player, 1100), rating(31, player.copy(id = id(51), name = "Luca", account_user_id = null), 1100), rating(32, null, null)))
+            }
+            override suspend fun history(rating: PublishedRating, after: RatingHistoryCursor?): RatingHistoryPage {
+                historyCalls++
+                error("Rating history must not be requested by the app UI")
+            }
         }
         val statistics = object : StatisticsRepository {
             override suspend fun load(onProgress: (Int) -> Unit) = StatisticsSnapshot(1051, 1, 1, 2, 60, 2,
@@ -94,6 +107,12 @@ class OverviewUiTest {
         compose.setContent { KingScoreTheme { AppContent(access.value, { _, _ -> }, {}, {}, {},
             playsFactory = { plays }, onAccessFailure = { access.value = AccessState.Blocked(it) },
             statisticsFactory = { statistics }, ratingsFactory = { ratings }) } }
+    }
+    private fun refreshFromAccessibilityAction() {
+        val action = compose.onNodeWithTag("pull-refresh").fetchSemanticsNode().config[SemanticsActions.CustomActions]
+            .single { it.label == "Aggiorna" }
+        compose.runOnIdle { assertTrue(action.action()) }
+        compose.waitForIdle()
     }
     private fun capture(name: String) {
         compose.waitForIdle()

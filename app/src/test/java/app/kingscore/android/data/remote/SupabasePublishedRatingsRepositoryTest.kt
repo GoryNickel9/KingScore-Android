@@ -72,6 +72,7 @@ class SupabasePublishedRatingsRepositoryTest {
         assertEquals(listOf(2, 1), history.map { it.games_played })
         assertTrue(history.all { it.is_general && it.game_id == null })
         source.body = f.snapshot(3, UUID(0, 31)).toString()
+        repository.invalidate()
         val current = repository.ranking(null).entries.first()
         failure(DataProblem.INVALID_RESPONSE) { repository.history(general) }
         assertEquals(3, repository.history(current).items.size)
@@ -83,6 +84,7 @@ class SupabasePublishedRatingsRepositoryTest {
         for ((body, problem) in listOf(f.pending("stale").toString() to DataProblem.PUBLICATION_STALE,
             f.pending("missing").toString() to DataProblem.PUBLICATION_MISSING, "{}" to DataProblem.INVALID_RESPONSE)) {
             source.body = body
+            repository.invalidate()
             failure(problem) { repository.ranking(null) }
             failure(DataProblem.INVALID_RESPONSE) { repository.history(old) }
             source.body = f.snapshot().toString(); old = repository.ranking(null).entries.first()
@@ -109,10 +111,91 @@ class SupabasePublishedRatingsRepositoryTest {
         val rating = repository.ranking(null).entries.first()
         failure(DataProblem.INVALID_RESPONSE) { repository.history(rating, RatingHistoryCursor(java.time.Instant.EPOCH, UUID(0, 777))) }
         source.fetch = { withContext(NonCancellable) { pending.await() } }
+        repository.invalidate()
         val job = async { repository.ranking(null) }
         yield()
         repository.close()
         pending.complete(f.snapshot().toString())
         try { job.await(); fail("Late generation accepted") } catch (_: CancellationException) { }
+    }
+
+    @Test fun `concurrent selections share one complete publication and player catalog until explicit invalidation`() = runBlocking {
+        val pending = CompletableDeferred<String>()
+        val source = Source(f.snapshot().toString()).apply { fetch = { pending.await() } }
+        var playerReads = 0
+        var gameReads = 0
+        val delegate = reader()
+        val repository = SupabasePublishedRatingsRepository(AuthenticatedReader { account, resource, parameters ->
+            if (resource == "players") playerReads++
+            if (resource == "games") gameReads++
+            delegate.get(account, resource, parameters)
+        }, f.actor, source)
+        val general = async { repository.ranking(null) }
+        yield()
+        val game = async { repository.ranking(f.game) }
+        pending.complete(f.snapshot().toString())
+        val first = general.await()
+        val second = game.await()
+        assertEquals(1, source.reads)
+        assertEquals(1, playerReads)
+        assertNotNull(first.readAt)
+        assertEquals(first.readAt, second.readAt)
+        assertEquals(f.game, second.entries.first().gameId)
+        repository.games(); repository.games()
+        assertEquals(1, gameReads)
+        assertTrue(source.verifications >= 2)
+        repository.invalidate()
+        source.fetch = { f.snapshot(3, UUID(0, 31)).toString() }
+        val updated = repository.ranking(null)
+        repository.games()
+        assertEquals(2, source.reads)
+        assertEquals(2, playerReads)
+        assertEquals(2, gameReads)
+        assertEquals(UUID(0, 31), updated.entries.first().publicationId)
+    }
+
+    @Test fun `invalidating an in flight publication prevents it repopulating the session cache`() = runBlocking {
+        val pending = CompletableDeferred<String>()
+        val source = Source(f.snapshot().toString()).apply { fetch = { withContext(NonCancellable) { pending.await() } } }
+        val repository = SupabasePublishedRatingsRepository(reader(), f.actor, source)
+        val old = async { repository.ranking(null) }
+        yield()
+        repository.invalidate()
+        source.fetch = { f.snapshot(3, UUID(0, 31)).toString() }
+        val current = async { repository.ranking(f.game) }
+        pending.complete(f.snapshot().toString())
+        try { old.await(); fail("Invalidated publication accepted") } catch (_: CancellationException) { }
+        assertEquals(UUID(0, 31), current.await().entries.first().publicationId)
+        assertEquals(2, source.reads)
+        assertEquals(UUID(0, 31), repository.ranking(null).entries.first().publicationId)
+        assertEquals(2, source.reads)
+    }
+
+    @Test fun `cached selections verify connectivity and revoked account before using the publication`() = runBlocking {
+        val source = Source(f.snapshot().toString())
+        val repository = SupabasePublishedRatingsRepository(reader(), f.actor, source)
+        repository.ranking(null)
+        source.failure = AuthProblem.NETWORK_UNAVAILABLE
+        try { repository.ranking(f.game); fail("Offline cache accepted") }
+        catch (failure: AuthFailure) { assertEquals(AuthProblem.NETWORK_UNAVAILABLE, failure.problem) }
+        source.failure = null
+        source.body = f.snapshot(3, UUID(0, 31)).toString()
+        assertEquals(UUID(0, 31), repository.ranking(null).entries.first().publicationId)
+        assertEquals(2, source.reads)
+        source.failure = AuthProblem.INVALID_CREDENTIALS
+        try { repository.games(); repository.games(); fail("Revoked cached catalog accepted") }
+        catch (failure: AuthFailure) { assertEquals(AuthProblem.INVALID_CREDENTIALS, failure.problem) }
+    }
+
+    @Test fun `separate authenticated session repositories cannot share a publication`() = runBlocking {
+        val firstSource = Source(f.snapshot().toString())
+        val nextSource = Source(f.snapshot(3, UUID(0, 31)).toString())
+        val first = SupabasePublishedRatingsRepository(reader(), f.actor, firstSource)
+        val next = SupabasePublishedRatingsRepository(reader(), f.actor, nextSource)
+        assertEquals(f.publication, first.ranking(null).entries.first().publicationId)
+        assertEquals(UUID(0, 31), next.ranking(null).entries.first().publicationId)
+        first.close()
+        assertEquals(UUID(0, 31), next.ranking(f.game).entries.first().publicationId)
+        assertEquals(1, nextSource.reads)
     }
 }

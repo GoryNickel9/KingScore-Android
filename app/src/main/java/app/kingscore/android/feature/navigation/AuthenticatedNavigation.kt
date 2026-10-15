@@ -54,6 +54,7 @@ import app.kingscore.android.data.repository.StatisticsRepository
 import app.kingscore.android.data.repository.RatingsRepository
 import app.kingscore.android.feature.dashboard.DashboardRoute
 import app.kingscore.android.feature.stats.StatisticsRoute
+import app.kingscore.android.feature.stats.StatisticsViewModel
 import app.kingscore.android.feature.ratings.RatingsRoute
 import app.kingscore.android.feature.plays.HistoryRoute
 import app.kingscore.android.feature.plays.DetailRoute
@@ -100,6 +101,11 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
     val repository = resources.plays
     val statistics = resources.statistics
     val ratings = resources.ratings
+    val sharedStatistics: StatisticsViewModel? = statistics?.let {
+        viewModel(viewModelStoreOwner = resources, key = "session-statistics",
+            factory = modelFactory { StatisticsViewModel(it, onAccessFailure) })
+    }
+    val commentRevision by resources.commentDataRevision.collectAsStateWithLifecycle()
     val revision by resources.playDataRevision.collectAsStateWithLifecycle()
     val canEditPlays = account.isAdmin && repository != null && playWritesFactory != null && editorNetwork != null
     val editing = entry?.destination?.route in setOf("play/new", "play/edit/{id}")
@@ -107,7 +113,7 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
     DisposableEffect(resources) { onDispose {
         if (activity?.isChangingConfigurations != true) resourcesModel.release(resources)
     } }
-    CompositionLocalProvider(LocalViewModelStoreOwner provides resources, LocalPlayDataRevision provides revision) {
+    CompositionLocalProvider(LocalViewModelStoreOwner provides resources, LocalPlayDataRevision provides revision, LocalCommentDataRevision provides commentRevision) {
         Scaffold(
             bottomBar = {
                 if (!editing) NavigationBar(modifier = Modifier.heightIn(min = navigationHeight)) {
@@ -135,14 +141,15 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                     composable(destination.route) {
                         if (destination.route == "plays" && repository != null) {
                             HistoryRoute(repository, onAccessFailure,
-                                onCreate = if (canEditPlays) ({ navigation.navigate("play/new") }) else null) { id -> navigation.navigate("play/$id") }
+                                onCreate = if (canEditPlays) ({ navigation.navigate("play/new") }) else null,
+                                onOpenComments = { id -> navigation.navigate("play/$id"); navigation.currentBackStackEntry?.savedStateHandle?.set("openComments", true) }) { id -> navigation.navigate("play/$id") }
                         } else if (destination.route == "home" && repository != null) {
                             DashboardRoute(account, repository, onAccessFailure,
                                 onOpen = { navigation.navigate("play/$it") }, onHistory = { navigation.navigate("plays") },
-                                onRatings = { navigation.navigate("elo") }, statisticsRepository = statistics,
+                                onRatings = { navigation.navigate("elo") }, statisticsRepository = statistics, sharedModel = sharedStatistics,
                                 onProfile = { navigation.navigate("account") { launchSingleTop = true } })
                         } else if (destination.route == "stats" && statistics != null) {
-                            StatisticsRoute(statistics, onAccessFailure)
+                            StatisticsRoute(statistics, onAccessFailure, sharedModel = sharedStatistics)
                         } else if (destination.route == "elo" && ratings != null) {
                             RatingsRoute(account, ratings, onAccessFailure,
                                 onProfile = { navigation.navigate("account") { launchSingleTop = true } })
@@ -177,25 +184,30 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                 }
                 composable("play/{id}", arguments = listOf(navArgument("id") { type = NavType.StringType })) { detailEntry ->
                     val id = runCatching { UUID.fromString(detailEntry.arguments?.getString("id")) }.getOrNull()
+                    val openComments by detailEntry.savedStateHandle.getStateFlow("openComments", false).collectAsStateWithLifecycle()
                     if (repository != null && id != null) DetailRoute(repository, account.id, id, onAccessFailure,
                         onOpenGame = { gameId ->
                             // Reopening the parent game returns to its existing pages instead of stacking duplicates.
                             if (!navigation.popBackStack("game/$gameId", false)) navigation.navigate("game/$gameId")
                         }, onOpenPlayer = { playerId ->
                             if (!navigation.popBackStack("player/$playerId", false)) navigation.navigate("player/$playerId")
-                        }, onManage = if (canEditPlays) ({ navigation.navigate("play/edit/$id") }) else null) { navigation.popBackStack() }
+                        }, onManage = if (canEditPlays) ({ navigation.navigate("play/edit/$id") }) else null,
+                        openComments = openComments, onCommentsShown = { detailEntry.savedStateHandle["openComments"] = false },
+                        onCommentsChanged = resources::commentsSaved) { navigation.popBackStack() }
                     else Text("Partita non disponibile.", modifier = Modifier.padding(24.dp))
                 }
                 composable("game/{id}", arguments = listOf(navArgument("id") { type = NavType.StringType })) { gameEntry ->
                     val id = runCatching { UUID.fromString(gameEntry.arguments?.getString("id")) }.getOrNull()
                     if (repository != null && id != null) GameRoute(repository, id, onAccessFailure,
-                        onOpenPlay = { navigation.navigate("play/$it") }) { navigation.popBackStack() }
+                        onOpenPlay = { navigation.navigate("play/$it") },
+                        onOpenComments = { playId -> navigation.navigate("play/$playId"); navigation.currentBackStackEntry?.savedStateHandle?.set("openComments", true) }) { navigation.popBackStack() }
                     else Text("Gioco non disponibile.", modifier = Modifier.padding(24.dp))
                 }
                 composable("player/{id}", arguments = listOf(navArgument("id") { type = NavType.StringType })) { playerEntry ->
                     val id = runCatching { UUID.fromString(playerEntry.arguments?.getString("id")) }.getOrNull()
                     if (repository != null && id != null) PlayerRoute(repository, account.id, id, onAccessFailure,
-                        onOpenPlay = { navigation.navigate("play/$it") }) { navigation.popBackStack() }
+                        onOpenPlay = { navigation.navigate("play/$it") },
+                        onOpenComments = { playId -> navigation.navigate("play/$playId"); navigation.currentBackStackEntry?.savedStateHandle?.set("openComments", true) }) { navigation.popBackStack() }
                     else Text("Giocatore non disponibile.", modifier = Modifier.padding(24.dp))
                 }
                 composable("play/new") {

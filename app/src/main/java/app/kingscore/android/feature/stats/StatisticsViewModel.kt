@@ -32,13 +32,24 @@ class StatisticsViewModel(
     private var request: Job? = null
     private var generation = 0
     private var initialized = false
+    private var observedRevision: Int? = null
 
-    fun show() {
-        if (!initialized) refresh()
+    fun show(revision: Int? = null) {
+        if (revision != null) refreshForRevision(revision)
+        else if (!initialized) refresh()
+    }
+
+    /** Home and Statistics share this model; one confirmed mutation starts only one scan. */
+    fun refreshForRevision(revision: Int) {
+        if (initialized && observedRevision == revision) return
+        observedRevision = revision
+        refresh()
     }
 
     fun refresh() {
-        clearMemory()
+        generation++
+        request?.cancel()
+        state.value = StatisticsState(snapshot = state.value.snapshot, updatedAt = state.value.updatedAt)
         initialized = true
         val stamp = generation
         request = viewModelScope.launch {
@@ -57,7 +68,8 @@ class StatisticsViewModel(
                     onAccessFailure(failure.problem)
                 }
             } catch (failure: DataFailure) {
-                if (stamp == generation) state.value = state.value.copy(loading = false, problem = failure.problem)
+                if (stamp == generation) state.value = state.value.copy(snapshot = null, updatedAt = null,
+                    loading = false, problem = failure.problem)
             }
         }
     }
@@ -65,6 +77,7 @@ class StatisticsViewModel(
     fun clearMemory() {
         generation++
         initialized = false
+        observedRevision = null
         request?.cancel()
         state.value = StatisticsState()
     }

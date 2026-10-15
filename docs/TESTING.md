@@ -1,5 +1,21 @@
 # Verifica KingScore Android
 
+## Candidata 0.5.2/code 17: qualifica in corso
+
+La stabile consegnata resta la 0.5.1/code 16. I test aggiunti per la candidata e i comportamenti descritti qui sono controlli da eseguire e qualificare; non costituiscono un report di successo. I risultati storici sotto rimangono attribuiti ai rispettivi APK.
+
+| Area | Controlli previsti |
+| --- | --- |
+| Statistiche | Proiezione ridotta, pagine richieste da 500, cap server inferiore, cursori e deduplica; riepilogo completo condiviso tra Home e Statistiche, invalidazione dopo una partita confermata e risposte tardive scartate |
+| ELO | Pubblicazione riusata tra generale e giochi con verifica online, refresh forzato, invalidazione e cambio account; rimozione del dialogo storico senza cambiare formula o dati pubblicati |
+| Commenti e storico | Batch per le partite caricate, più di 50 commenti e cap inferiore, dati corrotti, errori distinti da zero; conteggi aggiornati dopo CRUD confermato o riconciliazione, senza rilettura dello storico |
+| UI e accesso | Nuove card con tutti i partecipanti/punti e null espliciti, tre menu, Filtri, ordine Home; refresh dalla cima e azione TalkBack, retry, font grandi, tastiera, logout, cambio account e blocco senza Internet |
+| Release | JVM, lint e CI del commit finale; APK firmato, esclusione degli hook di test, aggiornamento 16 → 17 e conservazione dei registri cifrati |
+
+Nuove prove mirate: `CommentCountsRepositoryTest`, `HistoryCommentCountsTest`, `CommentChangeCallbackTest` e `RemainingScreensUiTest`; le suite esistenti verificano anche cache ELO, proiezione statistica e sessione. Il refresh fallito dello storico deve riprovare la prima pagina conservando i filtri; un diniego FORBIDDEN elimina righe e conteggi. I test della card conservano tutte le cifre dei punteggi, anche con separatore decimale italiano e font a 2×. Il dettaglio Giocatore non deve inventare totali o percentuali dalla sola pagina caricata.
+
+Le prove automatiche di questa revisione restano sul PC con fixture. Non sono stati avviati nuovi test remoti o modifiche web/cloud per la candidata. Non sono dichiarati tempi istantanei, benchmark su telefono o qualifica della nuova firma prima dei risultati effettivi. I normali comandi di refresh scompaiono dalla UI; Riprova e il recupero degli invii incerti restano verifiche separate.
+
 ## Prima stabile privata 0.5.0 — 15 ottobre 2026
 
 L'APK firmato code 15 deriva dalla fonte pulita `df39f5b3bc1fad0e11991784864421193c983225`.

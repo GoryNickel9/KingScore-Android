@@ -3,7 +3,6 @@ package app.kingscore.android.data.remote
 import app.kingscore.android.data.repository.DataFailure
 import app.kingscore.android.data.repository.DataProblem
 import app.kingscore.android.data.repository.GameStatistic
-import app.kingscore.android.data.repository.HistoryFilters
 import app.kingscore.android.data.repository.MonthStatistic
 import app.kingscore.android.data.repository.PlayCursor
 import app.kingscore.android.data.repository.PlaysRepository
@@ -41,36 +40,35 @@ class SupabaseStatisticsRepository(
 
         do {
             currentCoroutineContext().ensureActive()
-            val page = plays.history(HistoryFilters(), cursor)
+            val page = plays.statisticsPage(cursor)
             // A malformed/non-advancing cursor must not create an endless scan.
             val previous = cursor
             if (page.next != null && (page.items.isEmpty() || previous != null && compare(page.next, previous) >= 0)) {
                 throw DataFailure(DataProblem.INVALID_RESPONSE)
             }
-            for (detail in page.items) {
+            for (play in page.items) {
                 currentCoroutineContext().ensureActive()
-                val play = detail.play
                 if (!seenPlays.add(play.id)) continue
-                val playedMonth = YearMonth.from(play.played_at)
+                val playedMonth = YearMonth.from(play.playedAt)
                 if (playedMonth == month) monthPlays++
                 if (playedMonth in months) months[playedMonth] = months.getValue(playedMonth) + 1
-                play.duration_minutes?.takeIf { it >= 0 }?.let {
+                play.durationMinutes?.takeIf { it >= 0 }?.let {
                     recordedMinutes += it.toLong()
                     durationSamples++
                 }
-                play.game_id?.let { id ->
+                play.gameId?.let { id ->
                     val tally = games.getOrPut(id) { GameTally() }
                     tally.plays++
-                    detail.game?.let { tally.name = it.name; tally.imageUrl = it.image_url }
+                    play.gameName?.let { tally.name = it; tally.imageUrl = play.gameImageUrl }
                 }
                 var participated = false
                 var won = false
-                for (row in detail.scores) {
-                    val playerId = row.score.player_id ?: continue
+                for (row in play.scores) {
+                    val playerId = row.playerId ?: continue
                     players.add(playerId)
                     if (playerId == linkedPlayer?.id) {
                         participated = true
-                        if (row.score.winner == true) won = true
+                        if (row.winner == true) won = true
                     }
                 }
                 if (participated) personalPlays++

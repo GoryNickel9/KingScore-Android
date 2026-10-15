@@ -28,7 +28,7 @@ class StatisticsViewModelTest {
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
     @After fun teardown() { Dispatchers.resetMain() }
 
-    @Test fun `show scans once progress is not a snapshot and refresh discards previous totals`() = runTest(dispatcher) {
+    @Test fun `show scans once progress is not a snapshot and refresh retains the last complete snapshot`() = runTest(dispatcher) {
         val finish = CompletableDeferred<StatisticsSnapshot>()
         var calls = 0
         repository.scan = { progress -> calls++; progress(50); finish.await() }
@@ -51,11 +51,59 @@ class StatisticsViewModelTest {
         advanceUntilIdle()
         assertEquals(1, calls)
         repository.scan = { snapshot(2) }
+        val readAt = model.statistics.value.updatedAt
         model.refresh()
-        assertNull(model.statistics.value.snapshot)
+        assertEquals(snapshot(51), model.statistics.value.snapshot)
+        assertEquals(readAt, model.statistics.value.updatedAt)
+        assertTrue(model.statistics.value.loading)
         assertEquals(0, model.statistics.value.processed)
         advanceUntilIdle()
         assertEquals(snapshot(2), model.statistics.value.snapshot)
+    }
+
+    @Test fun `two screens coalesce the same mutation revision and explicit refresh still scans`() = runTest(dispatcher) {
+        var calls = 0
+        val first = CompletableDeferred<StatisticsSnapshot>()
+        repository.scan = { calls++; first.await() }
+        val model = StatisticsViewModel(repository, accessProblems::add)
+        model.show(0)
+        model.show(0)
+        runCurrent()
+        assertEquals(1, calls)
+        first.complete(snapshot(5))
+        advanceUntilIdle()
+        repository.scan = { calls++; snapshot(calls) }
+        model.refreshForRevision(1)
+        model.refreshForRevision(1)
+        model.show(1)
+        advanceUntilIdle()
+        assertEquals(2, calls)
+        model.refresh()
+        advanceUntilIdle()
+        assertEquals(3, calls)
+        model.clearMemory()
+        model.show(1)
+        advanceUntilIdle()
+        assertEquals(4, calls)
+    }
+
+    @Test fun `a different account model never sees another models complete snapshot`() = runTest(dispatcher) {
+        val first = StatisticsViewModel(repository, accessProblems::add)
+        first.show(0)
+        advanceUntilIdle()
+        assertNotNull(first.statistics.value.snapshot)
+        val secondRepository = FakeStatistics()
+        val pending = CompletableDeferred<StatisticsSnapshot>()
+        secondRepository.scan = { pending.await() }
+        val second = StatisticsViewModel(secondRepository, accessProblems::add)
+        second.show(0)
+        runCurrent()
+        assertNull(second.statistics.value.snapshot)
+        first.clearMemory()
+        pending.complete(snapshot(7))
+        advanceUntilIdle()
+        assertNull(first.statistics.value.snapshot)
+        assertEquals(snapshot(7), second.statistics.value.snapshot)
     }
 
     @Test fun `data error after progress exposes no partial or old totals and refresh recovers`() = runTest(dispatcher) {

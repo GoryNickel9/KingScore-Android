@@ -2,6 +2,8 @@
 
 La stabile privata corrente è la 0.5.1/code 16: `.work/releases/KingScore-0.5.1-16.apk`, SHA-256 `90306da33c1a75ed24607c7828e7f59c5c645fcbf127164a71c61aad4586c960`. Aggiornamento dalla 0.5.0 verificato con lo stesso certificato, UID e dati cifrati conservati. Login, blocco offline e riconnessione sono verificati sulla release; i test delle nuove schermate usano fixture locali. Fonte e limiti: [STABILITY.md](STABILITY.md) e [qualifica](evidence/private-051-release-validation.json). La 0.5.0 resta il precedente checkpoint con collaudo remoto autorizzato.
 
+La 0.5.2/code 17 è candidata in verifica. Il percorso previsto è `.work/releases/KingScore-0.5.2-17.apk`; questo nome non prova che l'artefatto esista o sia qualificato. Prima della consegna vanno registrati firma, checksum, fonte pulita, test, CI e aggiornamento 16 → 17. Non sostituire la chiave della stabile e non distribuire la probe di test. Lo stato corrente è in [STABILITY.md](STABILITY.md).
+
 Le RC precedenti restano storiche: la RC4 aveva l'editor disabilitato, la RC1 era stata ritirata per un difetto del monitor rete, la RC2 lo correggeva e la RC3 migliorava logout e navigazione con font grandi.
 
 ## Build e firma sul PC Windows
@@ -12,8 +14,8 @@ Servono PowerShell 7, JDK 17 o successivo, Android SDK 36 e build-tools 35.0.0. 
 # Prima firma: crea una sola chiave locale, protetta dai permessi Windows.
 pwsh -NoProfile -File scripts/build-private-apk.ps1 -InitializeSigningKey
 
-# Build successive: riusano obbligatoriamente la stessa chiave.
-pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 16 -VersionName 0.5.1
+# Candidata successiva: riusa la stessa chiave; la build non equivale alla promozione.
+pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 17 -VersionName 0.5.2
 ```
 
 Usare -Offline soltanto dopo che le dipendenze release sono state scaricate. Il workaround Java locale, quando necessario su questo PC, si configura nell'ambiente del comando come descritto in TESTING.md; non entra nell'APK o nella firma.
@@ -33,6 +35,8 @@ Conservare una copia protetta di questa directory: perdere chiave o password imp
 Un aggiornamento deve avere lo stesso applicationId e certificato, con versionCode maggiore. Android rifiuta una firma diversa. Le precedenti anteprime erano firmate con la chiave debug: non possono essere aggiornate direttamente con la nuova firma privata. La prima installazione privata richiede la rimozione dell'anteprima; questa elimina i suoi dati locali. Prima verificare eventuali commenti dall'esito incerto. Non disinstallare automaticamente l'app su un dispositivo dell'utente.
 
 Installare l'APK da una fonte privata autorizzata e verificare SHA-256. Per gli aggiornamenti successivi, installare il nuovo APK sopra quello precedente, senza cancellare i dati.
+
+Gli aggiornamenti restano manuali: l'app non cerca, scarica o installa nuovi APK. Il gesto di trascinamento aggiorna soltanto i dati della schermata. Per installare una nuova versione serve ricevere l'APK firmato, aprirlo sul dispositivo e confermare l'aggiornamento nel sistema Android.
 
 ## Collaudo locale
 

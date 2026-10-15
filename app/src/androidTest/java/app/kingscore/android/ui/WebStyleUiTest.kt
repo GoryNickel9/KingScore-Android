@@ -28,6 +28,7 @@ import org.junit.Test
 class WebStyleUiTest {
     @get:Rule val compose = createComposeRule()
     private val access = mutableStateOf<AccessState>(AccessState.Connected(account))
+    private var historyCalls = 0
 
     @Test fun approvedScreensKeepPublishedValuesAndRemovePrivateContentWhenBlockedOrSignedOut() {
         showApp()
@@ -38,10 +39,11 @@ class WebStyleUiTest {
         compose.onNodeWithContentDescription("Punteggio: 330").assertExists()
         capture("detail")
         compose.onNodeWithText("ELO", useUnmergedTree = true).performClick()
-        compose.onNodeWithTag("rating-${id(30)}").assertTextContains("1080")
+        compose.onNodeWithTag("rating-${id(30)}", useUnmergedTree = true).assert(hasAnyDescendant(hasText("1080")))
         capture("ranking")
-        compose.onNodeWithTag("rating-${id(30)}").performClick()
-        compose.onNodeWithTag("rating-history").assertIsDisplayed()
+        compose.onNodeWithTag("rating-${id(30)}").assertHasNoClickAction()
+        compose.onNodeWithTag("rating-history").assertDoesNotExist()
+        compose.runOnIdle { assertEquals(0, historyCalls) }
         compose.runOnIdle { access.value = AccessState.Blocked(AuthProblem.NETWORK_UNAVAILABLE) }
         compose.onNodeWithTag("connection-blocked").assertIsDisplayed()
         compose.onNodeWithTag("rating-history").assertDoesNotExist()
@@ -59,7 +61,7 @@ class WebStyleUiTest {
         capture("home-font2")
         compose.onNodeWithText("ELO", useUnmergedTree = true).performClick()
         compose.onNodeWithTag("ratings-content").performScrollToNode(hasTestTag("rating-${id(30)}"))
-        compose.onNodeWithTag("rating-${id(30)}").assertTextContains("1080")
+        compose.onNodeWithTag("rating-${id(30)}", useUnmergedTree = true).assert(hasAnyDescendant(hasText("1080")))
         capture("ranking-font2")
         compose.onNodeWithText("Home", useUnmergedTree = true).performClick()
         openDetail()
@@ -125,8 +127,10 @@ class WebStyleUiTest {
                 PublishedRating(id(30), player, player.id, gameId, null, 1080, 17, 8, 9, 0, Instant.EPOCH),
                 PublishedRating(id(31), player.copy(id = id(51), name = "Giulia", account_user_id = null), id(51), gameId,
                     null, 1053, 42, 21, 21, 0, Instant.EPOCH)))
-            override suspend fun history(rating: PublishedRating, after: RatingHistoryCursor?) = RatingHistoryPage(listOf(
-                EloHistoryRow(id(60), play.play.id, game.id, player.id, "Marco", 1080, 15, Instant.EPOCH, true, 2, id(99), Instant.EPOCH)), null)
+            override suspend fun history(rating: PublishedRating, after: RatingHistoryCursor?): RatingHistoryPage {
+                historyCalls++
+                error("Rating history must not be requested by the app UI")
+            }
         }
         compose.setContent {
             val density = LocalDensity.current

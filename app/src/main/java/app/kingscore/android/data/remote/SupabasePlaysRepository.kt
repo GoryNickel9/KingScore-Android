@@ -9,6 +9,8 @@ import kotlinx.serialization.json.*
 
 class SupabasePlaysRepository(private val reader: AuthenticatedReader, private val accountId: UUID,
     override val commentWrites: CommentWrites? = null) : PlaysRepository {
+    override suspend fun statisticsPage(after: PlayCursor?): StatisticsPage = loadStatisticsPage(reader, accountId, after)
+
     override suspend fun history(filters: HistoryFilters, after: PlayCursor?): PlayPage {
         val query = filters.query.trim()
         val projection = "*,games(*),play_scores(*,players(*))" +
@@ -95,6 +97,24 @@ class SupabasePlaysRepository(private val reader: AuthenticatedReader, private v
             require(after == null || cursors.all { compare(it, after) > 0 })
         }
         return CommentPage(rows, rows.lastOrNull()?.takeIf { rows.size == PAGE_SIZE }?.let { CommentCursor(it.created_at, it.id) })
+    }
+
+    override suspend fun commentCounts(playIds: Set<UUID>): Map<UUID, Int> {
+        val counts = playIds.associateWith { 0 }.toMutableMap()
+        // Bound URL size; page all identifiers so the REST row limit cannot truncate a count.
+        for (chunk in playIds.sortedBy(UUID::toString).chunked(PAGE_SIZE)) {
+            val requested = chunk.toSet()
+            val rows = reader.readAllById(accountId, "play_comments", listOf(
+                "select" to "id,play_id", "play_id" to chunk.joinToString(",", "in.(", ")"),
+            ), decoder = { row ->
+                val id = UUID.fromString(row.getValue("id").jsonPrimitive.content)
+                val playId = UUID.fromString(row.getValue("play_id").jsonPrimitive.content)
+                require(playId in requested)
+                id to playId
+            }, finishOnShortPage = false, id = { it.first })
+            rows.forEach { (_, playId) -> counts[playId] = Math.addExact(counts.getValue(playId), 1) }
+        }
+        return counts
     }
 
     private fun compare(a: PlayCursor, b: PlayCursor): Int = a.date.compareTo(b.date).takeIf { it != 0 } ?: a.id.toString().compareTo(b.id.toString())

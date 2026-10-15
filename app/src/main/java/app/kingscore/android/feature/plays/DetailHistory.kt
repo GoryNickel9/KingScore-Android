@@ -13,8 +13,8 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 internal fun LazyListScope.detailHistory(state: HistoryState, emptyLabel: String, moreTag: String,
-    onMore: () -> Unit, onRetry: () -> Unit, onOpen: (UUID) -> Unit) {
-    if (state.loading) item { Loading("Caricamento partite…") }
+    onMore: () -> Unit, onRetry: () -> Unit, onOpen: (UUID) -> Unit, onComments: ((UUID) -> Unit)? = null) {
+    if (state.loading && state.items.isEmpty()) item { Loading("Caricamento partite…") }
     else {
         state.updatedAt?.let { instant -> item {
             val time = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault()).format(instant)
@@ -22,8 +22,12 @@ internal fun LazyListScope.detailHistory(state: HistoryState, emptyLabel: String
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         } }
         if (state.items.isEmpty() && state.problem == null) item { Text(emptyLabel) }
-        items(state.items, key = { it.play.id.toString() }) { PlayHistoryCard(it, onOpen) }
+        items(state.items, key = { it.play.id.toString() }) { PlayHistoryCard(it, onOpen, state.commentCounts[it.play.id], onComments?.let { callback -> { callback(it.play.id) } }) }
         state.problem?.let { item { DataError(it, onRetry) } }
+        if (state.commentCountsProblem != null) item {
+            Text("Conteggi commenti non disponibili. Puoi leggere i commenti aprendo una partita.",
+                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
         if (state.loadingMore) item { Loading("Caricamento altre partite…") }
         else if (state.next != null && state.problem == null) item {
             OutlinedButton(onClick = onMore, modifier = Modifier.fillMaxWidth().testTag(moreTag)) { Text("Carica altre partite") }

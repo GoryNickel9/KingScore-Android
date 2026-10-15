@@ -32,11 +32,12 @@ internal fun CommentControls(state: DetailState, actions: CommentActions) {
         if (state.commentWriteProblem != null && state.commentEditor == null && state.deletingComment == null) {
             CommentError(state, actions)
         }
-        OutlinedButton(onClick = { actions.compose(null) }, enabled = !state.commentSaving && !state.commentsLoading &&
+        OutlinedButton(onClick = { actions.compose(null) }, enabled = !state.loading && state.problem == null && !state.missing &&
+            !state.commentSaving && !state.commentsLoading &&
             !state.commentWritesBlocked, modifier = Modifier.testTag("add-comment")) { Text("Scrivi un commento") }
         if (state.commentReviewReady && state.commentWriteProblem == CommentProblem.UNCERTAIN) {
             Text("Commenti riletti. La lettura non prova che l'operazione sia fallita: verifica l'elenco prima di scrivere di nuovo.")
-            OutlinedButton(onClick = actions.acknowledge, enabled = !state.commentSaving && !state.commentsLoading,
+            OutlinedButton(onClick = actions.acknowledge, enabled = !state.loading && !state.commentSaving && !state.commentsLoading,
                 modifier = Modifier.testTag("acknowledge-comment-outcome")) { Text("Ho controllato i commenti") }
         }
     }
@@ -66,7 +67,8 @@ internal fun CommentDialogs(state: DetailState, actions: CommentActions) {
                         if (editor.id != null) Text("La modifica più recente prevale se il commento viene aggiornato da un altro dispositivo.",
                             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         CommentError(state, actions)
-                        Button(onClick = actions.save, enabled = valid && !state.commentSaving && !state.commentsLoading &&
+                        Button(onClick = actions.save, enabled = valid && !state.loading && state.problem == null && !state.missing &&
+                            !state.commentSaving && !state.commentsLoading &&
                             !state.commentWritesBlocked &&
                             (editor.id == null || state.comments.any { it.id == editor.id }),
                             modifier = Modifier.fillMaxWidth().testTag("save-comment")) {
@@ -76,7 +78,8 @@ internal fun CommentDialogs(state: DetailState, actions: CommentActions) {
                         Text("Vuoi eliminare il tuo commento? L'operazione non può essere annullata.")
                         state.comments.firstOrNull { it.id == state.deletingComment }?.let { Text(it.content) }
                         CommentError(state, actions)
-                        Button(onClick = actions.delete, enabled = !state.commentSaving && !state.commentsLoading &&
+                        Button(onClick = actions.delete, enabled = !state.loading && state.problem == null && !state.missing &&
+                            !state.commentSaving && !state.commentsLoading &&
                             !state.commentWritesBlocked && state.comments.any { it.id == state.deletingComment },
                             modifier = Modifier.fillMaxWidth().testTag("confirm-delete-comment")) {
                             Text(if (state.commentSaving) "Eliminazione…" else "Elimina commento")
@@ -101,7 +104,8 @@ private fun CommentError(state: DetailState, actions: CommentActions) {
             CommentProblem.STORAGE -> "Non è stato possibile proteggere o leggere il registro delle richieste. Nuovi commenti e modifiche sono bloccati."
         }, color = MaterialTheme.colorScheme.error, modifier = Modifier.testTag("comment-write-error").semantics { liveRegion = LiveRegionMode.Polite })
         if (problem == CommentProblem.UNCERTAIN || problem == CommentProblem.NOT_FOUND || problem == CommentProblem.STORAGE) {
-            OutlinedButton(onClick = actions.recheck, enabled = !state.commentsLoading && !state.commentSaving,
+            OutlinedButton(onClick = actions.recheck, enabled = !state.loading && state.problem == null && !state.missing &&
+                !state.commentsLoading && !state.commentSaving,
                 modifier = Modifier.testTag("recheck-comments")) { Text("Rileggi commenti") }
             if (state.commentsLoading) Text("Verifica commenti…")
             if (state.commentsProblem != null) Text("Verifica non riuscita. Riprova a rileggere i commenti.", color = MaterialTheme.colorScheme.error)

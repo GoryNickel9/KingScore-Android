@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
 import app.kingscore.android.core.auth.*
@@ -52,7 +53,7 @@ class PlayerUiTest {
         compose.onNodeWithTag("player-detail").assertIsDisplayed()
         assertEquals(before + 1, repo.playerRequests.size)
         assertEquals(1, repo.playerCalls)
-        compose.onNodeWithContentDescription("Aggiorna").performClick()
+        refreshPlayer()
         compose.waitUntil { repo.playerRequests.size == before + 2 }
         assertNull(repo.playerRequests.last().second)
         assertEquals(2, repo.playerCalls)
@@ -69,7 +70,7 @@ class PlayerUiTest {
         compose.onNodeWithText("Giocatore non disponibile").assertIsDisplayed()
         assertTrue(repo.playerRequests.isEmpty())
         repo.playerRead = { throw DataFailure(DataProblem.FORBIDDEN) }
-        compose.onNodeWithContentDescription("Aggiorna").performClick()
+        refreshPlayer()
         compose.onNodeWithText("Non hai il permesso di leggere questi dati.").assertIsDisplayed()
         compose.onNodeWithText("Giocatore non disponibile").assertDoesNotExist()
         assertTrue(repo.playerRequests.isEmpty())
@@ -138,7 +139,8 @@ class PlayerUiTest {
 
     @Test fun playerWithEmptyHistoryIsDistinctFromMissingPlayer() {
         repo.empty = true
-        compose.setContent { KingScoreTheme { PlayerRoute(repo, account.id, player.id, {}, {}, {}) } }
+        compose.setContent { KingScoreTheme { PlayerRoute(repo, account.id, player.id,
+            onAccessFailure = {}, onOpenPlay = {}, onBack = {}) } }
         compose.onNodeWithTag("player-content").performScrollToNode(hasText("Nessuna partita registrata per questo giocatore."))
         compose.onNodeWithText("Nessuna partita registrata per questo giocatore.").assertIsDisplayed()
         compose.onNodeWithText("Giocatore non disponibile").assertDoesNotExist()
@@ -151,6 +153,13 @@ class PlayerUiTest {
             {}, {}, {}, {}, onOpenPlayer = { fail("Missing player ID must not navigate") }) } }
         compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Punteggi"))
         compose.onAllNodesWithText("Apri giocatore").assertCountEquals(0)
+    }
+
+    private fun refreshPlayer() {
+        val action = compose.onNodeWithTag("pull-refresh").fetchSemanticsNode().config[SemanticsActions.CustomActions]
+            .single { it.label == "Aggiorna" }
+        compose.runOnIdle { assertTrue(action.action()) }
+        compose.waitForIdle()
     }
 
     private fun showApp() {

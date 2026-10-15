@@ -8,7 +8,7 @@ import kotlinx.serialization.json.*
 
 internal suspend fun <T> AuthenticatedReader.readAllById(
     accountId: UUID, resource: String, parameters: List<Pair<String, String>>,
-    decoder: (JsonObject) -> T, id: (T) -> UUID,
+    decoder: (JsonObject) -> T, finishOnShortPage: Boolean = true, id: (T) -> UUID,
 ): List<T> {
     val items = mutableListOf<T>()
     var after: UUID? = null
@@ -24,7 +24,7 @@ internal suspend fun <T> AuthenticatedReader.readAllById(
             }
         } catch (_: Exception) { throw DataFailure(DataProblem.INVALID_RESPONSE) }
         items += page
-        after = page.lastOrNull()?.takeIf { page.size == PAGE_SIZE }?.let(id)
+        after = page.lastOrNull()?.takeIf { !finishOnShortPage || page.size == PAGE_SIZE }?.let(id)
     } while (after != null)
     return items
 }

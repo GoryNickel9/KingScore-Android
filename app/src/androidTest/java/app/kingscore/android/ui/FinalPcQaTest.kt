@@ -91,7 +91,8 @@ class FinalPcQaTest {
         val samples = mutableListOf<Double>()
         repeat(5) {
             val start = SystemClock.elapsedRealtimeNanos()
-            compose.onNodeWithContentDescription("Aggiorna").performClick()
+            val refresh = compose.onNodeWithTag("pull-refresh").fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsActions.CustomActions].single { it.label == "Aggiorna" }
+            compose.runOnIdle { assertTrue(refresh.action()) }
             compose.onNodeWithTag("history-content").performScrollToNode(hasTestTag("play-${id(1)}"))
             compose.onNodeWithTag("play-${id(1)}").assertIsDisplayed()
             samples += (SystemClock.elapsedRealtimeNanos() - start) / 1_000_000.0

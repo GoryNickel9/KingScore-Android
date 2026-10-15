@@ -45,14 +45,20 @@ class LiveBackendSmokeTest {
         waitFor("temporary player's published global standing", 120_000) {
             scrollIfPresent("ratings-content", hasTestTag("rating-${config.playerId}"))
         }
-        tapTag("rating-${config.playerId}")
-        waitFor("published history") {
-            exists(hasTestTag("rating-history")) && exists(SemanticsMatcher("published history value") { node ->
-                node.config.getOrNull(SemanticsProperties.Text)?.any { Regex("^-?[0-9]+ · [+-]?[0-9]+$").matches(it.text) } == true
-            })
+        guarded("published global rating value") {
+            val row = hasTestTag("rating-${config.playerId}")
+            compose.onNode(row).assertIsDisplayed().assertHasNoClickAction()
+            val texts = compose.onAllNodes(hasAnyAncestor(row), useUnmergedTree = true).fetchSemanticsNodes()
+                .flatMap { it.config.getOrNull(SemanticsProperties.Text).orEmpty() }
+                .map { it.text }
+            val numbers = texts.filter { Regex("^-?[0-9]+$").matches(it) }
+            // Position and ELO are separate numbers; the record includes labels and cannot satisfy this check.
+            requireStep(numbers.size >= 2, "published standing has no numeric rating")
+            requireStep("Rating non disponibile" !in texts, "published standing has no ELO value")
+            compose.onNodeWithTag("rating-history").assertDoesNotExist()
+            compose.onNodeWithText("Tocca un giocatore per vedere lo storico").assertDoesNotExist()
         }
-        tapText("Chiudi")
-        stage("global_standings_and_history")
+        stage("global_standings")
 
         openTemporaryPlay()
         waitFor("admin management control") { exists(hasTestTag("manage-play")) }
@@ -193,9 +199,6 @@ class LiveBackendSmokeTest {
         compose.onNodeWithTag(container).performScrollToNode(matcher)
     }
     private fun tapTag(tag: String) = guarded("activate required control") { compose.onNodeWithTag(tag).performClick() }
-    private fun tapText(text: String) = guarded("activate labelled control") {
-        compose.onNode(hasText(text) and hasClickAction()).performClick()
-    }
     private fun waitFor(label: String, timeout: Long = 45_000, condition: () -> Boolean) = guarded(label) {
         compose.waitUntil(timeoutMillis = timeout, condition = condition)
     }

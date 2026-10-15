@@ -19,7 +19,10 @@ class AuthenticatedResources : ViewModel() {
         private var closed = false
         private val revision = MutableStateFlow(0)
         val playDataRevision: StateFlow<Int> = revision
-        fun playSaved() { if (!closed) revision.value++ }
+        private val commentRevision = MutableStateFlow(0)
+        val commentDataRevision: StateFlow<Int> = commentRevision
+        fun commentsSaved() { if (!closed) commentRevision.value++ }
+        fun playSaved() { if (!closed) { ratings?.invalidate(); revision.value++ } }
         internal fun close() {
             if (closed) return
             closed = true

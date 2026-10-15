@@ -209,6 +209,18 @@ class PlayEditorUiTest {
         network.connected.value = true; compose.waitForIdle()
         assertNull(vm.editor.value.draft); assertTrue(writer.commands.isEmpty()); assertEquals(listOf(AuthProblem.NETWORK_UNAVAILABLE), failures)
     }
+    @Test fun participantPickerExcludesTheExistingIdentityAndPreservesItsScore() {
+        val vm = model(play); show(vm); click("editor-add-player")
+        compose.onNodeWithTag("editor-option-${anna.id}").assertDoesNotExist()
+        compose.onNodeWithTag("editor-catalog-search").assertIsDisplayed().performTextReplacement("Bruno")
+        compose.onNodeWithTag("editor-option-${bruno.id}").performClick()
+        compose.onNodeWithTag("editor-picker").assertDoesNotExist()
+        compose.runOnIdle {
+            assertEquals(listOf(anna.id, bruno.id), vm.editor.value.draft!!.scores.map { it.playerId })
+            assertEquals("5.125", vm.editor.value.draft!!.scores.first().score)
+            assertTrue(writer.commands.isEmpty())
+        }
+    }
     @Test fun defaultDisabledHasNoCatalogOrWriteControls() {
         show(model(enabled = false)); compose.onNodeWithText("Gestione partite non disponibile in questa versione.").assertIsDisplayed()
         compose.onNodeWithTag("editor-save").assertDoesNotExist(); assertEquals(0, catalogs); assertEquals(0, writer.editorCalls)

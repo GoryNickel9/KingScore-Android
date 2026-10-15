@@ -3,6 +3,7 @@ package app.kingscore.android.ui
 import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -45,7 +46,7 @@ class GameUiTest {
         compose.onNodeWithTag("game-detail").assertIsDisplayed()
         assertEquals(beforePage + 1, repo.gameRequests.size)
         assertEquals(1, repo.gameCalls)
-        compose.onNodeWithContentDescription("Aggiorna").performClick()
+        refreshGame()
         compose.waitUntil { repo.gameRequests.size == beforePage + 2 }
         compose.onNodeWithTag("game-content").performScrollToNode(hasText("1 partite caricate", substring = true))
         compose.onNodeWithText("1 partite caricate", substring = true).assertIsDisplayed()
@@ -61,7 +62,7 @@ class GameUiTest {
         compose.onNodeWithText("Gioco non disponibile").assertIsDisplayed()
         assertTrue(repo.gameRequests.isEmpty())
         repo.gameRead = { throw DataFailure(DataProblem.FORBIDDEN) }
-        compose.onNodeWithContentDescription("Aggiorna").performClick()
+        refreshGame()
         compose.onNodeWithText("Non hai il permesso di leggere questi dati.").assertIsDisplayed()
         compose.onNodeWithText("Gioco non disponibile").assertDoesNotExist()
         assertTrue(repo.gameRequests.isEmpty())
@@ -109,7 +110,7 @@ class GameUiTest {
 
     @Test fun existingGameWithEmptyHistoryIsDistinctFromMissingGame() {
         repo.empty = true
-        compose.setContent { KingScoreTheme { GameRoute(repo, game.id, {}, {}, {}) } }
+        compose.setContent { KingScoreTheme { GameRoute(repo, game.id, onAccessFailure = {}, onOpenPlay = {}, onBack = {}) } }
         compose.onNodeWithTag("game-content").performScrollToNode(hasText("Nessuna partita registrata per questo gioco."))
         compose.onNodeWithText("Nessuna partita registrata per questo gioco.").assertIsDisplayed()
         compose.onNodeWithText("Gioco non disponibile").assertDoesNotExist()
@@ -125,6 +126,13 @@ class GameUiTest {
         compose.onNodeWithTag("recent-${first.play.id}").performClick()
         compose.onNodeWithTag("open-game").performClick()
         compose.onNodeWithTag("game-detail").assertIsDisplayed()
+    }
+    private fun refreshGame() {
+        compose.onNodeWithContentDescription("Aggiorna").assertDoesNotExist()
+        val action = compose.onNodeWithTag("pull-refresh").fetchSemanticsNode().config[SemanticsActions.CustomActions]
+            .single { it.label == "Aggiorna" }
+        compose.runOnIdle { assertTrue(action.action()) }
+        compose.waitForIdle()
     }
     private fun capture(name: String) {
         compose.waitForIdle()

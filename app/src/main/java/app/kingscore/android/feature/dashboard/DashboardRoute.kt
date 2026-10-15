@@ -28,6 +28,7 @@ import app.kingscore.android.feature.plays.*
 import app.kingscore.android.feature.stats.StatisticsViewModel
 import app.kingscore.android.ui.*
 import app.kingscore.android.feature.navigation.PlayDataRefresh
+import app.kingscore.android.feature.navigation.LocalPlayDataRevision
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.UUID
@@ -36,18 +37,21 @@ import kingscore.contracts.v1.PlayDetail
 @Composable
 fun DashboardRoute(account: Account, repository: PlaysRepository, onAccessFailure: (AuthProblem) -> Unit,
     onOpen: (UUID) -> Unit, onHistory: () -> Unit, onRatings: () -> Unit,
-    statisticsRepository: StatisticsRepository? = null, onProfile: () -> Unit = {}) {
-    val model: HistoryViewModel = viewModel(factory = modelFactory { HistoryViewModel(repository, onAccessFailure) })
+    statisticsRepository: StatisticsRepository? = null, onProfile: () -> Unit = {},
+    sharedModel: StatisticsViewModel? = null) {
+    val model: HistoryViewModel = viewModel(factory = modelFactory { HistoryViewModel(repository, onAccessFailure, includeCommentCounts = false) })
     val state by model.history.collectAsStateWithLifecycle()
     PlayDataRefresh(model, onShow = model::show, onRefresh = { model.refresh() })
-    val summaryModel: StatisticsViewModel? = statisticsRepository?.let {
+    val summaryModel: StatisticsViewModel? = sharedModel ?: statisticsRepository?.let {
         viewModel(key = "dashboard-statistics", factory = modelFactory { StatisticsViewModel(it, onAccessFailure) })
     }
-    summaryModel?.let { PlayDataRefresh(it, onShow = it::show, onRefresh = it::refresh) }
+    val revision = LocalPlayDataRevision.current
+    summaryModel?.let { PlayDataRefresh(it, onShow = { it.show(revision) }, onRefresh = { it.refreshForRevision(revision) }) }
     val summary = summaryModel?.statistics?.collectAsStateWithLifecycle()?.value
     Column(Modifier.fillMaxSize()) {
         KingScoreHeader(account.name, onProfile)
-        LazyColumn(Modifier.weight(1f).testTag("dashboard-content"), contentPadding = PaddingValues(16.dp),
+        OnlinePullRefresh(state.loading || summary?.loading == true, { model.refresh(); summaryModel?.refresh() }, Modifier.weight(1f)) {
+        LazyColumn(Modifier.fillMaxSize().testTag("dashboard-content"), contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             item {
                 Text("Benvenuto, ${account.name}!", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
@@ -56,7 +60,7 @@ fun DashboardRoute(account: Account, repository: PlaysRepository, onAccessFailur
             }
             if (summary != null) {
                 when {
-                    summary.loading -> item { KingScorePanel {
+                    summary.loading && summary.snapshot == null -> item { KingScorePanel {
                         LinearProgressIndicator(Modifier.fillMaxWidth())
                         Text("Lettura riepilogo: ${summary.processed} partite…", style = MaterialTheme.typography.bodySmall)
                     } }
@@ -70,16 +74,6 @@ fun DashboardRoute(account: Account, repository: PlaysRepository, onAccessFailur
                     }
                 }
             }
-            item {
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text("Ultime partite", Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    TextButton(onClick = onHistory) { Text("Vedi tutte") }
-                }
-            }
-            if (state.loading) item { Loading("Caricamento…") }
-            state.problem?.let { item { DataError(it) { model.refresh() } } }
-            if (!state.loading && state.problem == null && state.items.isEmpty()) item { Text("Nessuna partita registrata.") }
-            items(state.items.take(5), key = { it.play.id.toString() }) { RecentPlay(it, onOpen) }
             summary?.snapshot?.games?.take(3)?.takeIf { it.isNotEmpty() }?.let { games ->
                 item { KingScorePanel {
                     Text("Giochi preferiti", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
@@ -95,10 +89,18 @@ fun DashboardRoute(account: Account, repository: PlaysRepository, onAccessFailur
                     }
                 } }
             }
-            item { Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                TextButton(onClick = { model.refresh(); summaryModel?.refresh() }) { Text("Aggiorna Home") }
-                TextButton(onClick = onRatings) { Text("Classifiche ELO") }
-            } }
+            item {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text("Ultime partite", Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    TextButton(onClick = onHistory) { Text("Vedi tutte") }
+                }
+            }
+            if (state.loading) item { Loading("Caricamento…") }
+            state.problem?.let { item { DataError(it) { model.refresh() } } }
+            if (!state.loading && state.problem == null && state.items.isEmpty()) item { Text("Nessuna partita registrata.") }
+            items(state.items.take(5), key = { it.play.id.toString() }) { RecentPlay(it, onOpen) }
+
+        }
         }
     }
 }
@@ -131,7 +133,7 @@ private fun DashboardTotals(stats: StatisticsSnapshot) {
 }
 
 @Composable
-private fun MonthlyChart(months: List<MonthStatistic>) {
+internal fun MonthlyChart(months: List<MonthStatistic>) {
     val monthFormat = remember { DateTimeFormatter.ofPattern("MMM", Locale.ITALIAN) }
     val summary = months.joinToString("; ") { "${it.month.format(DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ITALIAN))}: ${it.plays} partite" }
     val color = MaterialTheme.colorScheme.primary

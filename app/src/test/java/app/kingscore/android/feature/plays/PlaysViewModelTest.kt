@@ -60,7 +60,7 @@ class PlaysViewModelTest {
         assertNull(model.history.value.updatedAt)
     }
 
-    @Test fun `back navigation preserves loaded pages but explicit refresh starts over`() = runTest(dispatcher) {
+    @Test fun `back navigation reuses rows while refresh retains them until replacement arrives`() = runTest(dispatcher) {
         var calls = 0
         repository.page = { _, _ -> calls++; PlayPage(listOf(play(1)), null) }
         val model = HistoryViewModel(repository, accessProblems::add)
@@ -70,7 +70,8 @@ class PlaysViewModelTest {
         advanceUntilIdle()
         assertEquals(1, calls)
         model.refresh()
-        assertTrue(model.history.value.items.isEmpty())
+        assertEquals(listOf(play(1)), model.history.value.items)
+        assertTrue(model.history.value.loading)
         advanceUntilIdle()
         assertEquals(2, calls)
     }
@@ -78,7 +79,7 @@ class PlaysViewModelTest {
     @Test fun `auth or network failure removes loaded rows before blocking shell`() = runTest(dispatcher) {
         repository.page = { _, _ -> PlayPage(listOf(play(1)), PlayCursor(LocalDate.now(), id(1))) }
         lateinit var model: HistoryViewModel
-        model = HistoryViewModel(repository) { assertTrue(model.history.value.items.isEmpty()); accessProblems += it }
+        model = HistoryViewModel(repository, { assertTrue(model.history.value.items.isEmpty()); accessProblems += it })
         model.show()
         advanceUntilIdle()
         repository.page = { _, _ -> throw AuthFailure(AuthProblem.NETWORK_UNAVAILABLE) }

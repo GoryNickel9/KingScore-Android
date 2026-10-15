@@ -1,8 +1,11 @@
 package app.kingscore.android.feature.plays
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -14,6 +17,7 @@ import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -31,7 +35,15 @@ import kingscore.contracts.v1.*
 @Composable
 internal fun PlayDetailContent(state: DetailState, accountId: UUID, onRefresh: () -> Unit, onMoreComments: () -> Unit,
     onRetryComments: () -> Unit, onBack: () -> Unit, onOpenGame: ((UUID) -> Unit)?,
-    onOpenPlayer: ((UUID) -> Unit)?, commentActions: CommentActions?, onManage: (() -> Unit)?) {
+    onOpenPlayer: ((UUID) -> Unit)?, commentActions: CommentActions?, onManage: (() -> Unit)?,
+    openComments: Boolean = false, onCommentsShown: () -> Unit = {}) {
+    val listState = rememberLazyListState()
+    LaunchedEffect(openComments, state.detail?.play?.id) {
+        if (openComments && state.detail != null && state.problem == null) {
+            listState.scrollToItem(3)
+            onCommentsShown()
+        }
+    }
     Column(Modifier.fillMaxSize().testTag("play-detail")) {
         Surface(color = MaterialTheme.colorScheme.surface) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -43,19 +55,21 @@ internal fun PlayDetailContent(state: DetailState, accountId: UUID, onRefresh: (
                         Spacer(Modifier.width(6.dp))
                         Text("Gestisci")
                     }
-                } else IconButton(onClick = onRefresh, enabled = !state.loading && !state.commentSaving) { Icon(Icons.Outlined.Refresh, "Aggiorna") }
+                }
             }
         }
+        OnlinePullRefresh(state.loading, onRefresh, Modifier.weight(1f),
+            enabled = !state.commentSaving && state.commentEditor == null && state.deletingComment == null && !state.commentWritesBlocked) {
         when {
-            state.loading -> Loading("Caricamento partita…")
-            state.problem != null -> Box(Modifier.padding(16.dp)) { DataError(state.problem, onRefresh) }
-            state.missing -> Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            state.loading && state.detail == null -> Loading("Caricamento partita…")
+            state.problem != null -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) { DataError(state.problem, onRefresh) }
+            state.missing -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("Partita non trovata", style = MaterialTheme.typography.titleLarge)
                 Text("Potrebbe essere stata eliminata o non essere più accessibile.")
             }
             state.detail != null -> {
                 val detail = state.detail
-                LazyColumn(Modifier.weight(1f).testTag("detail-content"), contentPadding = PaddingValues(16.dp),
+                LazyColumn(Modifier.fillMaxSize().testTag("detail-content"), state = listState, contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     item { KingScorePanel {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -99,7 +113,7 @@ internal fun PlayDetailContent(state: DetailState, accountId: UUID, onRefresh: (
                         Text("Note", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         Text(detail.play.notes?.takeIf { it.isNotBlank() } ?: "Nessuna nota.", style = MaterialTheme.typography.bodyMedium)
                     } }
-                    item { KingScorePanel {
+                    item(key = "comments") { KingScorePanel(Modifier.testTag("comments-section")) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("Commenti", Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             if (!state.commentsLoading && state.commentsProblem == null) Text(
@@ -120,10 +134,10 @@ internal fun PlayDetailContent(state: DetailState, accountId: UUID, onRefresh: (
                             Text(comment.content, style = MaterialTheme.typography.bodyMedium)
                             if (commentActions != null && comment.user_id == accountId) {
                                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                                    TextButton(onClick = { commentActions.compose(comment.id) }, enabled = !state.commentSaving &&
+                                    TextButton(onClick = { commentActions.compose(comment.id) }, enabled = !state.loading && !state.commentSaving &&
                                         !state.commentsLoading && !state.commentWritesBlocked,
                                         modifier = Modifier.testTag("edit-comment-${comment.id}")) { Text("Modifica") }
-                                    TextButton(onClick = { commentActions.requestDelete(comment.id) }, enabled = !state.commentSaving &&
+                                    TextButton(onClick = { commentActions.requestDelete(comment.id) }, enabled = !state.loading && !state.commentSaving &&
                                         !state.commentsLoading && !state.commentWritesBlocked,
                                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
                                         modifier = Modifier.testTag("delete-comment-${comment.id}")) { Text("Elimina") }
@@ -137,16 +151,11 @@ internal fun PlayDetailContent(state: DetailState, accountId: UUID, onRefresh: (
                     if (!state.commentsLoading && state.commentsProblem == null && state.commentCursor != null) item {
                         OutlinedButton(onClick = onMoreComments, modifier = Modifier.fillMaxWidth()) { Text("Carica altri commenti") }
                     }
-                    if (onManage != null) item {
-                        TextButton(onClick = onRefresh, enabled = !state.commentSaving) {
-                            Icon(Icons.Outlined.Refresh, "Aggiorna")
-                            Spacer(Modifier.width(8.dp))
-                            Text("Rileggi partita")
-                        }
-                    }
+
                 }
             }
         }
+    }
     }
     if (commentActions != null) CommentDialogs(state, commentActions)
 }
@@ -155,7 +164,7 @@ internal fun PlayDetailContent(state: DetailState, accountId: UUID, onRefresh: (
 private fun PlayMetadata(detail: PlayDetail) {
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(Icons.Outlined.PeopleOutline, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-        Text("${detail.scores.size} giocatori", style = MaterialTheme.typography.bodySmall)
+        Text(if (detail.scores.size == 1) "1 giocatore" else "${detail.scores.size} giocatori", style = MaterialTheme.typography.bodySmall)
     }
     detail.play.duration_minutes?.let { minutes ->
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {

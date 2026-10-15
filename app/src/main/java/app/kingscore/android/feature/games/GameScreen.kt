@@ -1,6 +1,8 @@
 package app.kingscore.android.feature.games
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,13 +17,15 @@ import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.feature.plays.*
 import app.kingscore.android.ui.modelFactory
 import app.kingscore.android.ui.GameCover
+import app.kingscore.android.ui.OnlinePullRefresh
+import app.kingscore.android.feature.navigation.CommentDataRefresh
 import app.kingscore.android.feature.navigation.PlayDataRefresh
 import java.util.UUID
 import kingscore.contracts.v1.GameRow
 
 @Composable
 fun GameRoute(repository: PlaysRepository, id: UUID, onAccessFailure: (AuthProblem) -> Unit,
-    onOpenPlay: (UUID) -> Unit, onBack: () -> Unit) {
+    onOpenPlay: (UUID) -> Unit, onOpenComments: ((UUID) -> Unit)? = null, onBack: () -> Unit) {
     val history: HistoryViewModel = viewModel(factory = modelFactory { HistoryViewModel(repository, onAccessFailure) })
     val model: GameDetailViewModel = viewModel(factory = modelFactory {
         GameDetailViewModel(repository, id) { history.clearMemory(); onAccessFailure(it) }
@@ -29,24 +33,26 @@ fun GameRoute(repository: PlaysRepository, id: UUID, onAccessFailure: (AuthProbl
     val game by model.detail.collectAsStateWithLifecycle()
     val plays by history.history.collectAsStateWithLifecycle()
     PlayDataRefresh(model, onShow = model::show, onRefresh = { history.clearMemory(); model.refresh() })
+    CommentDataRefresh(history)
     LaunchedEffect(game.game, game.revision) { if (game.game != null) history.show(HistoryFilters(gameId = id)) }
     GameScreen(game, plays, { history.clearMemory(); model.refresh() }, history::loadMore,
-        history::retry, onOpenPlay, onBack)
+        history::retry, onOpenPlay, onBack, onOpenComments)
 }
 
 @Composable
 fun GameScreen(state: GameState, history: HistoryState, onRefresh: () -> Unit, onMore: () -> Unit,
-    onRetry: () -> Unit, onOpenPlay: (UUID) -> Unit, onBack: () -> Unit) {
+    onRetry: () -> Unit, onOpenPlay: (UUID) -> Unit, onBack: () -> Unit, onOpenComments: ((UUID) -> Unit)? = null) {
     Column(Modifier.fillMaxSize().testTag("game-detail")) {
-        ScreenHeader("Dettaglio gioco", onBack, onRefresh, state.loading, backLabel = "Torna indietro")
+        ScreenHeader("Dettaglio gioco", onBack = onBack, backLabel = "Torna indietro")
+        OnlinePullRefresh(state.loading || history.loading, onRefresh, Modifier.weight(1f)) {
         when {
             state.loading -> Loading("Caricamento gioco…")
-            state.problem != null -> Box(Modifier.padding(24.dp)) { DataError(state.problem, onRefresh) }
-            state.missing -> Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            state.problem != null -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp)) { DataError(state.problem, onRefresh) }
+            state.missing -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("Gioco non disponibile", style = MaterialTheme.typography.titleLarge)
                 Text("Potrebbe essere stato eliminato o non essere più accessibile.")
             }
-            state.game != null -> LazyColumn(Modifier.weight(1f).testTag("game-content"),
+            state.game != null -> LazyColumn(Modifier.fillMaxSize().testTag("game-content"),
                 contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
@@ -58,8 +64,9 @@ fun GameScreen(state: GameState, history: HistoryState, onRefresh: () -> Unit, o
                 }
                 item { Text("Partite del gioco", style = MaterialTheme.typography.titleLarge) }
                 detailHistory(history, "Nessuna partita registrata per questo gioco.", "more-game-plays",
-                    onMore, onRetry, onOpenPlay)
+                    onMore, onRetry, onOpenPlay, onOpenComments)
             }
+        }
         }
     }
 }

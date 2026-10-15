@@ -3,9 +3,12 @@ package app.kingscore.android.feature.plays
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.ui.Alignment
+import app.kingscore.android.ui.CatalogOption
+import app.kingscore.android.ui.CatalogSelectionSheet
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.listSaver
@@ -50,6 +53,7 @@ internal fun historyFilterSummary(state: HistoryState): String = buildList {
     if (filters.source != null) add(sourceLabel(filters.source.wireValue))
 }.joinToString(" · ")
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun HistoryFiltersDialog(state: HistoryState, onOptions: () -> Unit, onApply: (HistoryFilters) -> Unit, onDismiss: () -> Unit) {
     val initial = state.filters
@@ -58,27 +62,54 @@ fun HistoryFiltersDialog(state: HistoryState, onOptions: () -> Unit, onApply: (H
     var from by rememberSaveable { mutableStateOf(initial.from?.let(filterDateFormat::format) ?: "") }
     var to by rememberSaveable { mutableStateOf(initial.to?.let(filterDateFormat::format) ?: "") }
     var choosing by rememberSaveable { mutableStateOf<String?>(null) }
-    var search by rememberSaveable { mutableStateOf("") }
+    var source by rememberSaveable { mutableStateOf(initial.source?.name) }
     LaunchedEffect(choosing) { if (choosing != null) onOptions() }
     val fromDate = runCatching { historyFilterDate(from) }
     val toDate = runCatching { historyFilterDate(to) }
     val reversed = fromDate.getOrNull()?.let { start -> toDate.getOrNull()?.let { start > it } } == true
     val valid = fromDate.isSuccess && toDate.isSuccess && !reversed
     val window = LocalWindowInfo.current.containerSize
-    val height = with(LocalDensity.current) { window.height.toDp() * 0.55f }
+    val height = with(LocalDensity.current) { window.height.toDp() * 0.86f }
     val keyboard = LocalSoftwareKeyboardController.current
     val focus = LocalFocusManager.current
     val done = KeyboardActions(onDone = { keyboard?.hide(); focus.clearFocus() })
-    AlertDialog(onDismissRequest = onDismiss, modifier = Modifier.testTag("history-filters-dialog"),
-        title = { Text(when (choosing) { "game" -> "Scegli gioco"; "player" -> "Scegli partecipante"; else -> "Filtri dello storico" }) },
-        text = {
-            if (choosing == null) Column(Modifier.heightIn(max = height).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick = { search = ""; choosing = "game" }, modifier = Modifier.fillMaxWidth()) {
+    if (choosing != null) {
+        val games = choosing == "game"
+        val options = if (games) state.options?.games.orEmpty().map { CatalogOption(it.id, it.name, imageUrl = it.image_url) }
+            else state.options?.players.orEmpty().map {
+                CatalogOption(it.id, playerName(it), imageUrl = it.avatar_url,
+                    subtitle = it.name.takeIf { original -> original != playerName(it) },
+                    searchText = "${it.name} ${it.alias.orEmpty()}", player = true)
+            }
+        CatalogSelectionSheet(title = if (games) "Scegli gioco" else "Scegli partecipante",
+            options = listOf(CatalogOption(null, if (games) "Tutti i giochi" else "Tutti i partecipanti", player = !games)) + options,
+            selectedId = (if (games) game else player)?.let(UUID::fromString),
+            searchLabel = if (games) "Cerca gioco" else "Cerca nome o alias", tagPrefix = "history",
+            modifier = Modifier.testTag("history-filters-dialog"), loading = state.optionsLoading,
+            problem = state.optionsProblem?.let { if (it == DataProblem.FORBIDDEN) "Non hai il permesso di leggere i cataloghi."
+                else "Non è stato possibile leggere i cataloghi." }, onRetry = onOptions,
+            onDismiss = { choosing = null }, onChoose = { id ->
+                if (games) game = id?.toString() else player = id?.toString()
+                choosing = null
+            })
+        return
+    }
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.colorScheme.surface) {
+        Column(Modifier.fillMaxWidth().heightIn(max = height).imePadding().padding(horizontal = 16.dp)
+            .testTag("history-filters-dialog"), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Filtri", Modifier.weight(1f), style = MaterialTheme.typography.headlineSmall)
+                IconButton(onClick = onDismiss) { Icon(Icons.Outlined.Close, "Chiudi Filtri") }
+            }
+            Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedButton(onClick = { focus.clearFocus(); keyboard?.hide(); choosing = "game" }, modifier = Modifier.fillMaxWidth()) {
                     Text("Gioco: ${state.options?.games?.firstOrNull { it.id.toString() == game }?.name ?: if (game == null) "Tutti" else "selezionato"}")
                 }
-                OutlinedButton(onClick = { search = ""; choosing = "player" }, modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(onClick = { focus.clearFocus(); keyboard?.hide(); choosing = "player" }, modifier = Modifier.fillMaxWidth()) {
                     Text("Partecipante: ${state.options?.players?.firstOrNull { it.id.toString() == player }?.let(::playerName) ?: if (player == null) "Tutti" else "selezionato"}")
                 }
+                Text("Periodo", style = MaterialTheme.typography.titleMedium)
                 OutlinedTextField(from, { from = it }, singleLine = true, isError = fromDate.isFailure,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done), keyboardActions = done,
                     label = { Text("Dal (gg/mm/aaaa)") }, modifier = Modifier.fillMaxWidth().testTag("history-from"),
@@ -91,46 +122,25 @@ fun HistoryFiltersDialog(state: HistoryState, onOptions: () -> Unit, onApply: (H
                         else if (reversed) Text("La data finale deve essere uguale o successiva a quella iniziale.")
                     })
                 Text("Estremi inclusi. Lascia una data vuota per non limitarla.", style = MaterialTheme.typography.bodySmall)
-                TextButton(onClick = { game = null; player = null; from = ""; to = "" }) { Text("Azzera questi filtri") }
-            } else Column(Modifier.heightIn(max = height), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(search, { search = it }, singleLine = true, label = { Text("Cerca nel catalogo") }, modifier = Modifier.fillMaxWidth())
-                when {
-                    state.optionsLoading -> { CircularProgressIndicator(); Text("Caricamento cataloghi…") }
-                    state.optionsProblem != null -> {
-                        Text(if (state.optionsProblem == DataProblem.FORBIDDEN) "Non hai il permesso di leggere i cataloghi." else "Non è stato possibile leggere i cataloghi.")
-                        TextButton(onClick = onOptions) { Text("Riprova cataloghi") }
-                    }
-                    state.options != null -> {
-                        val options = if (choosing == "game") state.options.games.map { Triple(it.id.toString(), it.name, it.name) }
-                            else state.options.players.map { Triple(it.id.toString(), playerName(it), "${it.name} ${it.alias.orEmpty()}") }
-                        val matching = options.filter { it.third.contains(search.trim(), ignoreCase = true) }
-                        val duplicates = options.groupingBy { it.second }.eachCount()
-                        LazyColumn(Modifier.weight(1f, fill = false).testTag("history-catalog")) {
-                            item {
-                                TextButton(onClick = { if (choosing == "game") game = null else player = null; choosing = null }) {
-                                    Text(if (choosing == "game") "Tutti i giochi" else "Tutti i partecipanti")
-                                }
-                            }
-                            if (matching.isEmpty()) item { Text("Nessun risultato nel catalogo.") }
-                            items(matching, key = { it.first }) { (id, name, _) ->
-                                TextButton(onClick = { if (choosing == "game") game = id else player = id; choosing = null },
-                                    modifier = Modifier.fillMaxWidth().testTag("history-option-$id")) {
-                                    Column(Modifier.fillMaxWidth()) {
-                                        Text(name)
-                                        if ((duplicates[name] ?: 0) > 1) Text("Identificativo: $id", style = MaterialTheme.typography.bodySmall)
-                                    }
-                                }
-                            }
-                        }
+                Text("Fonte", style = MaterialTheme.typography.titleMedium)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(null to "Tutte", PlaySource.IRL.name to "Dal vivo", PlaySource.ONLINE.name to "Online").forEach { (value, label) ->
+                        FilterChip(selected = source == value, onClick = { source = value }, label = { Text(label) },
+                            modifier = Modifier.testTag("filter-source-${value ?: "all"}"))
                     }
                 }
+                Text("Chiudere senza applicare mantiene i filtri precedenti.", style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-        },
-        confirmButton = {
-            if (choosing != null) TextButton(onClick = { choosing = null }) { Text("Indietro") }
-            else Button(onClick = { onApply(initial.copy(gameId = game?.let(UUID::fromString), playerId = player?.let(UUID::fromString),
-                from = fromDate.getOrNull(), to = toDate.getOrNull())) }, enabled = valid) { Text("Applica filtri") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Annulla") } },
-    )
+            TextButton(onClick = { game = null; player = null; from = ""; to = ""; source = null }) { Text("Azzera questi filtri") }
+            FlowRow(Modifier.fillMaxWidth().padding(bottom = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(onClick = onDismiss) { Text("Annulla") }
+                Button(onClick = { focus.clearFocus(); keyboard?.hide()
+                    onApply(initial.copy(gameId = game?.let(UUID::fromString), playerId = player?.let(UUID::fromString),
+                        from = fromDate.getOrNull(), to = toDate.getOrNull(), source = source?.let(PlaySource::valueOf)))
+                }, enabled = valid) { Text("Applica filtri") }
+            }
+        }
+    }
 }

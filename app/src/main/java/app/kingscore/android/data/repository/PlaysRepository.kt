@@ -34,7 +34,17 @@ interface PlaysRepository {
     suspend fun player(id: UUID): PlayerRow?
     suspend fun game(id: UUID): GameRow?
     suspend fun history(filters: HistoryFilters = HistoryFilters(), after: PlayCursor? = null): PlayPage
+    suspend fun statisticsPage(after: PlayCursor? = null): StatisticsPage {
+        val page = history(HistoryFilters(), after)
+        return StatisticsPage(page.items.map { detail ->
+            StatisticsPlay(detail.play.id, detail.play.played_at, detail.play.duration_minutes,
+                detail.play.game_id, detail.game?.name, detail.game?.image_url,
+                detail.scores.map { StatisticsScore(it.score.player_id, it.score.winner) })
+        }, page.next)
+    }
     suspend fun filterOptions(): HistoryOptions
     suspend fun detail(id: UUID): PlayDetail?
     suspend fun comments(id: UUID, after: CommentCursor? = null): CommentPage
+    /** Null means this reader does not provide counts; missing/failed counts must never become zero. */
+    suspend fun commentCounts(playIds: Set<UUID>): Map<UUID, Int>? = null
 }

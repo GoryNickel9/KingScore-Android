@@ -13,8 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -24,6 +22,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kingscore.android.data.repository.*
+import app.kingscore.android.ui.CatalogOption
+import app.kingscore.android.ui.CatalogSelectionSheet
 import app.kingscore.android.feature.plays.playerName
 import app.kingscore.android.feature.plays.sourceLabel
 import java.math.BigDecimal
@@ -201,13 +201,23 @@ fun PlayEditorRoute(model: PlayEditorViewModel, onResult: (PlayWriteResult) -> U
     val draft = state.draft
     if (picking != null && draft != null && state.canEdit) {
         val games = picking == "game"
-        val options = if (games) state.options.games.map { it.id to it.name }
-            else state.options.players.filterNot { player -> draft.scores.any { it.playerId == player.id } }.map { it.id to playerName(it) }
-        CatalogPicker(if (games) "Scegli gioco" else "Scegli partecipante", options, onDismiss = { picking = null }) { id ->
-            model.edit { current -> if (games) current.copy(gameId = id)
-                else current.copy(scores = current.scores + DraftScore(playerId = id, winner = current.teamWon ?: false)) }
-            picking = null
-        }
+        val options = if (games) state.options.games.map { CatalogOption(it.id, it.name, imageUrl = it.image_url) }
+            else state.options.players.filterNot { player -> draft.scores.any { it.playerId == player.id } }.map {
+                CatalogOption(it.id, playerName(it), imageUrl = it.avatar_url,
+                    subtitle = it.name.takeIf { original -> original != playerName(it) },
+                    searchText = "${it.name} ${it.alias.orEmpty()}", player = true)
+            }
+        CatalogSelectionSheet(title = if (games) "Scegli gioco" else "Scegli partecipante", options = options,
+            selectedId = draft.gameId.takeIf { games }, searchLabel = if (games) "Cerca gioco" else "Cerca nome o alias",
+            tagPrefix = "editor", modifier = Modifier.testTag("editor-picker"), onDismiss = { picking = null },
+            helperText = if (games || draft.scores.isEmpty()) null else "${draft.scores.size} partecipanti già inseriti sono esclusi.",
+            onChoose = { id ->
+                if (id != null) {
+                    model.edit { current -> if (games) current.copy(gameId = id)
+                        else current.copy(scores = current.scores + DraftScore(playerId = id, winner = current.teamWon ?: false)) }
+                    picking = null
+                }
+            })
     }
 }
 
@@ -267,24 +277,6 @@ private fun LazyListScope.snapshot(snapshot: PlayEditorResult, options: HistoryO
             Text("Colore: ${row.score.color ?: "Non indicato"} · Ruolo: ${row.score.role ?: "Non indicato"}")
         }
     }
-}
-@Composable private fun CatalogPicker(title: String, options: List<Pair<UUID, String>>, onDismiss: () -> Unit, choose: (UUID) -> Unit) {
-    var search by remember { mutableStateOf("") }
-    val height = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.height.toDp() * 0.55f }
-    val duplicates = options.groupingBy { it.second }.eachCount()
-    AlertDialog(onDismissRequest = onDismiss, modifier = Modifier.testTag("editor-picker"), title = { Text(title) },
-        text = { Column(Modifier.heightIn(max = height), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(search, { search = it }, singleLine = true, label = { Text("Cerca nel catalogo") }, modifier = Modifier.fillMaxWidth().testTag("editor-catalog-search"))
-            LazyColumn(Modifier.weight(1f, fill = false)) {
-                val filtered = options.filter { it.second.contains(search, ignoreCase = true) }
-                if (filtered.isEmpty()) item { Text("Nessun risultato") }
-                items(filtered, key = { it.first }) { (id, name) ->
-                    TextButton(onClick = { choose(id) }, modifier = Modifier.fillMaxWidth().testTag("editor-option-$id")) {
-                        Column(Modifier.fillMaxWidth()) { Text(name); if ((duplicates[name] ?: 0) > 1) Text("Identificativo: $id", style = MaterialTheme.typography.bodySmall) }
-                    }
-                }
-            }
-        } }, confirmButton = { TextButton(onClick = onDismiss) { Text("Annulla") } })
 }
 private fun writeMessage(problem: PlayWriteProblem) = when (problem) {
     PlayWriteProblem.INVALID_INPUT -> "Controlla data, durata, partecipanti e punteggi. Il testo potrebbe superare il limite consentito."

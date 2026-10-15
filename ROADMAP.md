@@ -8,6 +8,16 @@ La prima stabile privata 0.5.0/code 15 ha l'editor admin abilitato. Backend e si
 
 La stabile privata corrente è la **0.5.1/code 16**: Home, classifica e dettaglio riallineati alle proposte web approvate; 258 test JVM, lint senza errori e aggiornamento 15 → 16 verificati. Le prove native coprono 92 casi distinti riusciti e due integrazioni condizionali escluse, dopo la correzione dei driver dell’editor. Nessuna modifica web o cloud per questo aggiornamento. Firma, limiti e report: [STABILITY.md](docs/STABILITY.md).
 
+## Aggiornamento 0.5.2/code 17 in verifica
+
+La candidata implementa le nove richieste approvate: stile web per Partite/Statistiche/Giocatore, rimozione del dialogo storico punteggio da Rating ELO, meno letture ripetute, gesto di aggiornamento dalla cima, rimozione di Classifiche ELO dalla Home, preferiti prima delle ultime partite, tre menu ridisegnati, badge commenti e tutti i partecipanti con i punti nelle card.
+
+1. **Implementazione presente:** pannelli e selettori, conteggi commenti in batch, valori numerici esatti, refresh accessibile. Il dettaglio Giocatore conserva lo storico paginato senza presentare la prima pagina come totale.
+2. **Letture ridotte:** Home e Statistiche condividono un ViewModel della sessione; la scansione completa usa campi statistici ridotti e pagine richieste da 500. ELO riusa la pubblicazione in RAM, mantenendo la verifica online dell'accesso. La prima lettura richiede ancora la rete.
+3. **Qualifica da completare:** test JVM e nativi, lint, CI sul commit, APK firmato e aggiornamento 16 → 17 con dati conservati. La 0.5.1 resta la stabile finché queste verifiche non sono registrate.
+
+Login e Internet restano obbligatori. Il riuso in RAM non abilita consultazione offline; la perdita di accesso rimuove lo stato privato. Formula ELO, backend e sito non cambiano in questo aggiornamento. Gli APK continuano a essere installati manualmente.
+
 ## Vincoli confermati
 
 1. L'app richiede una connessione Internet funzionante. In assenza di connessione mostra uno stato dedicato e blocca la consultazione e l'invio delle operazioni; non dispone di una modalità offline.

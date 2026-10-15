@@ -32,7 +32,8 @@ data class DetailState(
 }
 
 class PlayDetailViewModel(private val repository: PlaysRepository, private val id: UUID,
-    private val onAccessFailure: (AuthProblem) -> Unit, private val accountId: UUID? = null) : ViewModel() {
+    private val onAccessFailure: (AuthProblem) -> Unit, private val accountId: UUID? = null,
+    private val onCommentsChanged: () -> Unit = {}) : ViewModel() {
     private val state = MutableStateFlow(DetailState())
     val detail: StateFlow<DetailState> = state
     private var request: Job? = null
@@ -46,7 +47,10 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
         val uncertain = state.value.commentWriteProblem == CommentProblem.UNCERTAIN || repository.commentWrites?.hasUncertainOutcome(id) == true
         val editor = state.value.commentEditor.takeIf { uncertain }
         val deleting = state.value.deletingComment.takeIf { uncertain }
+        val previous = state.value.takeIf { it.problem == null && !it.missing }
         clearMemory()
+        if (previous?.detail != null) state.value = state.value.copy(detail = previous.detail,
+            comments = previous.comments, commentCursor = previous.commentCursor)
         if (uncertain) state.value = state.value.copy(commentWriteProblem = CommentProblem.UNCERTAIN)
         val stamp = generation
         request = viewModelScope.launch {
@@ -64,7 +68,10 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
             } catch (cancelled: CancellationException) { throw cancelled
             } catch (failure: AuthFailure) { accessFailure(failure, stamp)
             } catch (failure: DataFailure) {
-                if (stamp == generation) state.value = state.value.copy(loading = false, problem = failure.problem,
+                if (stamp == generation) state.value = if (failure.problem == DataProblem.FORBIDDEN)
+                    DetailState(loading = false, problem = failure.problem,
+                        commentWriteProblem = CommentProblem.UNCERTAIN.takeIf { uncertain })
+                else state.value.copy(loading = false, problem = failure.problem,
                     commentEditor = editor, deletingComment = deleting)
             }
         }
@@ -135,6 +142,7 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
 
     private fun ownComment(commentId: UUID) = state.value.comments.firstOrNull { it.id == commentId && it.user_id == accountId }
     private fun canWrite() = repository.commentWrites != null && accountId != null && state.value.detail != null &&
+        !state.value.loading && state.value.problem == null && !state.value.missing &&
         !state.value.commentSaving && !state.value.commentsLoading && !state.value.commentWritesBlocked
 
     fun acknowledgeComments() {
@@ -146,8 +154,11 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
         mutation = viewModelScope.launch {
             try {
                 writer.acknowledgeOutcome(id)
-                if (stamp == generation) state.value = state.value.copy(commentSaving = false, commentWriteProblem = null,
-                    commentReviewReady = false, commentEditor = null, deletingComment = null, commentNotice = CommentNotice.RECONCILED)
+                if (stamp == generation) {
+                    state.value = state.value.copy(commentSaving = false, commentWriteProblem = null,
+                        commentReviewReady = false, commentEditor = null, deletingComment = null, commentNotice = CommentNotice.RECONCILED)
+                    onCommentsChanged()
+                }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: AuthFailure) { accessFailure(failure, stamp) }
             catch (failure: CommentFailure) {
@@ -165,6 +176,7 @@ class PlayDetailViewModel(private val repository: PlaysRepository, private val i
                 action(writer)
                 if (stamp != generation) return@launch
                 state.value = state.value.copy(commentSaving = false, commentEditor = null, deletingComment = null, commentNotice = notice)
+                onCommentsChanged()
                 recheckComments()
             } catch (cancelled: CancellationException) { throw cancelled
             } catch (failure: AuthFailure) { accessFailure(failure, stamp)

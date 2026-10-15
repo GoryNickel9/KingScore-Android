@@ -9,6 +9,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import app.kingscore.android.MainActivity
+import app.kingscore.android.core.auth.AuthProblem
+import app.kingscore.android.feature.auth.message
 import java.util.UUID
 import org.json.JSONObject
 import org.junit.Assume
@@ -92,9 +94,18 @@ class LiveBackendSmokeTest {
         guarded("private credential input") {
             compose.onNodeWithTag("email").performTextReplacement(email)
             compose.onNodeWithTag("password").performTextReplacement(password)
-            compose.onNodeWithTag("sign-in").performScrollTo().performClick()
+            compose.onNodeWithTag("password").performImeAction()
         }
-        waitFor("verified authentication") { exists(hasTestTag("authenticated-shell")) }
+        stage("login_submitted")
+        waitFor("verified authentication") {
+            exists(hasTestTag("authenticated-shell")) || exists(hasTestTag("login-error")) ||
+                exists(hasTestTag("connection-blocked"))
+        }
+        if (!exists(hasTestTag("authenticated-shell"))) {
+            val problem = AuthProblem.entries.firstOrNull { exists(hasText(it.message())) }
+            stage("login_rejected_${problem?.name ?: "unknown"}")
+            requireStep(false, "authentication rejected")
+        }
     }
     private fun logout() {
         navigate("Profilo")

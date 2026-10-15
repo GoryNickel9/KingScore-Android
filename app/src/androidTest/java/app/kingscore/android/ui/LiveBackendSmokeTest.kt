@@ -61,7 +61,10 @@ class LiveBackendSmokeTest {
         guarded("temporary play notes input") { compose.onNodeWithTag("editor-notes").performTextReplacement(config.notesMarker) }
         scrollTo("editor-content", hasTestTag("editor-save"))
         tapTag("editor-save") // One submission only; uncertainty is never automatically replayed by this test.
-        waitFor("atomic update result") { exists(hasTestTag("editor-success")) || exists(hasTestTag("editor-error")) }
+        waitFor("atomic update result") {
+            scrollIfPresent("editor-content", hasTestTag("editor-success")) ||
+                scrollIfPresent("editor-content", hasTestTag("editor-error"))
+        }
         requireStep(exists(hasTestTag("editor-success")), "atomic update not confirmed")
         tapTag("editor-done")
         waitFor("updated temporary play detail") { scrollIfPresent("detail-content", hasText(config.notesMarker)) }
@@ -110,10 +113,12 @@ class LiveBackendSmokeTest {
         }
         scrollTo("history-content", hasTestTag("history-query"))
         guarded("temporary game search") { compose.onNodeWithTag("history-query").performTextReplacement(config.gameName) }
-        tapText("Cerca")
+        guarded("submit history search through keyboard") { compose.onNodeWithTag("history-query").performImeAction() }
+        stage("history_search_submitted")
         waitFor("temporary play in searched history") { scrollIfPresent("history-content", hasTestTag("play-${config.playId}")) }
         tapTag("play-${config.playId}")
         waitFor("temporary game detail") { exists(hasTestTag("detail-content")) && exists(hasText(config.gameName)) }
+        stage("temporary_play_opened")
     }
     private fun ownComments() {
         scrollTo("detail-content", hasTestTag("add-comment")); tapTag("add-comment")

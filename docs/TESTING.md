@@ -1,5 +1,30 @@
 # Verifica KingScore Android
 
+## 0.6.1/code 19 — compatibilità ELO v2
+
+APK: `.work/releases/KingScore-0.6.1-19.apk`, 14.593.506 byte. SHA-256 `941950bb49ec1ec7b2d2679530fe7ce0f306c1c20f76565bb28c15eb70e28254`. Fonte pulita `03d1fa576df4bf19fa11d626aec847fd274937d7`; stesso certificato della 0.6.0. Installare sopra la versione precedente senza disinstallarla.
+
+Classifiche e grafici leggono v2 e conservano v1 come compatibilità di lettura. Versioni sconosciute e dati incoerenti restano rifiutati. Storico, dettaglio e Home distinguono il primo posto condiviso dalle vittorie cooperative; nessun calcolo ELO nel client. Login e blocco senza Internet restano obbligatori.
+
+| Controllo | Risultato |
+| --- | --- |
+| JVM debug e release | 333 test per variante, zero fallimenti |
+| Lint | Zero errori; 16 avvisi debug e 16 release |
+| Contratti Node | 41 passati |
+| Risposte reali sul PC | Sette prove passate: v2, compatibilità v1, rifiuto di versioni sconosciute e storico alterato |
+| UI nativa interessata | 25 successi; quattro nuovi casi, testo 2× e blocco d'accesso inclusi |
+| Aggiornamento 18 → 19 | Stesso UID, registri cifrati conservati, firma estranea rifiutata, run-as negato |
+| Login/rete release | Sessione vuota mostra login; avvio offline, disconnessione e riconnessione verificati |
+| CI della fonte | [PASS sul commit 03d1fa5](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38813479934) |
+
+Il primo run nativo aveva due errori nei selettori dei nuovi test, corretti senza nuove modifiche produttive. La ripetizione completa delle sei classi interessate passa 25/25; non è ripetuta la suite integrale della 0.6.0. L'emulatore API 35 usa ART precompilato; nessuna misura di avvio a freddo o prova su telefono fisico. Nessun nuovo login GoTrue, deploy web o cambiamento Supabase.
+
+Il primo collaudo firmato ha verificato firma e recupero dei registri, ma la finestra Android «System UI isn't responding» ha coperto lo stato offline. Dopo il riavvio dell'emulatore dedicato, il collaudo completo è stato ripetuto sullo stesso APK; il report fallito resta conservato e referenziato nella qualifica.
+
+Questa patch non modifica le RPC statistiche: i conteggi server basati su `winner=true` possono includere ancora i primi posti condivisi fra le vittorie. Il ranking dei writer atomici e il collegamento dei writer web restano interventi separati. [Perimetro e dipendenze](ELO_V2_ANDROID.md).
+
+Evidenze: [build](evidence/private-061-build.json), [UI](evidence/private-061-ui-validation.json), [aggiornamento](evidence/private-061-upgrade-validation.json), [qualifica](evidence/private-061-release-validation.json), [letture v2](evidence/elo-v2-reader-validation.json). Il manifest iniziale di build rimane candidato; la qualifica promuove lo stesso checksum. Probe e dati sintetici rimossi, impostazioni ripristinate, emulatore dedicato arrestato. Aggiornamenti APK manuali.
+
 ## Stabile privata 0.6.0/code 18 — qualifica PC
 
 APK: `.work/releases/KingScore-0.6.0-18.apk`, 14.593.506 byte. SHA-256: `e820ff8a0622384dd618d1ad71ec876d8c289590237aa116c4790d4e258e9acf`. Fonte pulita: `b5d5e112c41cd585b81eab03c3e521b5de9c1fb9`. Certificato invariato: `b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b`. Installare sopra la 0.5.2 senza disinstallarla; aggiornamento 17 → 18 verificato con UID e registri cifrati conservati.

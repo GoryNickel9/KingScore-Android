@@ -1,0 +1,95 @@
+{
+  "status": "PASS",
+  "candidate": false,
+  "stable": true,
+  "qualification": "private-elo-v2-compatibility-update",
+  "versionName": "0.6.1",
+  "versionCode": 19,
+  "sourceCommit": "03d1fa576df4bf19fa11d626aec847fd274937d7",
+  "sourceDirtyAtBuild": false,
+  "apkSha256": "941950bb49ec1ec7b2d2679530fe7ce0f306c1c20f76565bb28c15eb70e28254",
+  "apkBytes": 14593506,
+  "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
+  "adminEditorEnabled": true,
+  "jvm": {
+    "tests": 333,
+    "failures": 0,
+    "errors": 0
+  },
+  "lint": {
+    "warnings": 16,
+    "errors": 0
+  },
+  "nodeContractTests": {
+    "passed": 41,
+    "failed": 0
+  },
+  "native": {
+    "affectedCasesPassed": 25,
+    "failed": 0,
+    "skipped": 0,
+    "completeApplicationSuiteRepeated": false,
+    "evidence": "private-061-ui-validation.json",
+    "baselineFullSuite": "private-060-ui-validation.json"
+  },
+  "actualResponseReaderChecks": {
+    "passed": 7,
+    "source": "PC replay of captured authenticated SQL reads",
+    "networkContacted": false
+  },
+  "supportedAlgorithms": [
+    "kingscore-elo-legacy-v1",
+    "kingscore-elo-rules-v2"
+  ],
+  "upgradeFrom18": "PASS",
+  "requiredLogin": "PASS",
+  "liveOfflineAndReconnect": "PASS",
+  "sourceCi": {
+    "conclusion": "success",
+    "headSha": "03d1fa576df4bf19fa11d626aec847fd274937d7",
+    "status": "completed",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38813479934"
+  },
+  "remoteDatabaseChanged": false,
+  "webChanged": false,
+  "vercelChanged": false,
+  "remoteAccountAuthenticationRetested": false,
+  "eloCalculatedOnAndroid": false,
+  "knownBackendDependencies": [
+    "Statistics RPC winner=true counts include shared first places until the backend API is aligned.",
+    "Atomic ranking rules and web writer integration are separate from this Android patch."
+  ],
+  "limitations": [
+    "PC API 35 emulator; no physical phone or new GoTrue login test.",
+    "25 affected UI cases passed; the complete baseline UI suite was not repeated.",
+    "Reader proof replays captured real responses on PC without network; no new full authenticated APK/backend flow.",
+    "APK updates remain manual."
+  ],
+  "initialSignedUpgradeAttempt": {
+    "status": "FAIL",
+    "report": ".work/private-apk/31f4d8c1dbc74f4681b5a532e05d5d4a/report.json",
+    "failure": "Offline UI assertion covered by Android System UI ANR dialog",
+    "observedDialog": "System UI isn't responding",
+    "xml": ".work/private-apk/31f4d8c1dbc74f4681b5a532e05d5d4a/offline-8.log",
+    "xmlSha256": "a982c05b43c3ec271a8eb427dc83b90e85b9e6592de592c2cdfac9ec779124f1",
+    "apkChanged": false,
+    "remoteDatabaseContacted": false
+  },
+  "cleanup": {
+    "status": "PASS",
+    "avd": "KingScoreUi05135",
+    "serial": "emulator-5586",
+    "testPackageRemoved": true,
+    "syntheticApplicationDataCleared": true,
+    "unrelatedEmulatorsModified": false,
+    "emulatorStopped": true,
+    "fontScale": "1.0",
+    "settingsRestored": {
+      "window_animation_scale": "1.0",
+      "transition_animation_scale": "1.0",
+      "animator_duration_scale": "null",
+      "show_ime_with_hard_keyboard": "1"
+    }
+  },
+  "verifiedAt": "2026-10-15T22:07:40.714311+00:00"
+}

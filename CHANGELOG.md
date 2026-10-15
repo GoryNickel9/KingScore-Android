@@ -1,10 +1,12 @@
 # Changelog
 
-## 0.6.1 — compatibilità ELO v2 in collaudo
+## 0.6.1 — compatibilità ELO v2
 
 - Classifiche e grafici leggono `kingscore-elo-rules-v2`, mantenendo v1 come compatibilità di lettura. Le versioni sconosciute e gli storici incoerenti restano rifiutati.
 - Primo posto condiviso indicato come «Pareggio» nello storico, nel dettaglio e nel riepilogo Home. Le vittorie cooperative restano vittorie; l'esito esplicito della squadra prevale sui flag individuali.
 - Login e blocco senza Internet invariati. Nessuna formula ELO nel client, modifica backend o deploy web. Le dipendenze dei win rate e dei salvataggi atomici sono descritte in [ELO_V2_ANDROID.md](docs/ELO_V2_ANDROID.md).
+
+APK code 19 dalla fonte pulita `03d1fa576df4bf19fa11d626aec847fd274937d7`: 333 test JVM debug/release, 25 test UI interessati, sette prove su risposte reali, 41 controlli Node e lint senza errori. [CI](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38813479934) e aggiornamento 18 → 19 passati. [Qualifica](docs/evidence/private-061-release-validation.json).
 
 ## 0.6.0 — 15 ottobre 2026
 

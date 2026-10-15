@@ -1,8 +1,10 @@
 # Roadmap KingScore Android
 
+Stato corrente: **0.6.1/code 19**, compatibilità ELO v2 e pareggi verificati. APK firmato, aggiornamento dalla 0.6.0 e CI passati. La formula resta sul backend; API statistiche e writer condivisi richiedono un intervento separato. [Perimetro](docs/ELO_V2_ANDROID.md).
+
 Avviare un'app Android nativa in Kotlin e Jetpack Compose, mantenendo Supabase e i dati condivisi con King-Score. La prima versione deve permettere di consultare lo storico, accedere con un account esistente, commentare e, per gli amministratori, aggiungere, modificare ed eliminare partite con gli stessi permessi del sito.
 
-Piano iniziale: 13 ottobre 2026. Stato aggiornato: 15 ottobre 2026. Scelta nativa confermata dall'utente. Questa roadmap riguarda KingScore, l'app per giochi da tavolo.
+Piano iniziale: 13 ottobre 2026. Stato aggiornato: 16 ottobre 2026. Scelta nativa confermata dall'utente. Questa roadmap riguarda KingScore, l'app per giochi da tavolo.
 
 Attività successiva alla 0.5.2: [API di riepilogo e Statistiche](docs/SUMMARY_STATISTICS.md). Il SQL approvato è applicato a ScoreKing dopo preflight, confronto dello stato precedente e letture con ruolo authenticated. Home usa il riepilogo RPC; Statistiche implementa le sezioni web con dettagli e grafici paginati. La 0.6.0/code 18 è qualificata sul PC: 323 test JVM debug/release, 111 test nativi riusciti e due esclusi, CI verde, APK firmato e aggiornamento dalla 0.5.2 verificato. Nessuna modifica al codice web o Vercel.
 

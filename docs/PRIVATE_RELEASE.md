@@ -1,8 +1,8 @@
 # Distribuzione APK privato
 
-La stabile privata corrente è la **0.6.0/code 18**: `.work/releases/KingScore-0.6.0-18.apk`, 14.593.506 byte, SHA-256 `e820ff8a0622384dd618d1ad71ec876d8c289590237aa116c4790d4e258e9acf`. Fonte pulita: `b5d5e112c41cd585b81eab03c3e521b5de9c1fb9`. Aggiornamento dalla 0.5.2 verificato con stesso certificato, UID e dati cifrati conservati; login e blocco offline restano obbligatori. [Qualifica](evidence/private-060-release-validation.json) e [limiti](STABILITY.md).
+Stabile corrente **0.6.1/code 19**: `.work/releases/KingScore-0.6.1-19.apk`, 14.593.506 byte, SHA-256 `941950bb49ec1ec7b2d2679530fe7ce0f306c1c20f76565bb28c15eb70e28254`. Fonte pulita `03d1fa576df4bf19fa11d626aec847fd274937d7`. Stesso certificato della 0.6.0; aggiornamento 18 → 19 con dati cifrati conservati. [Qualifica](evidence/private-061-release-validation.json) e [limiti](STABILITY.md).
 
-La 0.5.2/code 17 resta la baseline dell'aggiornamento. Riutilizzare la chiave in `.work/signing`, senza rigenerarla; non distribuire la probe. Il manifest iniziale `.apk.json` resta candidato e `.apk.release.json` registra la qualifica dello stesso checksum. Le prove remote della 0.5.0 restano storiche. La 0.6.0 applica solo le nuove letture SQL approvate, senza modificare i dati del sito o Vercel.
+Conservare la chiave in `.work/signing`; non distribuire la probe. Il manifest `.apk.json` resta candidato e `.apk.release.json` registra la successiva qualifica dello stesso checksum. La 0.6.1 riguarda compatibilità ELO v2 e presentazione dei pareggi; le dipendenze backend sono descritte in [ELO_V2_ANDROID.md](ELO_V2_ANDROID.md).
 
 ## Build e firma sul PC Windows
 
@@ -12,8 +12,8 @@ Servono PowerShell 7, JDK 17 o successivo, Android SDK 36 e build-tools 35.0.0. 
 # Prima firma: crea una sola chiave locale, protetta dai permessi Windows.
 pwsh -NoProfile -File scripts/build-private-apk.ps1 -InitializeSigningKey
 
-# Build 0.6.0: riusa la stessa chiave; lo script rifiuta APK già presenti.
-pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 18 -VersionName 0.6.0
+# Build 0.6.1: riusa la stessa chiave; lo script rifiuta APK già presenti.
+pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 19 -VersionName 0.6.1
 ```
 
 Usare -Offline soltanto dopo che le dipendenze release sono state scaricate. Il workaround Java locale, quando necessario su questo PC, si configura nell'ambiente del comando come descritto in TESTING.md; non entra nell'APK o nella firma.
@@ -36,7 +36,7 @@ Installare l'APK da una fonte privata autorizzata e verificare SHA-256. Per gli 
 
 Gli aggiornamenti restano manuali: l'app non cerca, scarica o installa nuovi APK. Il gesto di trascinamento aggiorna soltanto i dati della schermata. Per installare una nuova versione serve ricevere l'APK firmato, aprirlo sul dispositivo e confermare l'aggiornamento nel sistema Android.
 
-## Collaudo locale
+## Collaudo locale e checkpoint storici
 
 scripts/test-private-apk.ps1 rifiuta telefoni fisici ed emulatori con l'app già installata. Non cancella dati preesistenti. Il collaudo usa un APK baseline con versionCode 8 firmato con la nuova chiave, la candidata, la firma debug e una probe del solo APK di test firmata con la stessa chiave privata.
 
@@ -57,7 +57,7 @@ La RC3 supera aggiornamento 8 → 11, conservazione dei registri, rifiuto della 
 
 APK: `.work/releases/KingScore-0.5.0-rc3-11.apk`, 14.446.050 byte. SHA-256: `7f54b60fdf96d4bf63ca20d653d1d030b2d27a9f799203c5034248edb64e7a31`. Certificato SHA-256: `b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b`.
 
-Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI Android è attiva per la 0.6.0. I checkpoint RC4 sottostanti conservano le verifiche locali del periodo in cui era sospesa.
+Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI Android è attiva; la verifica della fonte 0.6.1 è passata. I checkpoint RC4 sottostanti conservano le verifiche locali del periodo in cui era sospesa.
 
 ## Candidata RC4
 

@@ -170,5 +170,27 @@
   },
   "environment": "Dedicated PC API 35 emulator emulator-5586, 384x832 density160, ART-precompiled. Text2x verified in Compose.",
   "remoteAccountAuthenticationTested": false,
-  "remoteDatabaseContacted": false
+  "remoteDatabaseContacted": false,
+  "sourceCi": {
+    "conclusion": "success",
+    "headSha": "03d1fa576df4bf19fa11d626aec847fd274937d7",
+    "status": "completed",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38813479934"
+  },
+  "cleanup": {
+    "status": "PASS",
+    "avd": "KingScoreUi05135",
+    "serial": "emulator-5586",
+    "testPackageRemoved": true,
+    "syntheticApplicationDataCleared": true,
+    "unrelatedEmulatorsModified": false,
+    "emulatorStopped": true,
+    "fontScale": "1.0",
+    "settingsRestored": {
+      "window_animation_scale": "1.0",
+      "transition_animation_scale": "1.0",
+      "animator_duration_scale": "null",
+      "show_ime_with_hard_keyboard": "1"
+    }
+  }
 }

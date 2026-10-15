@@ -1,14 +1,12 @@
 # KingScore Android
 
-App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di KingScore. La **stabile privata corrente è la 0.6.0/code 18**. Comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, immagini in lettura, commenti propri e gestione atomica di tutte le partite per gli amministratori. Login e Internet sono obbligatori.
+La **stabile privata corrente è la 0.6.1/code 19**, in Kotlin e Jetpack Compose, con login e Internet obbligatori. Classifiche e grafici leggono `kingscore-elo-rules-v2`; v1 resta una compatibilità di lettura per rollback. L'app non calcola ELO. Storico, dettaglio e Home distinguono primi posti condivisi e vittorie cooperative.
 
-La Home riceve il riepilogo con una RPC senza scaricare tutto lo storico. Statistiche segue le tre sezioni web: win rate personale per gioco, ELO generale e schede per gioco con medie, copertura e giocatori espandibili. I grafici caricano finestre di 100 partite; tocco, slider e legenda consentono di consultarli. NULL è escluso dalle medie, zero resta un campione e il win rate considera le proprie partecipazioni.
+La versione comprende Home con riepilogo RPC, storico paginato e filtri, dettagli partita/gioco/giocatore, statistiche e grafici paginati, immagini in lettura, commenti propri e gestione atomica delle partite per gli amministratori. Le cache restano nella sessione online; nessuna modalità offline o modifica delle credenziali/avatar.
 
-Le cache restano in RAM nella sessione online e si invalidano dopo nuove revisioni osservate o salvataggi. Dettagli e grafici si caricano separatamente. Prima apertura e refresh richiedono ancora il server; queste modifiche non introducono uso offline né garantiscono tempi istantanei su ogni rete. Rating ELO conserva il lettore della pubblicazione esistente e la formula rimane invariata.
+Qualifica: 333 test JVM debug/release, lint senza errori, 41 controlli Node, sette prove sulle risposte reali riprodotte sul PC e 25 test nativi delle classi interessate. Aggiornamento 0.6.0 → 0.6.1 con firma, UID e registri cifrati conservati. [CI della fonte](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38813479934) passata; [APK, checksum e limiti](docs/STABILITY.md).
 
-La code 18 supera 323 test JVM sia debug sia release, lint senza errori, 41 controlli Node e un singolo run nativo completo con 111 successi e due integrazioni escluse. Aggiornamento dalla 0.5.2 con stessa firma, UID e dati cifrati conservati. [CI della fonte](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38794486985) passata. APK, checksum e limiti: [STABILITY.md](docs/STABILITY.md).
-
-Il SQL approvato è applicato al progetto ScoreKing verificato. Dati, pubblicazione ELO, policy e funzioni precedenti non cambiano; nessuna modifica web o Vercel. Letture reali con ruolo authenticated e decoder Android passati; non è stato ripetuto un login GoTrue. Telefoni fisici non verificati. Gli aggiornamenti APK restano manuali.
+La patch modifica soltanto Android. Le API statistiche basate su `winner=true` possono ancora contare i pareggi come vittorie finché non verranno allineate sul backend; writer atomici e web restano interventi separati. [Dettagli](docs/ELO_V2_ANDROID.md). Nessun nuovo login remoto o telefono fisico verificato; aggiornamenti APK manuali.
 
 ## Perimetro confermato
 
@@ -65,7 +63,7 @@ Con Android SDK 36 e JDK 17 o successivo disponibili:
 
 Lo script di configurazione iniziale legge URL e chiave pubblica dal repository web; le configurazioni locali sono escluse da Git. Nel perimetro corrente usare la configurazione già presente oppure impostare manualmente SUPABASE_URL e SUPABASE_PUBLIC_KEY: [docs/PHASE2.md](docs/PHASE2.md). APK debug: `app/build/outputs/apk/debug/app-debug.apk`.
 
-La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e checkpoint precedenti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md), lo stato corrente in [docs/STABILITY.md](docs/STABILITY.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è riattivata e verifica contratti Node, test JVM, lint e build APK; la [CI della fonte della 0.6.0](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38794486985) è passata.
+La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e checkpoint precedenti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md), lo stato corrente in [docs/STABILITY.md](docs/STABILITY.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è riattivata e verifica contratti Node, test JVM, lint e build APK; la [CI della fonte della 0.6.1](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38813479934) è passata.
 
 Per verificare le evidenze salvate: `node --test scripts/check-evidence.test.mjs`. Per compilare ed eseguire i test Kotlin: `./scripts/check-contracts.ps1` con Kotlin e Java 17 o successivo disponibili.
 

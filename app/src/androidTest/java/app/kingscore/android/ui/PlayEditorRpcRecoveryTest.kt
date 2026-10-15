@@ -158,6 +158,7 @@ class PlayEditorRpcRecoveryTest {
                 newEditor()
                 click("editor-game"); compose.onNodeWithTag("editor-option-$game").performClick()
                 click("editor-add-player"); compose.onNodeWithTag("editor-option-$player").performClick()
+                replace("editor-duration", "30"); click("editor-winner-$player")
                 replace("editor-score-$player", "9007199254740993.125")
                 fixture("fault", buildJsonObject { put("rpc", "create_play_v1") })
                 click("editor-save")

@@ -48,7 +48,7 @@ class PlayEditorNavigationTest {
     private var uncertain = false
     private var current: PlayDetail? = PlayDetail(PlayRow(playId, UUID(9, 99), game.id, LocalDate.of(2026, 10, 14),
         "Imported", "Original", 30, "online", "123", Instant.EPOCH, false, null), game,
-        listOf(ScoreWithPlayer(PlayScoreRow(scoreId, playId, player.id, BigDecimal("5.125"), false, "red", "Builder", 1), player)))
+        listOf(ScoreWithPlayer(PlayScoreRow(scoreId, playId, player.id, BigDecimal("5.125"), true, "red", "Builder", 1), player)))
     private var revision = "v1:original"
     private lateinit var scenario: ActivityScenario<DebugRecreationActivity>
     private val reads = object : PlaysRepository {
@@ -185,6 +185,7 @@ class PlayEditorNavigationTest {
         compose.onNodeWithTag("create-play").performClick()
         click("editor-game"); compose.onNodeWithTag("editor-option-${game.id}").performClick()
         click("editor-add-player"); compose.onNodeWithTag("editor-option-${player.id}").performClick()
+        replace("editor-duration", "30"); click("editor-winner-${player.id}")
         replace("editor-score-${player.id}", "9007199254740993.125"); click("editor-save")
         compose.onNodeWithText("Partita salvata.").assertIsDisplayed()
         click("editor-done")

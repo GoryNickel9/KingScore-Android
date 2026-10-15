@@ -14,6 +14,11 @@ data class PlayDraft(
     val notes: String? = null, val cooperative: Boolean = false, val teamWon: Boolean? = null,
     val scores: List<DraftScore> = emptyList(),
 ) {
+    val hasValidDuration: Boolean
+        get() = duration.matches(Regex("[1-9][0-9]*")) && duration.toIntOrNull() != null
+    val hasRequiredWinner: Boolean
+        get() = cooperative || scores.any { it.winner }
+
     fun input(): PlayInput {
         val decimal = Regex("^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$")
         require(playedAt.matches(Regex("[0-9]{4}-[0-9]{2}-[0-9]{2}")))

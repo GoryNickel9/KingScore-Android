@@ -115,9 +115,8 @@ fun PlayEditorRoute(model: PlayEditorViewModel, onResult: (PlayWriteResult) -> U
                             runCatching { LocalDate.parse(draft.playedAt).year in 1..9999 }.getOrDefault(false)
                         Field(draft.playedAt, { text -> model.edit { it.copy(playedAt = text) } }, "Data (AAAA-MM-GG)", "editor-date", state.canEdit,
                             invalid = !dateValid, help = "Inserisci una data valida, per esempio 2026-10-14.")
-                        val durationValid = draft.duration.isEmpty() || (draft.duration.matches(Regex("0|[1-9][0-9]*")) && draft.duration.toIntOrNull() != null)
-                        Field(draft.duration, { text -> model.edit { it.copy(duration = text) } }, "Durata in minuti", "editor-duration", state.canEdit,
-                            invalid = !durationValid, help = "Lascia vuoto se non indicata; altrimenti usa minuti interi non negativi.", keyboard = KeyboardType.Number)
+                        Field(draft.duration, { text -> model.edit { it.copy(duration = text) } }, "Durata in minuti (obbligatoria)", "editor-duration", state.canEdit,
+                            invalid = !draft.hasValidDuration, help = "Inserisci una durata intera di almeno 1 minuto.", keyboard = KeyboardType.Number)
                         Text("Modalità", style = MaterialTheme.typography.titleMedium)
                         PlaySource.entries.forEach { source ->
                             Choice(sourceLabel(source.wireValue), draft.source == source, state.canEdit, "editor-source-${source.name}") { model.edit { it.copy(source = source) } }
@@ -138,6 +137,9 @@ fun PlayEditorRoute(model: PlayEditorViewModel, onResult: (PlayWriteResult) -> U
                     item {
                         Text("Partecipanti (${draft.scores.size})", style = MaterialTheme.typography.titleLarge)
                         Text("Un punteggio vuoto resta non indicato; zero è un punteggio.")
+                        if (!draft.hasRequiredWinner) Notice(
+                            "Seleziona almeno un vincitore. Per un pareggio puoi selezionarne più di uno.",
+                            "editor-winner-required", error = state.writeProblem == PlayWriteProblem.INVALID_INPUT)
                     }
                     items(draft.scores, key = { "draft-${it.playerId}" }) { row ->
                         val name = playerName(state.options.players.firstOrNull { it.id == row.playerId })

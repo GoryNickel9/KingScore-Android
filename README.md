@@ -20,6 +20,7 @@ Questa patch modifica soltanto Android. I conteggi server e i writer atomici/web
 
 | File | Contenuto |
 | --- | --- |
+| [Campi obbligatori dell'editor](docs/PLAY_EDITOR_REQUIREMENTS.md) | Aggiornamento 0.6.3 in collaudo: durata positiva e almeno un vincitore nelle competitive |
 | [Statistiche numeriche](docs/STATISTICS_NUMERIC.md) | 0.6.2: rimozione di Win Rate per Gioco e di tutti i grafici da Statistiche |
 | [Compatibilità ELO v2](docs/ELO_V2_ANDROID.md) | Letture v1/v2, presentazione dei pareggi e dipendenze backend separate |
 | [ROADMAP.md](ROADMAP.md) | Fasi, stime e stato corrente |

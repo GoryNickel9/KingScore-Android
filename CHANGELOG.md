@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.3 — Campi obbligatori in collaudo
+
+- Durata obbligatoria di almeno un minuto sia in creazione sia in modifica, con indicazione e messaggio nel campo.
+- Almeno un vincitore nelle partite competitive; pareggi con più vincitori e cooperative perse senza vincitori restano validi.
+- Lettura dei dati storici, eliminazione e recupero delle richieste pregresse conservati. Nessuna modifica cloud o ricalcolo ELO. [Regole](docs/PLAY_EDITOR_REQUIREMENTS.md).
+
 ## 0.6.2 — Statistiche numeriche
 
 - Rimossi da Statistiche Win Rate per Gioco e tutti i grafici ELO, inclusi quelli nelle schede dei giochi. Restano partite totali, medie, copertura dei dati e dettagli dei giocatori.

@@ -75,12 +75,13 @@ class StatisticsWebUiTest {
         compose.onNodeWithText("50%").assertDoesNotExist()
         compose.onNodeWithTag("statistics-content").performScrollToNode(hasTestTag("statistics-game-$game"))
         compose.onNodeWithTag("statistics-content").performScrollToNode(hasText("Durata disponibile per 3 di 10 partite"))
-        compose.onNodeWithText("Durata disponibile per 3 di 10 partite").assertIsDisplayed()
+        compose.onNodeWithText("Durata disponibile per 3 di 10 partite").performScrollTo().assertIsDisplayed()
         capture("statistics-font2")
         compose.onNodeWithTag("statistics-content").performScrollToNode(hasTestTag("expand-statistics-$game"))
         compose.onNodeWithTag("expand-statistics-$game").performClick()
         compose.onNodeWithTag("statistics-content").performScrollToNode(hasText("Media su 3 di 4 partecipazioni"))
-        compose.onNodeWithText("Media su 3 di 4 partecipazioni").assertIsDisplayed()
+        compose.onNodeWithText("Media su 3 di 4 partecipazioni").performScrollTo().assertIsDisplayed()
+        capture("statistics-player-font2")
     }
     @Test fun unlinkedPlayerStillSeesNumericGamesWithoutPersonalWinRateOrCharts() {
         val ready=ready()

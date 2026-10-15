@@ -60,7 +60,7 @@ class PlayEditorUiTest {
             if (legacy) null else "offline", "123", Instant.EPOCH, false, null), game,
         if (legacy) (0..63).map { index -> ScoreWithPlayer(PlayScoreRow(UUID(7, 600L + index), play, UUID(7, 300L + index),
             null, null, null, null, null), anna.copy(id = UUID(7, 300L + index), name = "Partecipante $index")) }
-        else listOf(ScoreWithPlayer(PlayScoreRow(score, play, anna.id, BigDecimal("5.125"), false, null, "Builder", null), anna))),
+        else listOf(ScoreWithPlayer(PlayScoreRow(score, play, anna.id, BigDecimal("5.125"), true, null, "Builder", null), anna))),
         "v1:original", PlayEditability(!legacy, if (legacy) listOf("nullable-winner", "too-many-participants") else emptyList()))
     private inner class Writer : PlayWrites {
         override var pendingRequest: PendingPlayRequest? = null
@@ -98,7 +98,10 @@ class PlayEditorUiTest {
     }
     private fun replace(tag: String, text: String) { scroll(tag); compose.onNodeWithTag(tag).performTextReplacement(text); compose.waitForIdle() }
     private fun choose(tag: String, id: UUID) { click(tag); compose.onNodeWithTag("editor-option-$id").performClick(); compose.waitForIdle() }
-    private fun createForm() { choose("editor-game", game.id); choose("editor-add-player", anna.id) }
+    private fun createForm(withWinner: Boolean = true) {
+        choose("editor-game", game.id); replace("editor-duration", "30"); choose("editor-add-player", anna.id)
+        if (withWinner) click("editor-winner-${anna.id}")
+    }
     private fun capture(name: String) {
         val directory = File(InstrumentationRegistry.getInstrumentation().targetContext.getExternalFilesDir(null), "screenshots")
         directory.mkdirs()
@@ -111,7 +114,7 @@ class PlayEditorUiTest {
 
     @Test fun createUsesChosenIdentityExactScoreAndExplicitWinner() {
         show(); scroll("editor-save"); compose.onNodeWithTag("editor-save").assertIsNotEnabled()
-        createForm(); click("editor-source-ONLINE"); scroll("editor-date"); capture("editor-create")
+        createForm(withWinner = false); click("editor-source-ONLINE"); scroll("editor-date"); capture("editor-create")
         replace("editor-score-${anna.id}", "9007199254740993.125")
         click("editor-winner-${anna.id}"); click("editor-save")
         compose.onNodeWithText("Partita salvata.").assertIsDisplayed()
@@ -138,6 +141,47 @@ class PlayEditorUiTest {
         val input = (writer.commands.single() as CreatePlayCommand).payload
         assertTrue(input.is_cooperative); assertEquals(true, input.team_won); assertEquals(1, input.scores.size); assertTrue(input.scores.single().winner)
     }
+    @Test fun durationIsRequiredAndMustBePositiveBeforeARequestIsSent() {
+        show(); createForm()
+        for (duration in listOf("", "0")) {
+            replace("editor-duration", duration); click("editor-save")
+            assertTrue(writer.commands.isEmpty())
+            scroll("editor-duration")
+            compose.onNodeWithText("Inserisci una durata intera di almeno 1 minuto.").assertExists()
+            capture("editor-duration-required")
+        }
+        replace("editor-duration", "1"); click("editor-save")
+        assertEquals(1, (writer.commands.single() as CreatePlayCommand).payload.duration_minutes)
+    }
+    @Test fun competitiveWinnerIsRequiredAndMultipleWinnersRemainAllowed() {
+        show(); createForm(withWinner = false); click("editor-save")
+        assertTrue(writer.commands.isEmpty()); scroll("editor-winner-required")
+        compose.onNodeWithTag("editor-winner-required").assertIsDisplayed()
+        capture("editor-winner-required")
+        click("editor-winner-${anna.id}"); choose("editor-add-player", bruno.id); click("editor-winner-${bruno.id}")
+        click("editor-save")
+        assertEquals(2, (writer.commands.single() as CreatePlayCommand).payload.scores.count { it.winner })
+    }
+    @Test fun cooperativeLossDoesNotRequireOrInventAnyWinner() {
+        show(); createForm(withWinner = false); click("editor-cooperative"); click("editor-team-false")
+        compose.onNodeWithTag("editor-winner-required").assertDoesNotExist()
+        scroll("editor-winner-${anna.id}"); compose.onNodeWithTag("editor-winner-${anna.id}").assertIsOff().assertIsNotEnabled()
+        click("editor-save")
+        val input = (writer.commands.single() as CreatePlayCommand).payload
+        assertEquals(false, input.team_won); assertTrue(input.scores.none { it.winner })
+    }
+    @Test fun historicalMissingDurationAndWinnerCanBeCorrectedInTheEditor() {
+        val old = snapshot()
+        writer.read = { old.copy(detail = old.detail.copy(play = old.detail.play.copy(duration_minutes = null),
+            scores = old.detail.scores.map { row -> row.copy(score = row.score.copy(winner = false)) })) }
+        show(model(play)); click("editor-save"); assertTrue(writer.commands.isEmpty())
+        replace("editor-duration", "1"); click("editor-save"); assertTrue(writer.commands.isEmpty())
+        click("editor-winner-${anna.id}"); click("editor-save")
+        val command = writer.commands.single() as UpdatePlayCommand
+        assertEquals(1, command.payload.duration_minutes); assertTrue(command.payload.scores.single().winner)
+        assertEquals(score, command.payload.scores.single().id); assertEquals("v1:original", command.expected_revision)
+    }
+
     @Test fun editKeepsScoreIdRoleAndOriginalRevisionWithNullableMetadata() {
         show(model(play)); replace("editor-score-${anna.id}", "-0.25")
         replace("editor-notes", ""); click("editor-save")

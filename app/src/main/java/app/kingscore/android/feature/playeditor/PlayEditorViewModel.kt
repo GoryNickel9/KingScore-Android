@@ -97,6 +97,7 @@ class PlayEditorViewModel(
         if (!access() || !editable()) return
         val draft = state.value.draft ?: return
         try {
+            require(draft.hasValidDuration && draft.hasRequiredWinner)
             val input = draft.input()
             require(state.value.options.games.any { it.id == input.game_id })
             require(input.scores.all { score -> state.value.options.players.any { it.id == score.player_id } })

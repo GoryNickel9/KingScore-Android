@@ -1,0 +1,347 @@
+{
+  "status": "PASS",
+  "versionName": "0.6.3",
+  "versionCode": 21,
+  "passed": 57,
+  "failed": 0,
+  "skipped": 0,
+  "scope": "Eight affected/access classes: mandatory editor inputs, admin navigation, numeric statistics, ELO v2 draws and access gates",
+  "completeApplicationSuiteRepeated": false,
+  "baselineFullSuite": "private-060-ui-validation.json",
+  "priorApi35Ui": "private-062-ui-validation.json",
+  "log": ".work/mandatory-063-native.log",
+  "logSha256": "3b1ec0e407d89c92c27f61e66d63a3453fef1db21c98e62f240d845413064b92",
+  "cases": [
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "competitiveAndCooperativeResultsAreExplicitAndParticipantRemovalIsStable",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "conflictComparisonRequiresExplicitDiscardOfLocalDraft",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "createUsesChosenIdentityExactScoreAndExplicitWinner",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "largeFontFieldsLabelsAndSaveRemainReachable",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "participantPickerExcludesTheExistingIdentityAndPreservesItsScore",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "nonadminCannotLoadEditorEvenWhenFixtureCapabilityIsEnabled",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "compositionRestorationRetainsDraftWithoutReloadingOrWriting",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "catalogFailurePreservesPendingIdentityAndRecoveryRemainsAvailable",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "invalidDateShowsFieldErrorWithoutDispatchAndCanBeCorrected",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "editKeepsScoreIdRoleAndOriginalRevisionWithNullableMetadata",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "durationIsRequiredAndMustBePositiveBeforeARequestIsSent",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "competitiveWinnerIsRequiredAndMultipleWinnersRemainAllowed",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "cooperativeLossDoesNotRequireOrInventAnyWinner",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "historical64RowsRemainReadableAndDeletionRequiresConfirmation",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "storageFailureBlocksSaveAndDeleteWithoutOfferingToDiscardRequest",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "uncertaintyDisablesEditingAndRecoveryUsesOriginalRequest",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "historicalMissingDurationAndWinnerCanBeCorrectedInTheEditor",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "pendingOtherPlayClearlyReturnsItsOutcomeAndNeverWritesCurrentForm",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "lateSaveAfterClearingAccountCannotShowSuccess",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "lossOfInternetClosesPickerAndClearsDraftWithoutReconnectWrite",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "defaultDisabledHasNoCatalogOrWriteControls",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorUiTest",
+      "test": "backAsksBeforeDiscardAndCloseDestroysMemory",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorNavigationTest",
+      "test": "defaultCapabilityAndOrdinaryAccountNeverOpenAnEditor",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorNavigationTest",
+      "test": "rotationWhileSavingRetainsOneWriterAndOneRequest",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorNavigationTest",
+      "test": "uncertainRequestSurvivesBlockedAccessAndRemainsBoundToItsAccount",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorNavigationTest",
+      "test": "deletionReturnsToARefreshedMissingDetailAndHistory",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorNavigationTest",
+      "test": "recreationRetainsDraftAndExitConfirmationThenReopeningCreatesANewWriter",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorNavigationTest",
+      "test": "accessRemovalAndRoleRevocationDiscardDraftAndRejectLateSaveResults",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorNavigationTest",
+      "test": "largeTextKeepsCreateManageAndEditorExitControlsReachable",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorNavigationTest",
+      "test": "createRefreshesHistoryAndPreservesItsAppliedSourceFilter",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorNavigationTest",
+      "test": "updateOfAnotherOwnersPlayRefreshesDetailAndKeepsMetadata",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlayEditorNavigationTest",
+      "test": "checkingAndLogoutClearTheEditorBeforeTheSameAccountReturns",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "totalTieKeepsEveryPositionAndDrawLabelReachableAtFontTwo",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "cooperativeGroupWinStaysAVictoryEvenWithAStaleIndividualFlag",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "cooperativeLossNeverShowsDrawOrWinnerBadgesFromStaleIndividualFlags",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "sharedFirstsAreDrawsAcrossHomeHistoryAndDetailAndDisappearWithoutAccess",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.AccessUiTest",
+      "test": "loginExposesOnlyExistingAccountSignIn",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.AccessUiTest",
+      "test": "offlineStateContainsNoAuthenticatedNavigation",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.AccessUiTest",
+      "test": "accountScreenShowsRoleAndLogoutWithoutForbiddenSettings",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "disconnectRemovesDetailAndReconnectionReloadsWithoutCachedRows",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "cooperativeLossUsesStoredTeamResultAndPositions",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "historyOpensDetailAndBackPreservesPages",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "forbiddenOrMissingDetailIsNotPresentedAsEmptyHistory",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "logoutAndAccountChangeNeverRestorePreviousAccountPages",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "playerShowsIdentityAndPaginatedHistoryWithoutInventingGlobalStatistics",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "historyShowsEveryParticipantAndExactScoresAtLargeFont",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "commentBadgeIsAbsentForUnknownAndZeroAndOpensOnlyComments",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "statisticsNeverShowsPartialTotalsAndKeepsTheCompletedSnapshotDuringRefresh",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "incompleteOrFailedSummaryNeverInventsZeroTotalsOrHidesRecentPlays",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "redesignedCommentsExposeOnlyOwnActions",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "approvedScreensKeepPublishedValuesAndRemovePrivateContentWhenBlockedOrSignedOut",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "twiceSizedTextKeepsAllThreeScreensScrollableAndPreservesExactScore",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "playerExpansionKeepsAveragesAndCoverageWithoutCharts",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "numericGameCardsReplaceWinRatesAndAllStatisticsCharts",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "unlinkedPlayerStillSeesNumericGamesWithoutPersonalWinRateOrCharts",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "numericOverviewErrorOffersRetryAndThenShowsTheGameCards",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "fontTwoKeepsGameCoverageAndExpansionReachable",
+      "code": 0
+    }
+  ],
+  "screenshots": [
+    {
+      "path": ".work/ui-063-screenshots/editor-duration-required.png",
+      "sha256": "570abfada54219f24a2896020dc7b24ac8582598e63ff2860fe0dc1f719e21a6",
+      "data": "synthetic fixture"
+    },
+    {
+      "path": ".work/ui-063-screenshots/editor-large-font.png",
+      "sha256": "f029ca5f35ed8dc31b984c326c2ef8fbe1b7a18f0f1fd6e0b94f8e7b4c9c4640",
+      "data": "synthetic fixture"
+    },
+    {
+      "path": ".work/ui-063-screenshots/editor-winner-required.png",
+      "sha256": "b87206195753f8083ca31b389afea4eba26125ca679bfc86a0f6330552cb6f9d",
+      "data": "synthetic fixture"
+    },
+    {
+      "path": ".work/ui-063-screenshots/statistics-player-font2.png",
+      "sha256": "7723791ac221f72c2bd96897bcce10305804aa1b85e9f8e0a31cc63940b3a23a",
+      "data": "synthetic fixture"
+    }
+  ],
+  "sourceManifestSha256": "d0c41a1a733a1cdb20d4a9edda13e27fb40ed9890e2d481c983c52d23fb39032",
+  "debugApkSha256": "9df9516d5c8011cd4a69d253e61586706ee518f8dc2bf164d66360e1e902103c",
+  "testApkSha256": "11412f070459a5025f27e1169cc767ed554172b0f969ed33226f07c2c2a1bdeb",
+  "environment": "PC API 31 emulator emulator-5588; 384x832 density160; SwiftShader software renderer; ART-precompiled; Compose 1.8x/2x text checks",
+  "remoteAccountAuthenticationTested": false,
+  "remoteDatabaseContacted": false,
+  "developmentRun": {
+    "tests": 57,
+    "passed": 56,
+    "failed": 1,
+    "log": ".work/mandatory-063-native-initial.log",
+    "logSha256": "b3af981cd62f39a1670d304dd83f14ca1fee168f5b48a58b5aded52e40fc1bad",
+    "cause": "API31 player coverage at font 2x was not brought into view by lazy-item scrolling; added performScrollTo on the text node and captured the final row.",
+    "productionChangedAfterJvmPass": false
+  },
+  "requirements": {
+    "minimumDurationMinutes": 1,
+    "appliesToCreateAndUpdate": true,
+    "competitiveMinimumWinners": 1,
+    "multipleWinnersAllowed": true,
+    "cooperativeLossWithoutWinnersAllowed": true,
+    "historicalMissingOrZeroDurationStillReadable": true,
+    "statisticsGraphsAndWinRateRemoved": true
+  }
+}

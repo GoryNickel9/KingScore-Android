@@ -39,7 +39,8 @@ class PlayEditorViewModelTest {
     }
     private fun snapshot(legacy: Boolean = false, participants: Int = 1): PlayEditorResult =
         PlaySaveJson.editor(f.editor(legacy = legacy, participants = participants), f.play).let {
-            it.copy(detail = it.detail.copy(play = it.detail.play.copy(game_id = f.game)))
+            it.copy(detail = it.detail.copy(play = it.detail.play.copy(game_id = f.game, duration_minutes = 30),
+                scores = if (legacy) it.detail.scores else it.detail.scores.map { row -> row.copy(score = row.score.copy(winner = true)) }))
         }
     private inner class Writer : PlayWrites {
         override var pendingRequest: PendingPlayRequest? = null
@@ -64,7 +65,7 @@ class PlayEditorViewModelTest {
         account.copy(isAdmin = admin), network, reads, writer, id, enabled, failures::add,
         today = { LocalDate.of(2026, 10, 14) }, requestId = { f.request }).also { models += it }
     private suspend fun TestScope.loaded(id: UUID? = null): PlayEditorViewModel = model(id).also { it.load(); advanceUntilIdle() }
-    private fun valid() = PlayDraft(f.game, "2026-10-14", scores = listOf(DraftScore(playerId = f.player)))
+    private fun valid() = PlayDraft(f.game, "2026-10-14", duration = "30", scores = listOf(DraftScore(playerId = f.player, winner = true)))
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
     @After fun teardown() { models.forEach { it.clearMemory() }; Dispatchers.resetMain() }
 
@@ -93,14 +94,14 @@ class PlayEditorViewModelTest {
         assertTrue(vm.editor.value.accessBlocked); assertEquals(0, catalogs)
         assertEquals(listOf(AuthProblem.NETWORK_UNAVAILABLE), failures)
     }
-    @Test fun `create preserves decimal text null zero and metadata`() = runTest(dispatcher) {
+    @Test fun `create preserves decimal text and optional metadata with positive duration`() = runTest(dispatcher) {
         val vm = loaded(); assertEquals("2026-10-14", vm.editor.value.draft?.playedAt)
-        vm.change(valid().copy(notes = "", duration = "0", scores = listOf(DraftScore(playerId = f.player,
+        vm.change(valid().copy(notes = "", duration = "30", scores = listOf(DraftScore(playerId = f.player, winner = true,
             score = "9007199254740993.125", color = "", role = "builder"))))
         vm.save(); advanceUntilIdle()
         val command = writer.commands.single() as CreatePlayCommand
         assertEquals(BigDecimal("9007199254740993.125"), command.payload.scores.single().score)
-        assertEquals("", command.payload.notes); assertEquals(0, command.payload.duration_minutes)
+        assertEquals("", command.payload.notes); assertEquals(30, command.payload.duration_minutes)
         assertEquals("", command.payload.scores.single().color)
         vm.load(); vm.save(); advanceUntilIdle(); assertEquals(1, writer.commands.size)
     }
@@ -123,6 +124,67 @@ class PlayEditorViewModelTest {
         }
         assertTrue(writer.commands.isEmpty())
     }
+    @Test fun `create and update reject missing zero and invalid durations before writing`() = runTest(dispatcher) {
+        for (id in listOf(null, f.play)) {
+            val vm = loaded(id)
+            for (duration in listOf("", "0", "-1", "01", "1.5", " 1", "2147483648")) {
+                vm.change(valid().copy(duration = duration)); vm.save(); advanceUntilIdle()
+                assertEquals(duration, vm.editor.value.draft!!.duration)
+                assertEquals(PlayWriteProblem.INVALID_INPUT, vm.editor.value.writeProblem)
+                assertTrue(writer.commands.isEmpty())
+            }
+        }
+    }
+    @Test fun `create and update reject competitive plays without a winner before writing`() = runTest(dispatcher) {
+        for (id in listOf(null, f.play)) {
+            val vm = loaded(id)
+            vm.change(valid().copy(scores = listOf(DraftScore(playerId = f.player, winner = false))))
+            vm.save(); advanceUntilIdle()
+            assertEquals(PlayWriteProblem.INVALID_INPUT, vm.editor.value.writeProblem)
+            assertTrue(writer.commands.isEmpty())
+        }
+    }
+    @Test fun `shared competitive winners remain valid`() = runTest(dispatcher) {
+        val before = options(); val second = before.players.single().copy(id = UUID(20, 20), name = "Bruno")
+        options = { before.copy(players = before.players + second) }
+        val vm = loaded(); vm.change(valid().copy(scores = listOf(
+            DraftScore(playerId = f.player, winner = true), DraftScore(playerId = second.id, winner = true))))
+        vm.save(); advanceUntilIdle()
+        assertEquals(2, (writer.commands.single() as CreatePlayCommand).payload.scores.count { it.winner })
+    }
+    @Test fun `cooperative losses remain valid without any winner`() = runTest(dispatcher) {
+        val vm = loaded(); vm.change(valid().copy(cooperative = true, teamWon = false,
+            scores = listOf(DraftScore(playerId = f.player, winner = false))))
+        vm.save(); advanceUntilIdle()
+        val input = (writer.commands.single() as CreatePlayCommand).payload
+        assertEquals(false, input.team_won); assertTrue(input.scores.none { it.winner })
+    }
+    @Test fun `historical missing or zero duration and absent winners remain editable and deletable`() = runTest(dispatcher) {
+        for (duration in listOf(null, 0)) {
+            val old = snapshot()
+            writer.read = { old.copy(detail = old.detail.copy(play = old.detail.play.copy(duration_minutes = duration),
+                scores = old.detail.scores.map { row -> row.copy(score = row.score.copy(winner = false)) })) }
+            val vm = loaded(f.play)
+            assertNotNull(vm.editor.value.draft); assertFalse(vm.editor.value.draft!!.hasValidDuration)
+            assertFalse(vm.editor.value.draft!!.hasRequiredWinner)
+            val before = writer.commands.size
+            vm.save(); advanceUntilIdle(); assertEquals(before, writer.commands.size)
+            vm.requestDelete(); vm.delete(); advanceUntilIdle()
+            assertTrue(writer.commands.last() is DeletePlayCommand)
+        }
+    }
+    @Test fun `legacy editing writes only after duration and competitive winner are supplied`() = runTest(dispatcher) {
+        val old = snapshot()
+        writer.read = { old.copy(detail = old.detail.copy(play = old.detail.play.copy(duration_minutes = null),
+            scores = old.detail.scores.map { row -> row.copy(score = row.score.copy(winner = false)) })) }
+        val vm = loaded(f.play); vm.edit { it.copy(duration = "1") }; vm.save(); advanceUntilIdle()
+        assertTrue(writer.commands.isEmpty())
+        vm.edit { it.copy(scores = it.scores.map { row -> row.copy(winner = true) }) }; vm.save(); advanceUntilIdle()
+        val command = writer.commands.single() as UpdatePlayCommand
+        assertEquals(1, command.payload.duration_minutes); assertTrue(command.payload.scores.single().winner)
+        assertEquals(f.scoreId, command.payload.scores.single().id); assertEquals("v1:opaque", command.expected_revision)
+    }
+
     @Test fun `aggregate payload budget applies even to fixture writer`() = runTest(dispatcher) {
         val vm = loaded(); vm.change(valid().copy(notes = "x".repeat(1048576)))
         vm.save(); advanceUntilIdle()

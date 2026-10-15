@@ -121,7 +121,11 @@ class PlayEditorNavigationTest {
     @After fun clean() {
         gate?.complete(Unit)
         try {
-            if (::scenario.isInitialized) try { rotate(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) } finally { scenario.close() }
+            if (::scenario.isInitialized) try {
+                scenario.onActivity { it.finishEditorTestInput() }
+                compose.waitForIdle()
+                rotate(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+            } finally { scenario.close() }
         } finally { DebugRecreationActivity.content = null }
     }
     private fun rotate(orientation: Int) {
@@ -148,8 +152,11 @@ class PlayEditorNavigationTest {
         compose.onNodeWithTag("manage-play").performClick(); compose.waitForIdle()
     }
     private fun click(tag: String) {
+        // Finish text input before scrolling: an IME resize can recompose the lazy target between lookup and tap.
+        scenario.onActivity { it.finishEditorTestInput() }
+        compose.waitForIdle()
         compose.onNodeWithTag("editor-content").performScrollToNode(hasTestTag(tag))
-        compose.onNodeWithTag(tag).performClick(); compose.waitForIdle()
+        compose.onNodeWithTag(tag).performScrollTo().assertIsDisplayed().performClick(); compose.waitForIdle()
     }
     private fun replace(tag: String, value: String) {
         compose.onNodeWithTag("editor-content").performScrollToNode(hasTestTag(tag))

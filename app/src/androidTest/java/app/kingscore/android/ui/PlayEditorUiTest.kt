@@ -1,12 +1,13 @@
 package app.kingscore.android.ui
 
 import android.graphics.Bitmap
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.StateRestorationTester
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.Density
 import androidx.compose.material3.Surface
 import androidx.test.platform.app.InstrumentationRegistry
@@ -28,7 +29,7 @@ import org.junit.*
 import org.junit.Assert.*
 
 class PlayEditorUiTest {
-    @get:Rule val compose = createComposeRule()
+    @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
     private val account = Account(UUID(7, 1), "Admin", null, true)
     private val play = UUID(7, 2)
     private val game = GameRow(UUID(7, 3), "Azul", null, null, null, null, null)
@@ -88,7 +89,13 @@ class PlayEditorUiTest {
         compose.waitForIdle()
     }
     private fun scroll(tag: String) { compose.onNodeWithTag("editor-content").performScrollToNode(hasTestTag(tag)) }
-    private fun click(tag: String) { scroll(tag); compose.onNodeWithTag(tag).performClick(); compose.waitForIdle() }
+    private fun click(tag: String) {
+        compose.runOnIdle { compose.activity.finishEditorTestInput() }
+        compose.waitForIdle()
+        scroll(tag)
+        compose.onNodeWithTag(tag).performScrollTo().assertIsDisplayed().performClick()
+        compose.waitForIdle()
+    }
     private fun replace(tag: String, text: String) { scroll(tag); compose.onNodeWithTag(tag).performTextReplacement(text); compose.waitForIdle() }
     private fun choose(tag: String, id: UUID) { click(tag); compose.onNodeWithTag("editor-option-$id").performClick(); compose.waitForIdle() }
     private fun createForm() { choose("editor-game", game.id); choose("editor-add-player", anna.id) }
@@ -97,7 +104,10 @@ class PlayEditorUiTest {
         directory.mkdirs()
         File(directory, "$name.png").outputStream().use { compose.onRoot().captureToImage().asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, it) }
     }
-    @After fun clean() { models.forEach { it.clearMemory() } }
+    @After fun clean() {
+        compose.runOnIdle { compose.activity.finishEditorTestInput(); models.forEach { it.clearMemory() } }
+        compose.waitForIdle()
+    }
 
     @Test fun createUsesChosenIdentityExactScoreAndExplicitWinner() {
         show(); scroll("editor-save"); compose.onNodeWithTag("editor-save").assertIsNotEnabled()
@@ -117,6 +127,7 @@ class PlayEditorUiTest {
         show(); createForm(); replace("editor-date", "2026-02-30"); click("editor-save")
         compose.onNodeWithTag("editor-error").assertIsDisplayed(); assertTrue(writer.commands.isEmpty())
         replace("editor-date", "2026-02-28"); click("editor-save")
+        compose.onNodeWithText("Partita salvata.").assertIsDisplayed()
         assertEquals(LocalDate.of(2026, 2, 28), (writer.commands.single() as CreatePlayCommand).payload.played_at)
     }
     @Test fun competitiveAndCooperativeResultsAreExplicitAndParticipantRemovalIsStable() {

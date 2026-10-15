@@ -12,6 +12,9 @@ import io.ktor.http.*
 import java.net.ServerSocket
 import java.io.IOException
 import java.util.UUID
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kingscore.contracts.v1.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -161,6 +164,50 @@ class CommentWritesTest {
                 .post("{}".toRequestBody()).build()) }
             assertEquals(1, calls.get())
         } finally { transport.close(); server.close(); worker.join(2500) }
+    }
+
+    @Test fun `transport close defers idle socket eviction to its executor and is idempotent`() = runBlocking {
+        val server = ServerSocket(0, 5, java.net.InetAddress.getByName("127.0.0.1"))
+        val worker = Thread {
+            try {
+                server.accept().use { socket ->
+                    socket.soTimeout = 5000
+                    val input = socket.getInputStream().bufferedReader()
+                    while (!input.readLine().isNullOrEmpty()) { /* Consume the GET headers. */ }
+                    socket.getOutputStream().apply {
+                        write("HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}".toByteArray()); flush()
+                    }
+                    input.read()
+                }
+            } catch (_: IOException) { /* Fixture disposal closes the bounded worker. */ }
+        }.apply { isDaemon = true; start() }
+        val executor = Executors.newSingleThreadExecutor()
+        val transport = NoRetryCommentTransport()
+        // Keep the production configuration; control only the actual OkHttp cleanup executor.
+        val field = NoRetryCommentTransport::class.java.getDeclaredField("client").apply { isAccessible = true }
+        val client = (field.get(transport) as okhttp3.OkHttpClient).newBuilder()
+            .dispatcher(okhttp3.Dispatcher(executor)).build()
+        field.set(transport, client)
+        val busy = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        try {
+            assertEquals("{}", transport.send(Request.Builder().url("http://127.0.0.1:${server.localPort}/").build()).body)
+            executor.execute { busy.countDown(); release.await(5, TimeUnit.SECONDS) }
+            assertTrue(busy.await(3, TimeUnit.SECONDS))
+            assertEquals(1, client.connectionPool.idleConnectionCount())
+            transport.close()
+            transport.close()
+            assertFalse("Cleanup must run before its executor shuts down", executor.isShutdown)
+            assertEquals("The calling thread must not evict sockets", 1, client.connectionPool.idleConnectionCount())
+            try { transport.send(Request.Builder().url("http://127.0.0.1:${server.localPort}/").build()); fail("Closed transport must reject sends") }
+            catch (_: kotlinx.coroutines.CancellationException) { }
+            release.countDown()
+            assertTrue(executor.awaitTermination(3, TimeUnit.SECONDS))
+            assertEquals(0, client.connectionPool.connectionCount())
+            transport.close()
+        } finally {
+            release.countDown(); transport.close(); executor.shutdown(); server.close(); worker.join(5500)
+        }
     }
 
     @Test fun `validation counts emoji code points and rejects invalid PostgreSQL Unicode`() {

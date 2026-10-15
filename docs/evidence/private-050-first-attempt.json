@@ -1,0 +1,16 @@
+{
+  "status": "FAIL",
+  "versionCode": 13,
+  "sourceCommit": "f05612e77e2b5e054b59d414fe3c8ae9841b155d",
+  "apkSha256": "0faac492f1e14d04fabefc58955b71ede862686d2642c8e16cb690d703ceb65a",
+  "releaseBuildPassed": true,
+  "upgradeFrom12Passed": true,
+  "liveUiConfirmed": [
+    "admin_authenticated",
+    "global_standings_and_history"
+  ],
+  "failure": "NetworkOnMainThreadException while evicting pooled TLS connections during Activity disposal",
+  "stable": false,
+  "nextBuildVersionCode": 14,
+  "credentialsIncluded": false
+}

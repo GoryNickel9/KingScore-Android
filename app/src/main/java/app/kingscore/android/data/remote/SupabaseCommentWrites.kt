@@ -76,10 +76,14 @@ class NoRetryCommentTransport(private val captureErrorCode: Boolean = false,
         return buildJsonObject { put("code", code) }.toString()
     }
     override fun close() {
-        closed.set(true)
+        if (!closed.compareAndSet(false, true)) return
         client.dispatcher.cancelAll()
-        client.connectionPool.evictAll()
-        client.dispatcher.executorService.shutdown()
+        val executor = client.dispatcher.executorService
+        // Closing an idle TLS socket can write close_notify; never do it on the UI thread.
+        executor.execute {
+            try { client.connectionPool.evictAll() }
+            finally { executor.shutdown() }
+        }
     }
 }
 

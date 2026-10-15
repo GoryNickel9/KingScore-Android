@@ -1,5 +1,7 @@
 # Compatibilità Android con ELO v2 — 0.6.1/code 19
 
+Dalla 0.6.2 tutti i grafici e Win Rate per Gioco sono rimossi da Statistiche. La classifica e i decoder delle API conservano la compatibilità descritta qui; [Statistiche numeriche](STATISTICS_NUMERIC.md) documenta la schermata corrente.
+
 Il backend ScoreKing restituisce `kingscore-elo-rules-v2` tramite le RPC di lettura già usate dall'app. Il suffisso `_v1` nel nome di una RPC identifica il contratto di trasporto; non impone l'algoritmo ELO v1.
 
 ## Letture

@@ -1,10 +1,12 @@
 # Changelog
 
-## 0.6.2 — Statistiche numeriche in collaudo
+## 0.6.2 — Statistiche numeriche
 
 - Rimossi da Statistiche Win Rate per Gioco e tutti i grafici ELO, inclusi quelli nelle schede dei giochi. Restano partite totali, medie, copertura dei dati e dettagli dei giocatori.
 - Rimosse anche le richieste ai grafici e ai relativi cataloghi. Paginazione numerica, aggiornamento dalla cima, login e blocco senza Internet restano attivi.
 - Rating ELO e la lettura di ELO v2 restano disponibili. [Perimetro](docs/STATISTICS_NUMERIC.md).
+
+APK code 20 dalla fonte pulita `45193cfc5e5d53f3e1b0c58c46b972d32cc67b85`: 333 test JVM debug/release, 25 test nativi interessati, 41 controlli Node e lint senza errori. [CI](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38816371224) e aggiornamento 18 → 20 passati. [Qualifica](docs/evidence/private-062-release-validation.json).
 
 ## 0.6.1 — compatibilità ELO v2
 

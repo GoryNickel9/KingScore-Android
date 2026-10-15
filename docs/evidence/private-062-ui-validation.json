@@ -171,5 +171,38 @@
     "per-game charts",
     "chart player selection and pagination"
   ],
-  "numericGameAndPlayerStatisticsPreserved": true
+  "numericGameAndPlayerStatisticsPreserved": true,
+  "sourceCi": {
+    "conclusion": "success",
+    "headSha": "45193cfc5e5d53f3e1b0c58c46b972d32cc67b85",
+    "status": "completed",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38816371224"
+  },
+  "cleanup": {
+    "status": "PASS",
+    "avd": "KingScore062Release31",
+    "api": 31,
+    "serial": "emulator-5588",
+    "testPackageRemoved": true,
+    "syntheticApplicationDataCleared": true,
+    "unrelatedEmulatorsModified": false,
+    "emulatorStopped": true,
+    "settingsRestored": {
+      "system.font_scale": "null",
+      "secure.show_ime_with_hard_keyboard": "1",
+      "global.transition_animation_scale": "1.0",
+      "global.window_animation_scale": "1.0",
+      "global.animator_duration_scale": "null"
+    },
+    "failedApi35DeviceCleanup": {
+      "status": "PASS",
+      "avd": "KingScoreUi05135",
+      "serial": "emulator-5586",
+      "syntheticPackagesRemoved": true,
+      "fontScaleRestored": "1.0",
+      "keyboardSettingRestored": "1",
+      "stopRequested": true,
+      "emulatorStopped": true
+    }
+  }
 }

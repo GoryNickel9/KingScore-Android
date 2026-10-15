@@ -1,5 +1,30 @@
 # Verifica KingScore Android
 
+## 0.6.2/code 20 — Statistiche numeriche
+
+APK: `.work/releases/KingScore-0.6.2-20.apk`, 14.560.738 byte. SHA-256 `6bc382d954ed9a7d051cba527253574e9cb28d60f38141715354a3a1056c4f9f`. Fonte pulita `45193cfc5e5d53f3e1b0c58c46b972d32cc67b85`; stesso certificato delle versioni precedenti. Installare sopra la 0.6.0 senza disinstallarla; aggiornamento 18 → 20 verificato.
+
+Statistiche mostra schede dei giochi, partite totali, medie, copertura e dettagli paginati dei giocatori. Win Rate per Gioco e tutti i grafici sono rimossi, insieme alle richieste ai grafici e ai loro cataloghi. Rating ELO conserva la classifica e la compatibilità v1/v2; login e Internet restano obbligatori. [Perimetro](STATISTICS_NUMERIC.md).
+
+| Controllo | Risultato |
+| --- | --- |
+| JVM debug e release | 333 test per variante, zero fallimenti |
+| Lint | Zero errori; 16 avvisi debug e 16 release |
+| Contratti Node | 41 passati |
+| Richieste ai grafici | Zero in apertura, refresh, espansione, riapertura e paginazione numerica |
+| UI interessata | Singolo run verde: 25 successi, inclusi Statistiche, testo 2×, pareggi e accesso |
+| Aggiornamento 18 → 20 | Stesso UID, registri cifrati conservati, firma estranea rifiutata, run-as negato |
+| Login/rete release | Login con sessione vuota, blocco offline e disconnessione/riconnessione verificati |
+| CI della fonte | [PASS sul commit 45193cf](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38816371224) |
+
+Le prove UI usano un emulatore PC API 35; aggiornamento e gate della release sono verificati su un emulatore pulito API 31. Entrambi usano ART precompilato; il collaudo non misura l'avvio a freddo. La suite nativa integrale della 0.6.0 non è stata ripetuta. Nessun nuovo login remoto o telefono fisico verificato. Probe e dati sintetici rimossi, impostazioni ripristinate ed emulatori dedicati arrestati. Aggiornamenti APK manuali.
+
+Il primo tentativo firmato su API 35 ha verificato firma e registri, ma la finestra Android «System UI isn't responding» ha coperto lo stato offline. Il log di quel boot contiene anche crash di Google Play Services; il riavvio non ha risolto il blocco del sistema. Il collaudo completo è passato sullo stesso APK in un emulatore pulito API 31; il report fallito resta referenziato nella qualifica.
+
+Nessuna modifica web, Vercel o Supabase. Il riepilogo restituisce ancora i campi del win rate, che questa schermata non visualizza. I conteggi server e i writer atomici/web restano dipendenze separate: [ELO v2](ELO_V2_ANDROID.md).
+
+Evidenze: [build](evidence/private-062-build.json), [UI](evidence/private-062-ui-validation.json), [aggiornamento](evidence/private-062-upgrade-validation.json), [qualifica](evidence/private-062-release-validation.json). Il manifest iniziale di build resta candidato; la qualifica promuove lo stesso checksum.
+
 ## 0.6.1/code 19 — compatibilità ELO v2
 
 APK: `.work/releases/KingScore-0.6.1-19.apk`, 14.593.506 byte. SHA-256 `941950bb49ec1ec7b2d2679530fe7ce0f306c1c20f76565bb28c15eb70e28254`. Fonte pulita `03d1fa576df4bf19fa11d626aec847fd274937d7`; stesso certificato della 0.6.0. Installare sopra la versione precedente senza disinstallarla.

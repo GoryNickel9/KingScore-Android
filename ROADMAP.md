@@ -1,6 +1,6 @@
 # Roadmap KingScore Android
 
-Stato corrente: **0.6.1/code 19**, compatibilità ELO v2 e pareggi verificati. APK firmato, aggiornamento dalla 0.6.0 e CI passati. La formula resta sul backend; API statistiche e writer condivisi richiedono un intervento separato. [Perimetro](docs/ELO_V2_ANDROID.md).
+Stato corrente: **0.6.2/code 20**, Statistiche senza Win Rate per Gioco né grafici. APK firmato, aggiornamento dalla 0.6.0 e CI passati. Compatibilità ELO v2 e pareggi conservati; dipendenze backend separate. [Perimetro](docs/STATISTICS_NUMERIC.md).
 
 Avviare un'app Android nativa in Kotlin e Jetpack Compose, mantenendo Supabase e i dati condivisi con King-Score. La prima versione deve permettere di consultare lo storico, accedere con un account esistente, commentare e, per gli amministratori, aggiungere, modificare ed eliminare partite con gli stessi permessi del sito.
 

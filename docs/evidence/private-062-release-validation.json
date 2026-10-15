@@ -1,0 +1,110 @@
+{
+  "status": "PASS",
+  "candidate": false,
+  "stable": true,
+  "qualification": "private-numeric-statistics-update",
+  "versionName": "0.6.2",
+  "versionCode": 20,
+  "sourceCommit": "45193cfc5e5d53f3e1b0c58c46b972d32cc67b85",
+  "sourceDirtyAtBuild": false,
+  "apkSha256": "6bc382d954ed9a7d051cba527253574e9cb28d60f38141715354a3a1056c4f9f",
+  "apkBytes": 14560738,
+  "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
+  "adminEditorEnabled": true,
+  "jvm": {
+    "errors": 0,
+    "tests": 333,
+    "failures": 0
+  },
+  "lint": {
+    "warnings": 16,
+    "errors": 0
+  },
+  "nodeContractTests": {
+    "passed": 41,
+    "failed": 0
+  },
+  "native": {
+    "affectedCasesPassed": 25,
+    "failed": 0,
+    "skipped": 0,
+    "completeApplicationSuiteRepeated": false,
+    "evidence": "private-062-ui-validation.json",
+    "baselineFullSuite": "private-060-ui-validation.json"
+  },
+  "upgradeFrom18": "PASS",
+  "signedUpgradeApi": 31,
+  "requiredLogin": "PASS",
+  "liveOfflineAndReconnect": "PASS",
+  "sourceCi": {
+    "conclusion": "success",
+    "headSha": "45193cfc5e5d53f3e1b0c58c46b972d32cc67b85",
+    "status": "completed",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38816371224"
+  },
+  "statisticsChartsRemoved": true,
+  "statisticsWinRatesRemoved": true,
+  "chartRequestsFromStatistics": 0,
+  "chartRequestEvidence": "StatisticsDetailsViewModelTest: open, refresh, expansion, reopen and numeric pagination",
+  "eloReadersRegressionEvidence": "elo-v2-reader-validation.json (previous actual-response proof; decoder source unchanged)",
+  "remoteDatabaseChanged": false,
+  "webChanged": false,
+  "vercelChanged": false,
+  "remoteAccountAuthenticationRetested": false,
+  "eloCalculatedOnAndroid": false,
+  "supportedAlgorithms": [
+    "kingscore-elo-legacy-v1",
+    "kingscore-elo-rules-v2"
+  ],
+  "knownBackendDependencies": [
+    "Overview still returns win-rate fields; this UI no longer displays them.",
+    "Server win counts, atomic ranking rules and web writer integration remain separate from this Android patch."
+  ],
+  "limitations": [
+    "PC API 35 UI tests and fresh API 31 signed-upgrade tests; no physical phone or new GoTrue login test.",
+    "25 affected native cases passed; the complete baseline UI suite was not repeated.",
+    "ART-precompiled packages; no cold-start performance benchmark.",
+    "APK updates remain manual."
+  ],
+  "initialSignedUpgradeAttempt": {
+    "status": "FAIL",
+    "report": ".work/private-apk/a1401e07d086492cb0f4ae77edb021d2/report.json",
+    "failure": "Offline UI assertion covered by Android System UI ANR dialog",
+    "observedDialog": "System UI isn't responding",
+    "xml": ".work/private-apk/a1401e07d086492cb0f4ae77edb021d2/offline-11.log",
+    "xmlSha256": "a982c05b43c3ec271a8eb427dc83b90e85b9e6592de592c2cdfac9ec779124f1",
+    "apkChanged": false,
+    "remoteDatabaseContacted": false,
+    "eventLog": ".work/statistics-062-upgrade-first-events.log",
+    "eventLogSha256": "0bcc2ce0b5b21c37d2a835c2a448c095d468f585b879d5140cd6420c18cd1c78",
+    "googlePlayServicesCrashesObserved": true
+  },
+  "cleanup": {
+    "status": "PASS",
+    "avd": "KingScore062Release31",
+    "api": 31,
+    "serial": "emulator-5588",
+    "testPackageRemoved": true,
+    "syntheticApplicationDataCleared": true,
+    "unrelatedEmulatorsModified": false,
+    "emulatorStopped": true,
+    "settingsRestored": {
+      "system.font_scale": "null",
+      "secure.show_ime_with_hard_keyboard": "1",
+      "global.transition_animation_scale": "1.0",
+      "global.window_animation_scale": "1.0",
+      "global.animator_duration_scale": "null"
+    },
+    "failedApi35DeviceCleanup": {
+      "status": "PASS",
+      "avd": "KingScoreUi05135",
+      "serial": "emulator-5586",
+      "syntheticPackagesRemoved": true,
+      "fontScaleRestored": "1.0",
+      "keyboardSettingRestored": "1",
+      "stopRequested": true,
+      "emulatorStopped": true
+    }
+  },
+  "verifiedAt": "2026-10-15T22:37:22.463881+00:00"
+}

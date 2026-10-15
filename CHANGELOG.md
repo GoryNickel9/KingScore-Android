@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.0 — integrazione in collaudo
+## 0.6.0 — 15 ottobre 2026
 
 - SQL approvato e applicato a ScoreKing: cinque RPC autenticate per riepilogo Home, panoramica Statistiche, dettaglio gioco e finestre dei grafici ELO. Dati, revisione/pubblicazione ELO, policy, grant e funzioni precedenti invariati; nessuna modifica Vercel o web.
 - Win rate sulle partite del proprio giocatore; medie senza valori mancanti, con campioni disponibili. Cursori legati ad account e revisione, calcoli NUMERIC esatti e controlli RLS.
@@ -8,6 +8,8 @@
 - Grafici consultabili con tocco, slider accessibile e legenda. Testo 2× con metriche e comandi su più righe; colori del giocatore adattati quando manca contrasto sul fondo. Login, blocco senza Internet e funzioni escluse restano invariati.
 
 La pagina Statistiche della 0.5.2 conservava il riepilogo derivato dalla Home: il precedente allineamento di stile non copriva i grafici ELO e le schede statistiche del web. [Implementazione e limiti](docs/SUMMARY_STATISTICS.md), [contratto](docs/proposals/SUMMARY_API_V1.md) e [confronto delle schermate](docs/proposals/STATISTICS_WEB_PARITY.md).
+
+Stabile privata code 18 dalla fonte pulita `b5d5e112c41cd585b81eab03c3e521b5de9c1fb9`: 323 test JVM debug/release, 41 controlli Node, lint senza errori e [CI](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38794486985) passata. Run nativo completo: 111 successi e due integrazioni escluse. Aggiornamento 17 → 18 con firma e registri cifrati conservati; login, blocco offline e riconnessione verificati. [Qualifica](docs/evidence/private-060-release-validation.json).
 
 ## 0.5.2 — 15 ottobre 2026
 

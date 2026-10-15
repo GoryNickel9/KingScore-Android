@@ -4,13 +4,13 @@ Avviare un'app Android nativa in Kotlin e Jetpack Compose, mantenendo Supabase e
 
 Piano iniziale: 13 ottobre 2026. Stato aggiornato: 15 ottobre 2026. Scelta nativa confermata dall'utente. Questa roadmap riguarda KingScore, l'app per giochi da tavolo.
 
-Attività successiva alla 0.5.2: [API di riepilogo e Statistiche](docs/SUMMARY_STATISTICS.md). Il SQL approvato è applicato a ScoreKing dopo preflight, confronto dello stato precedente e letture con ruolo authenticated. Home usa il riepilogo RPC; Statistiche implementa le sezioni web con dettagli e grafici paginati. La 0.6.0/code 18 è in collaudo per la consegna firmata. Nessuna modifica al codice web o Vercel.
+Attività successiva alla 0.5.2: [API di riepilogo e Statistiche](docs/SUMMARY_STATISTICS.md). Il SQL approvato è applicato a ScoreKing dopo preflight, confronto dello stato precedente e letture con ruolo authenticated. Home usa il riepilogo RPC; Statistiche implementa le sezioni web con dettagli e grafici paginati. La 0.6.0/code 18 è qualificata sul PC: 323 test JVM debug/release, 111 test nativi riusciti e due esclusi, CI verde, APK firmato e aggiornamento dalla 0.5.2 verificato. Nessuna modifica al codice web o Vercel.
 
 La prima stabile privata 0.5.0/code 15 ha l'editor admin abilitato. Backend e sito sono stati attivati il 15 ottobre su autorizzazione dell'utente; le preparazioni annullate delle fasi 4.1 e 4.2 restano storiche. Build firmata, aggiornamento RC4/code 12 → 15 e percorso UI completo con MainActivity e account reali sono verificati su emulatore API 35. I dati temporanei sono rimossi e il risultato ELO originale è verificato dopo cleanup. La CI della fonte dell'APK è passata; anche le pubblicazioni temporanee sono state rimosse. Report di consegna: [docs/STABILITY.md](docs/STABILITY.md) e [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
 
 La precedente stabile privata **0.5.1/code 16** ha riallineato Home, classifica e dettaglio alle proposte web approvate; 258 test JVM, lint senza errori e aggiornamento 15 → 16 verificati. Le prove native coprono 92 casi distinti riusciti e due integrazioni condizionali escluse, dopo la correzione dei driver dell’editor. Nessuna modifica web o cloud per quell'aggiornamento. Firma, limiti e report: [STABILITY.md](docs/STABILITY.md).
 
-## Stabile privata corrente 0.5.2/code 17
+## Checkpoint precedente 0.5.2/code 17
 
 La 0.5.2 implementa le nove richieste approvate: stile web per Partite/Statistiche/Giocatore, rimozione del dialogo storico punteggio da Rating ELO, meno letture ripetute, gesto di aggiornamento dalla cima, rimozione di Classifiche ELO dalla Home, preferiti prima delle ultime partite, tre menu ridisegnati, badge commenti e tutti i partecipanti con i punti nelle card.
 

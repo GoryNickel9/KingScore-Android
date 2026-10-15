@@ -1,18 +1,14 @@
 # KingScore Android
 
-App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di KingScore. La stabile privata 0.5.2 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e gestione partite per gli amministratori. Login e Internet sono obbligatori.
+App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di KingScore. La **stabile privata corrente è la 0.6.0/code 18**. Comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, immagini in lettura, commenti propri e gestione atomica di tutte le partite per gli amministratori. Login e Internet sono obbligatori.
 
-La **stabile privata corrente è la 0.5.2/code 17**. Estende lo stile web a Partite, Statistiche e Giocatore, mostra tutti i partecipanti e i punti nelle card e aggiunge il badge dei commenti. Introduce menu ricercabili per giochi e partecipanti, rinomina il pannello Filtri e sostituisce i comandi Aggiorna con il trascinamento verso il basso dalla cima della pagina. In Home i giochi preferiti precedono le ultime partite e scompare il pulsante Classifiche ELO; Rating ELO mantiene le classifiche e rimuove il dialogo dello storico punteggio.
+La Home riceve il riepilogo con una RPC senza scaricare tutto lo storico. Statistiche segue le tre sezioni web: win rate personale per gioco, ELO generale e schede per gioco con medie, copertura e giocatori espandibili. I grafici caricano finestre di 100 partite; tocco, slider e legenda consentono di consultarli. NULL è escluso dalle medie, zero resta un campione e il win rate considera le proprie partecipazioni.
 
-Home e Statistiche condividono il riepilogo in RAM. La scansione statistica richiede pagine da 500 con i soli campi necessari e prosegue fino alla pagina vuota, anche se il server applica un limite inferiore. ELO riusa la stessa pubblicazione nella sessione online, verificando ancora l'accesso. Refresh e salvataggi confermati invalidano i dati interessati. La prima apertura richiede comunque risposte di rete; questi cambiamenti non promettono tempi istantanei e non introducono uso offline.
+Le cache restano in RAM nella sessione online e si invalidano dopo nuove revisioni osservate o salvataggi. Dettagli e grafici si caricano separatamente. Prima apertura e refresh richiedono ancora il server; queste modifiche non introducono uso offline né garantiscono tempi istantanei su ogni rete. Rating ELO conserva il lettore della pubblicazione esistente e la formula rimane invariata.
 
-La code 17 supera 301 test JVM sia debug sia release, lint senza errori e aggiornamento dalla 0.5.1 con lo stesso certificato e dati cifrati conservati. La CI della fonte dell'APK è passata. I test nativi sul PC hanno 106 casi distinti riusciti e due integrazioni escluse, dopo la ripetizione delle classi coinvolte nei cinque fallimenti iniziali; non è un singolo run completo verde. Menu e tre schermate sono verificati anche con font di sistema a 2×. APK, checksum e limiti: [STABILITY.md](docs/STABILITY.md). Telefoni fisici e un nuovo accesso autenticato al backend reale non sono verificati; gli aggiornamenti APK restano manuali.
+La code 18 supera 323 test JVM sia debug sia release, lint senza errori, 41 controlli Node e un singolo run nativo completo con 111 successi e due integrazioni escluse. Aggiornamento dalla 0.5.2 con stessa firma, UID e dati cifrati conservati. [CI della fonte](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38794486985) passata. APK, checksum e limiti: [STABILITY.md](docs/STABILITY.md).
 
-Gli amministratori possono creare, modificare ed eliminare tutte le partite tramite salvataggi atomici. Classifiche generali, classifiche per gioco e storici leggono la stessa pubblicazione globale del backend. La formula ELO è invariata e l'app non esegue ricalcoli. Il registro cifrato conserva richieste incerte e conferme; il recupero richiede un'azione esplicita.
-
-La precedente 0.5.1, versionCode 16, aggiorna Home, classifica e dettaglio partita secondo le proposte approvate: colori slate/verde, riepilogo con grafico mensile, righe ELO compatte e punteggi allineati. Supera 258 test JVM, lint senza errori e aggiornamento dalla 0.5.0 con lo stesso certificato e dati cifrati conservati. Le prove native usano fixture sul PC: 92 casi riusciti e due integrazioni condizionali escluse; i dettagli dei tentativi e delle ripetizioni sono in [TESTING.md](docs/TESTING.md).
-
-La precedente 0.5.0, versionCode 15, supera build firmata, aggiornamento dalla RC4 e percorso UI completo con MainActivity e account reali su emulatore API 35. Il collaudo verifica classifiche, modifica admin di una partita altrui, commenti propri e blocco senza Internet. Account, dati e pubblicazioni temporanei sono stati rimossi; il risultato ELO originale è verificato dopo la pulizia. La CI della fonte dell'APK è passata; lo stesso workflow verifica i report di consegna. Prove, checksum e limiti: [STABILITY.md](docs/STABILITY.md) e [LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md). I documenti delle fasi 4.1 e 4.2 descrivono preparazioni precedenti annullate.
+Il SQL approvato è applicato al progetto ScoreKing verificato. Dati, pubblicazione ELO, policy e funzioni precedenti non cambiano; nessuna modifica web o Vercel. Letture reali con ruolo authenticated e decoder Android passati; non è stato ripetuto un login GoTrue. Telefoni fisici non verificati. Gli aggiornamenti APK restano manuali.
 
 ## Perimetro confermato
 
@@ -33,7 +29,7 @@ La precedente 0.5.0, versionCode 15, supera build firmata, aggiornamento dalla R
 | [docs/ACTIVITY_LIFECYCLE.md](docs/ACTIVITY_LIFECYCLE.md) | Rotazione, ricreazione e pulizia della sessione |
 | [CHANGELOG.md](CHANGELOG.md) | Modifiche e cronologia dei rilasci |
 | [API riepilogo](docs/proposals/SUMMARY_API_V1.md) | SQL completo, permessi, contratti per Statistiche e collaudi locale/ScoreKing |
-| [Riepilogo e Statistiche 0.6.0](docs/SUMMARY_STATISTICS.md) | API applicate a ScoreKing, integrazione Android e comportamento dei grafici; APK in collaudo |
+| [Riepilogo e Statistiche 0.6.0](docs/SUMMARY_STATISTICS.md) | API applicate a ScoreKing, integrazione Android e comportamento dei grafici |
 | [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md) | Schema reale, RLS e limiti delle verifiche |
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | API esistenti, DTO e RPC proposte |
 | [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Contratti V1 e prove locali dei salvataggi |
@@ -68,7 +64,7 @@ Con Android SDK 36 e JDK 17 o successivo disponibili:
 
 Lo script di configurazione iniziale legge URL e chiave pubblica dal repository web; le configurazioni locali sono escluse da Git. Nel perimetro corrente usare la configurazione già presente oppure impostare manualmente SUPABASE_URL e SUPABASE_PUBLIC_KEY: [docs/PHASE2.md](docs/PHASE2.md). APK debug: `app/build/outputs/apk/debug/app-debug.apk`.
 
-La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e checkpoint precedenti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md), lo stato corrente in [docs/STABILITY.md](docs/STABILITY.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è riattivata e verifica contratti Node, test JVM, lint e build APK; la [CI della fonte della 0.5.2](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38774226906) è passata.
+La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e checkpoint precedenti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md), lo stato corrente in [docs/STABILITY.md](docs/STABILITY.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è riattivata e verifica contratti Node, test JVM, lint e build APK; la [CI della fonte della 0.6.0](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38794486985) è passata.
 
 Per verificare le evidenze salvate: `node --test scripts/check-evidence.test.mjs`. Per compilare ed eseguire i test Kotlin: `./scripts/check-contracts.ps1` con Kotlin e Java 17 o successivo disponibili.
 

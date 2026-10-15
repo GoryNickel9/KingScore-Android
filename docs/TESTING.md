@@ -1,5 +1,27 @@
 # Verifica KingScore Android
 
+## Stabile privata 0.6.0/code 18 — qualifica PC
+
+APK: `.work/releases/KingScore-0.6.0-18.apk`, 14.593.506 byte. SHA-256: `e820ff8a0622384dd618d1ad71ec876d8c289590237aa116c4790d4e258e9acf`. Fonte pulita: `b5d5e112c41cd585b81eab03c3e521b5de9c1fb9`. Certificato invariato: `b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b`. Installare sopra la 0.5.2 senza disinstallarla; aggiornamento 17 → 18 verificato con UID e registri cifrati conservati.
+
+La Home legge i totali con una RPC. Statistiche riprende Win Rate per Gioco, ELO Generale e Statistiche per Gioco del web, con schede giocatore espandibili, medie e copertura dei valori disponibili. I grafici leggono finestre di 100 partite e consentono selezione tramite tocco, slider e legenda; il testo 2× mantiene metriche e comandi leggibili.
+
+| Verifica della code 18 | Risultato |
+| --- | --- |
+| JVM e lint | 323 test sia debug sia release, zero fallimenti; lint senza errori, 24 avvisi debug e 16 release |
+| Contratti Node | 41 passati |
+| UI nativa | Singolo run completo verde: 111 successi e due integrazioni escluse su 113 casi |
+| CI della fonte | [PASS sul commit b5d5e11](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38794486985) |
+| Aggiornamento 17 → 18 | Stesso UID, registri cifrati conservati, firma diversa rifiutata, run-as negato |
+| Login e rete release | Login a sessione vuota, avvio offline e disconnessione bloccati, riconnessione verificata |
+| API reali | Progetto ScoreKing verificato; cinque RPC applicate, letture con ruolo authenticated e decoder Android passati, richieste HTTP anonime rifiutate |
+
+Dati sorgente, formula e pubblicazione ELO, policy, grant e funzioni precedenti sono invariati. Nessuna modifica web o Vercel. Le nuove RPC sono applicate su autorizzazione dell'utente; il telefono non esegue ricalcoli. Login e connessione restano obbligatori, senza modalità offline.
+
+Evidenze: [build](evidence/private-060-build.json), [UI](evidence/private-060-ui-validation.json), [aggiornamento](evidence/private-060-upgrade-validation.json), [qualifica](evidence/private-060-release-validation.json), [rollout Supabase](evidence/summary-api-live-validation.json). Il manifest di build resta candidato; il report di qualifica promuove lo stesso checksum.
+
+Il collaudo usa l'emulatore API 35 sul PC con ART precompilato. Telefono fisico e nuovo login GoTrue non sono verificati. Le risposte reali sono lette con ruolo SQL authenticated e decodificate dalle classi Android sul PC; non è un nuovo percorso autenticato completo nell'APK. Le misure SQL locali non stimano la latenza mobile. Le due integrazioni escluse richiedono account remoti e driver HTTP dedicato. Impostazioni ripristinate, fixture e probe rimosse, AVD dedicato arrestato. Gli aggiornamenti APK restano manuali.
+
 ## Stabile privata 0.5.2/code 17 — 15 ottobre 2026
 
 La code 17 deriva dalla fonte pulita `ca4908f16f2400a87c7276907dedc61ee47f01a4`. APK SHA-256: `20a6a4867119ea43a3aca00ddb9c9b3ceb830fe1d6b93de568d3168efe720205`. La qualifica della 0.5.2 è distinta dai risultati storici sotto, che restano attribuiti ai rispettivi APK.

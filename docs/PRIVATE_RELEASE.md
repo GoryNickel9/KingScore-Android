@@ -1,10 +1,8 @@
-# APK privato firmato
+# Distribuzione APK privato
 
-La stabile privata corrente è la **0.5.2/code 17**: `.work/releases/KingScore-0.5.2-17.apk`, 14.527.970 byte, SHA-256 `20a6a4867119ea43a3aca00ddb9c9b3ceb830fe1d6b93de568d3168efe720205`. Fonte pulita: `ca4908f16f2400a87c7276907dedc61ee47f01a4`. Aggiornamento dalla 0.5.1 verificato con lo stesso certificato, UID e dati cifrati conservati. Login, blocco offline e riconnessione sono verificati sulla release. Fonte, prove e limiti: [STABILITY.md](STABILITY.md) e [qualifica](evidence/private-052-release-validation.json).
+La stabile privata corrente è la **0.6.0/code 18**: `.work/releases/KingScore-0.6.0-18.apk`, 14.593.506 byte, SHA-256 `e820ff8a0622384dd618d1ad71ec876d8c289590237aa116c4790d4e258e9acf`. Fonte pulita: `b5d5e112c41cd585b81eab03c3e521b5de9c1fb9`. Aggiornamento dalla 0.5.2 verificato con stesso certificato, UID e dati cifrati conservati; login e blocco offline restano obbligatori. [Qualifica](evidence/private-060-release-validation.json) e [limiti](STABILITY.md).
 
-La 0.5.1/code 16 resta il checkpoint precedente e la baseline dell'aggiornamento: SHA-256 `90306da33c1a75ed24607c7828e7f59c5c645fcbf127164a71c61aad4586c960`. La 0.5.0 conserva il collaudo remoto autorizzato, non ripetuto per la 0.5.2. La nuova qualifica usa fixture sul PC e non certifica telefoni fisici. Non sostituire la chiave della stabile e non distribuire la probe di test.
-
-Le RC precedenti restano storiche: la RC4 aveva l'editor disabilitato, la RC1 era stata ritirata per un difetto del monitor rete, la RC2 lo correggeva e la RC3 migliorava logout e navigazione con font grandi.
+La 0.5.2/code 17 resta la baseline dell'aggiornamento. Riutilizzare la chiave in `.work/signing`, senza rigenerarla; non distribuire la probe. Il manifest iniziale `.apk.json` resta candidato e `.apk.release.json` registra la qualifica dello stesso checksum. Le prove remote della 0.5.0 restano storiche. La 0.6.0 applica solo le nuove letture SQL approvate, senza modificare i dati del sito o Vercel.
 
 ## Build e firma sul PC Windows
 
@@ -14,8 +12,8 @@ Servono PowerShell 7, JDK 17 o successivo, Android SDK 36 e build-tools 35.0.0. 
 # Prima firma: crea una sola chiave locale, protetta dai permessi Windows.
 pwsh -NoProfile -File scripts/build-private-apk.ps1 -InitializeSigningKey
 
-# Build 0.5.2: riusa la stessa chiave; lo script rifiuta APK già presenti.
-pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 17 -VersionName 0.5.2
+# Build 0.6.0: riusa la stessa chiave; lo script rifiuta APK già presenti.
+pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 18 -VersionName 0.6.0
 ```
 
 Usare -Offline soltanto dopo che le dipendenze release sono state scaricate. Il workaround Java locale, quando necessario su questo PC, si configura nell'ambiente del comando come descritto in TESTING.md; non entra nell'APK o nella firma.
@@ -59,7 +57,7 @@ La RC3 supera aggiornamento 8 → 11, conservazione dei registri, rifiuto della 
 
 APK: `.work/releases/KingScore-0.5.0-rc3-11.apk`, 14.446.050 byte. SHA-256: `7f54b60fdf96d4bf63ca20d653d1d030b2d27a9f799203c5034248edb64e7a31`. Certificato SHA-256: `b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b`.
 
-Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI Android è attualmente sospesa; le precedenti esecuzioni autorizzate restano documentate sui rispettivi commit. I checkpoint RC4 usano verifiche locali e skip ci.
+Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI Android è attiva per la 0.6.0. I checkpoint RC4 sottostanti conservano le verifiche locali del periodo in cui era sospesa.
 
 ## Candidata RC4
 

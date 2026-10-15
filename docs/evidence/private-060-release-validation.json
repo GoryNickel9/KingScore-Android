@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "candidate": false,
+  "stable": true,
+  "qualification": "private-stable-summary-and-statistics",
+  "versionName": "0.6.0",
+  "versionCode": 18,
+  "sourceCommit": "b5d5e112c41cd585b81eab03c3e521b5de9c1fb9",
+  "sourceDirtyAtBuild": false,
+  "apkSha256": "e820ff8a0622384dd618d1ad71ec876d8c289590237aa116c4790d4e258e9acf",
+  "apkBytes": 14593506,
+  "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
+  "adminEditorEnabled": true,
+  "jvm": {
+    "failures": 0,
+    "errors": 0,
+    "tests": 323
+  },
+  "lint": {
+    "warnings": 16,
+    "errors": 0
+  },
+  "nodeContractTests": {
+    "passed": 41,
+    "failed": 0
+  },
+  "native": {
+    "uniquePassed": 111,
+    "explicitIntegrationSkips": 2,
+    "singleCompleteRunGreen": true,
+    "evidence": "private-060-ui-validation.json"
+  },
+  "upgradeFrom17": "PASS",
+  "requiredLogin": "PASS",
+  "liveOfflineAndReconnect": "PASS",
+  "sourceCi": {
+    "conclusion": "success",
+    "headSha": "b5d5e112c41cd585b81eab03c3e521b5de9c1fb9",
+    "status": "completed",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38794486985"
+  },
+  "summaryApiProjectRef": "rixivmeipbizoxyvrvaf",
+  "remoteDatabaseChanged": true,
+  "remoteChanges": "Approved read functions and private helpers only",
+  "sourceDataMutated": false,
+  "eloFormulaChanged": false,
+  "webChanged": false,
+  "vercelChanged": false,
+  "remoteAccountAuthenticationRetested": false,
+  "actualSupabaseResponsesDecodedByAndroid": true,
+  "limitations": [
+    "PC API 35 emulator; no physical phone test.",
+    "No new GoTrue login. Real RPC reads used authenticated SQL role; real responses decoded by Android on PC.",
+    "No production mobile-latency or cold-start benchmark. Home, recent plays, images and Auth remain separate requests.",
+    "Rating ELO retains the existing session publication reader. Statistics charts use bounded windows.",
+    "APK updates remain manual."
+  ],
+  "cleanup": {
+    "status": "PASS",
+    "avd": "KingScoreUi05135",
+    "serial": "emulator-5586",
+    "testPackageRemoved": true,
+    "syntheticApplicationDataCleared": true,
+    "unrelatedEmulatorsModified": false,
+    "emulatorStopped": true,
+    "fontScale": "1.0",
+    "settingsRestored": {
+      "window_animation_scale": "1.0",
+      "transition_animation_scale": "1.0",
+      "animator_duration_scale": "null",
+      "show_ime_with_hard_keyboard": "1"
+    }
+  },
+  "verifiedAt": "2026-10-15T19:38:10.063371+00:00"
+}

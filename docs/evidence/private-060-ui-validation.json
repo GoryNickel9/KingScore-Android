@@ -625,5 +625,27 @@
     "LiveBackendSmokeTest needs remote test accounts",
     "PlayEditorRpcRecoveryTest needs dedicated HTTP driver"
   ],
-  "remoteAccountAuthenticationRetested": false
+  "remoteAccountAuthenticationRetested": false,
+  "sourceCi": {
+    "conclusion": "success",
+    "headSha": "b5d5e112c41cd585b81eab03c3e521b5de9c1fb9",
+    "status": "completed",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38794486985"
+  },
+  "cleanup": {
+    "status": "PASS",
+    "avd": "KingScoreUi05135",
+    "serial": "emulator-5586",
+    "testPackageRemoved": true,
+    "syntheticApplicationDataCleared": true,
+    "unrelatedEmulatorsModified": false,
+    "emulatorStopped": true,
+    "fontScale": "1.0",
+    "settingsRestored": {
+      "window_animation_scale": "1.0",
+      "transition_animation_scale": "1.0",
+      "animator_duration_scale": "null",
+      "show_ime_with_hard_keyboard": "1"
+    }
+  }
 }

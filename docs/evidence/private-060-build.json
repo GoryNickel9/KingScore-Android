@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "candidate": true,
+  "stable": false,
+  "versionName": "0.6.0",
+  "versionCode": 18,
+  "applicationId": "app.kingscore.android",
+  "sourceCommit": "b5d5e112c41cd585b81eab03c3e521b5de9c1fb9",
+  "sourceDirty": false,
+  "apk": "C:\\Users\\GoryNickel\\Documents\\GitHub\\KingScore-Android\\.work\\releases\\KingScore-0.6.0-18.apk",
+  "sha256": "e820ff8a0622384dd618d1ad71ec876d8c289590237aa116c4790d4e258e9acf",
+  "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
+  "debuggable": false,
+  "testHooksExcluded": true,
+  "adminEditorEnabled": true,
+  "remoteDatabaseContacted": false,
+  "jvm": {
+    "failures": 0,
+    "errors": 0,
+    "tests": 323
+  },
+  "lint": {
+    "warnings": 16,
+    "errors": 0
+  }
+}

@@ -1,20 +1,26 @@
 # Verifica KingScore Android
 
-## Candidata 0.5.2/code 17: qualifica in corso
+## Stabile privata 0.5.2/code 17 — 15 ottobre 2026
 
-La stabile consegnata resta la 0.5.1/code 16. I test aggiunti per la candidata e i comportamenti descritti qui sono controlli da eseguire e qualificare; non costituiscono un report di successo. I risultati storici sotto rimangono attribuiti ai rispettivi APK.
+La code 17 deriva dalla fonte pulita `ca4908f16f2400a87c7276907dedc61ee47f01a4`. APK SHA-256: `20a6a4867119ea43a3aca00ddb9c9b3ceb830fe1d6b93de568d3168efe720205`. La qualifica della 0.5.2 è distinta dai risultati storici sotto, che restano attribuiti ai rispettivi APK.
 
-| Area | Controlli previsti |
+| Area | Risultati verificati |
 | --- | --- |
-| Statistiche | Proiezione ridotta, pagine richieste da 500, cap server inferiore, cursori e deduplica; riepilogo completo condiviso tra Home e Statistiche, invalidazione dopo una partita confermata e risposte tardive scartate |
-| ELO | Pubblicazione riusata tra generale e giochi con verifica online, refresh forzato, invalidazione e cambio account; rimozione del dialogo storico senza cambiare formula o dati pubblicati |
-| Commenti e storico | Batch per le partite caricate, più di 50 commenti e cap inferiore, dati corrotti, errori distinti da zero; conteggi aggiornati dopo CRUD confermato o riconciliazione, senza rilettura dello storico |
-| UI e accesso | Nuove card con tutti i partecipanti/punti e null espliciti, tre menu, Filtri, ordine Home; refresh dalla cima e azione TalkBack, retry, font grandi, tastiera, logout, cambio account e blocco senza Internet |
-| Release | JVM, lint e CI del commit finale; APK firmato, esclusione degli hook di test, aggiornamento 16 → 17 e conservazione dei registri cifrati |
+| JVM, lint e contratti | 301 test sia debug sia release, zero fallimenti; lint con zero errori, 24 avvisi debug e 16 release; 40 controlli Node passati |
+| Letture dati | Statistiche con proiezione ridotta, pagine richieste da 500 e completamento a pagina vuota; fixture da 483 partite in due richieste dati invece di dieci, escluse Auth/cataloghi. Riepilogo condiviso, cache ELO con verifica online, invalidazione e risposte tardive coperti dai test |
+| UI nativa | 108 casi distinti: 106 riusciti e due integrazioni escluse, dopo la ripetizione da 31 casi delle classi coinvolte nei cinque fallimenti iniziali. Menu 4/4 e nuove schermate 4/4 passano anche con font di sistema a 2× |
+| Firma e aggiornamento | Release non debuggabile, hook di test esclusi; aggiornamento 16 → 17 con stesso UID e registri cifrati conservati, firma estranea rifiutata e run-as negato |
+| Accesso release e CI | Login a sessione vuota, avvio offline, disconnessione e riconnessione verificati; [CI della fonte](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38774226906) passata |
 
-Nuove prove mirate: `CommentCountsRepositoryTest`, `HistoryCommentCountsTest`, `CommentChangeCallbackTest` e `RemainingScreensUiTest`; le suite esistenti verificano anche cache ELO, proiezione statistica e sessione. Il refresh fallito dello storico deve riprovare la prima pagina conservando i filtri; un diniego FORBIDDEN elimina righe e conteggi. I test della card conservano tutte le cifre dei punteggi, anche con separatore decimale italiano e font a 2×. Il dettaglio Giocatore non deve inventare totali o percentuali dalla sola pagina caricata.
+Le prove mirate comprendono `CommentCountsRepositoryTest`, `HistoryCommentCountsTest`, `CommentChangeCallbackTest` e `RemainingScreensUiTest`. Verificano conteggi in batch con cap server inferiore a 50, errori distinti da zero, notifiche solo dopo esiti confermati e risposte tardive scartate. Il retry di un refresh fallito rilegge la prima pagina con gli stessi filtri; FORBIDDEN elimina righe, conteggi e risposte catalogo pendenti. Le card conservano tutte le cifre, compresi decimali con virgola; il dettaglio Giocatore non produce totali dalla sola pagina caricata.
 
-Le prove automatiche di questa revisione restano sul PC con fixture. Non sono stati avviati nuovi test remoti o modifiche web/cloud per la candidata. Non sono dichiarati tempi istantanei, benchmark su telefono o qualifica della nuova firma prima dei risultati effettivi. I normali comandi di refresh scompaiono dalla UI; Riprova e il recupero degli invii incerti restano verifiche separate.
+Il run completo iniziale sulla fonte `6601729c922b5a984aa4358c7e2a90605473c07b` esegue 106 casi: 99 successi, cinque fallimenti e due assunzioni. La fonte finale ripete integralmente le classi coinvolte: 31 successi, inclusi due nuovi casi, senza fallimenti rimasti aperti. L'aggregato è 106 successi e due assunzioni su 108 casi distinti; non è un singolo run completo verde. L'ultima modifica produttiva è la guardia di caricamento del dettaglio Gioco, ricollaudata con la sua classe completa e `MetadataRefreshUiTest`. Sono corretti anche la separazione dei tag nel wrapper refresh e i driver dei conteggi/card.
+
+Le due assunzioni sono le integrazioni `LiveBackendSmokeTest` e `PlayEditorRpcRecoveryTest`, che richiedono account remoti e il driver HTTP dedicato; non sono contate come successi. Le nuove catture hanno sfondo e colore testo del tema applicativo e fixture sintetiche. Menu e nuove schermate sono ripetuti con font di sistema a 2×, oltre alla prova Compose del punteggio lungo.
+
+Evidenze: [build](evidence/private-052-build.json), [UI per caso](evidence/private-052-ui-validation.json), [aggiornamento](evidence/private-052-upgrade-validation.json), [rilascio](evidence/private-052-release-validation.json), [letture dati](evidence/private-052-data-reads-validation.json) e [misure PC](evidence/private-052-pc-performance.json). Le misure usano l'APK debug con 1.200 partite sintetiche, scorrimenti Android e nessuna latenza di rete. L'ambiente è l'AVD API 35 dedicato, 384×832 a 160 dpi, GPU host e ART precompilato. Non costituiscono misure di produzione, release o avvio a freddo su telefono.
+
+La prova firmata usa la stabile 0.5.1/code 16 come baseline, conserva i registri cifrati e verifica login/blocco/ripresa con sessione vuota. Non inserisce credenziali né autentica account remoti. Nessuna modifica web, Vercel o Supabase per la 0.5.2; il percorso reale della 0.5.0 resta storico. Impostazioni dell'emulatore ripristinate, dati sintetici cancellati, pacchetto test rimosso e AVD dedicato arrestato. Telefono fisico e nuovo collaudo remoto non verificati.
 
 ## Prima stabile privata 0.5.0 — 15 ottobre 2026
 

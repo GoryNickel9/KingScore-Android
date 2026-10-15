@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.5.2 — candidata in verifica
+## 0.5.2 — 15 ottobre 2026
 
 - Partite, Statistiche e dettaglio Giocatore riallineati alle proposte approvate. Le card dello storico mostrano tutti i partecipanti e i punteggi, compresi negativi, zero e valori mancanti, senza ricalcolare posizioni o vincitori.
 - Badge dei commenti nelle card, con apertura della sezione Commenti. I conteggi sono letti in batch fino al completamento; un dato non disponibile non diventa zero. Le modifiche confermate dei commenti aggiornano i conteggi senza rileggere l'intero archivio.
@@ -8,7 +8,7 @@
 - Pannelli dal basso con ricerca per Scegli gioco e Scegli partecipante; Filtri sostituisce Filtri dello storico. Selezioni, annullamento, campi data e permessi mantengono i controlli esistenti.
 - Riepilogo condiviso in RAM tra Home e Statistiche, lettura statistica con campi ridotti e pagine richieste da 500, pubblicazione ELO riusata nella sessione online. Login, blocco senza Internet, formula ELO e aggiornamenti APK manuali restano invariati. Nessuna modifica web, Vercel o Supabase per questo aggiornamento.
 
-VersionCode previsto: 17. La candidata non è ancora promossa: test, CI, firma e aggiornamento devono essere qualificati. La stabile consegnata resta la 0.5.1/code 16; i risultati delle sezioni seguenti appartengono alle rispettive versioni.
+Stabile privata, versionCode 17, dalla fonte pulita `ca4908f16f2400a87c7276907dedc61ee47f01a4`: 301 test JVM sia debug sia release, lint con zero errori e rispettivamente 24 e 16 avvisi. Aggiornamento 16 → 17 verificato con lo stesso certificato, UID e registri cifrati conservati; login, blocco senza Internet e riconnessione passano sulla release. La [CI della fonte](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38774226906) è passata. La qualifica nativa aggrega 106 casi distinti riusciti e due integrazioni escluse, dopo cinque fallimenti iniziali e la ripetizione completa delle classi interessate: non è un singolo run completo verde. Menu e tre schermate passano anche con font di sistema a 2×. Prove sul PC con fixture, senza telefono fisico o nuovo accesso autenticato al backend reale: [STABILITY.md](docs/STABILITY.md).
 
 ## 0.5.1 — 15 ottobre 2026
 

@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "statisticsPageSize": 500,
+  "globalHistoryPageSize": 50,
+  "completion": "empty page, including lower REST caps",
+  "fixture": {
+    "plays": 483,
+    "statisticsDataRequests": 2,
+    "previous50RowDataRequests": 10
+  },
+  "authenticationAndCatalogRequestsExcluded": true,
+  "firstCompleteScanStillRequired": true,
+  "homeAndStatisticsShareSessionModel": true,
+  "eloPublicationReusedWithOnlineVerification": true,
+  "cacheClearedOnAccessRemoval": true,
+  "diskCacheAdded": false,
+  "serverSummaryEndpointAdded": false,
+  "productionLatencyMeasured": false,
+  "verification": "301 JVM tests passed in debug and release, including statistics pagination, session invalidation, comment counts and late responses."
+}

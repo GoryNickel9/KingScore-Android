@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "candidate": true,
+  "stable": false,
+  "versionName": "0.5.2",
+  "versionCode": 17,
+  "applicationId": "app.kingscore.android",
+  "sourceCommit": "ca4908f16f2400a87c7276907dedc61ee47f01a4",
+  "sourceDirty": false,
+  "apk": "C:\\Users\\GoryNickel\\Documents\\GitHub\\KingScore-Android\\.work\\releases\\KingScore-0.5.2-17.apk",
+  "sha256": "20a6a4867119ea43a3aca00ddb9c9b3ceb830fe1d6b93de568d3168efe720205",
+  "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
+  "debuggable": false,
+  "testHooksExcluded": true,
+  "adminEditorEnabled": true,
+  "remoteDatabaseContacted": false,
+  "jvm": {
+    "failures": 0,
+    "errors": 0,
+    "tests": 301
+  },
+  "lint": {
+    "warnings": 16,
+    "errors": 0
+  }
+}

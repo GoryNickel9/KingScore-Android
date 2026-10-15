@@ -1,8 +1,8 @@
 # APK privato firmato
 
-La stabile privata corrente è la 0.5.1/code 16: `.work/releases/KingScore-0.5.1-16.apk`, SHA-256 `90306da33c1a75ed24607c7828e7f59c5c645fcbf127164a71c61aad4586c960`. Aggiornamento dalla 0.5.0 verificato con lo stesso certificato, UID e dati cifrati conservati. Login, blocco offline e riconnessione sono verificati sulla release; i test delle nuove schermate usano fixture locali. Fonte e limiti: [STABILITY.md](STABILITY.md) e [qualifica](evidence/private-051-release-validation.json). La 0.5.0 resta il precedente checkpoint con collaudo remoto autorizzato.
+La stabile privata corrente è la **0.5.2/code 17**: `.work/releases/KingScore-0.5.2-17.apk`, 14.527.970 byte, SHA-256 `20a6a4867119ea43a3aca00ddb9c9b3ceb830fe1d6b93de568d3168efe720205`. Fonte pulita: `ca4908f16f2400a87c7276907dedc61ee47f01a4`. Aggiornamento dalla 0.5.1 verificato con lo stesso certificato, UID e dati cifrati conservati. Login, blocco offline e riconnessione sono verificati sulla release. Fonte, prove e limiti: [STABILITY.md](STABILITY.md) e [qualifica](evidence/private-052-release-validation.json).
 
-La 0.5.2/code 17 è candidata in verifica. Il percorso previsto è `.work/releases/KingScore-0.5.2-17.apk`; questo nome non prova che l'artefatto esista o sia qualificato. Prima della consegna vanno registrati firma, checksum, fonte pulita, test, CI e aggiornamento 16 → 17. Non sostituire la chiave della stabile e non distribuire la probe di test. Lo stato corrente è in [STABILITY.md](STABILITY.md).
+La 0.5.1/code 16 resta il checkpoint precedente e la baseline dell'aggiornamento: SHA-256 `90306da33c1a75ed24607c7828e7f59c5c645fcbf127164a71c61aad4586c960`. La 0.5.0 conserva il collaudo remoto autorizzato, non ripetuto per la 0.5.2. La nuova qualifica usa fixture sul PC e non certifica telefoni fisici. Non sostituire la chiave della stabile e non distribuire la probe di test.
 
 Le RC precedenti restano storiche: la RC4 aveva l'editor disabilitato, la RC1 era stata ritirata per un difetto del monitor rete, la RC2 lo correggeva e la RC3 migliorava logout e navigazione con font grandi.
 
@@ -14,7 +14,7 @@ Servono PowerShell 7, JDK 17 o successivo, Android SDK 36 e build-tools 35.0.0. 
 # Prima firma: crea una sola chiave locale, protetta dai permessi Windows.
 pwsh -NoProfile -File scripts/build-private-apk.ps1 -InitializeSigningKey
 
-# Candidata successiva: riusa la stessa chiave; la build non equivale alla promozione.
+# Build 0.5.2: riusa la stessa chiave; lo script rifiuta APK già presenti.
 pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 17 -VersionName 0.5.2
 ```
 
@@ -82,3 +82,9 @@ La sospensione richiesta al checkpoint 76008a4 è stata revocata dall'utente con
 La qualifica usa la stabile 0.5.0/code 15 come baseline e il runner `test-private-apk.ps1` con `-CompileEmulatorPackages`. Il flag prepara ART sul solo emulatore esplicito: non cambia i byte degli APK e non rappresenta una misura delle prestazioni di avvio. È stato aggiunto dopo timeout osservati nell'avvio dell'instrumentation su API 35. I controlli di firma, cifratura, login e radio restano invariati. La probe firmata è un artefatto di test e non va distribuita.
 
 Build, aggiornamento 15 → 16 e CI della fonte sono passati. Non sono stati inseriti account reali né eseguite modifiche cloud per la 0.5.1. L'APK, il checksum e la promozione verificata sono in `.work/releases`; il manifest originale di build resta `candidate=true, stable=false`, mentre `.apk.release.json` registra la successiva qualifica. Le prove precedenti nelle sezioni RC restano riferite ai rispettivi artefatti.
+
+## Aggiornamento UI e letture 0.5.2
+
+La code 17 supera build release con 301 test JVM, lint senza errori e [CI della fonte](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38774226906). La [prova firmata 16 → 17](evidence/private-052-upgrade-validation.json) conserva UID e registri partite/commenti cifrati, rifiuta un APK con firma diversa e nega run-as; verifica login a sessione vuota, blocco offline e riconnessione. La stessa chiave privata firma l'aggiornamento.
+
+La qualifica nativa usa fixture su emulatore API 35 e pacchetti ART precompilati; non include un nuovo accesso al backend reale. Il report di [build](evidence/private-052-build.json) conserva lo stato candidato originario; il report di [rilascio](evidence/private-052-release-validation.json) promuove lo stesso checksum dopo il collaudo. La procedura ripristina le impostazioni del dispositivo dedicato e rimuove i dati sintetici e la probe.

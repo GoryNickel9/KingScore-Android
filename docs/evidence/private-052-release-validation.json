@@ -1,0 +1,71 @@
+{
+  "status": "PASS",
+  "candidate": false,
+  "stable": true,
+  "qualification": "private-stable-ui-update",
+  "versionName": "0.5.2",
+  "versionCode": 17,
+  "sourceCommit": "ca4908f16f2400a87c7276907dedc61ee47f01a4",
+  "sourceDirtyAtBuild": false,
+  "apkSha256": "20a6a4867119ea43a3aca00ddb9c9b3ceb830fe1d6b93de568d3168efe720205",
+  "apkBytes": 14527970,
+  "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
+  "adminEditorEnabled": true,
+  "jvm": {
+    "failures": 0,
+    "errors": 0,
+    "tests": 301
+  },
+  "lint": {
+    "warnings": 16,
+    "errors": 0
+  },
+  "nodeContractTests": {
+    "passed": 40,
+    "failed": 0
+  },
+  "native": {
+    "uniquePassed": 106,
+    "explicitIntegrationSkips": 2,
+    "singleCompleteRunGreen": false,
+    "affectedClassRerunPassed": 31,
+    "evidence": "private-052-ui-validation.json"
+  },
+  "upgradeFrom16": "PASS",
+  "requiredLogin": "PASS",
+  "liveOfflineAndReconnect": "PASS",
+  "sourceCi": {
+    "conclusion": "success",
+    "headSha": "ca4908f16f2400a87c7276907dedc61ee47f01a4",
+    "status": "completed",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38774226906"
+  },
+  "remoteAccountAuthenticationRetested": false,
+  "remoteDatabaseChanged": false,
+  "webChanged": false,
+  "vercelChanged": false,
+  "limitations": [
+    "PC emulator qualification; no physical phone test.",
+    "106-case base run had five failures; all 31 affected-class cases passed after production/loading and test-driver fixes. Two new regressions bring unique coverage to 108 cases, with two explicit integration skips.",
+    "No new authenticated real-backend smoke test; remote qualification remains the 0.5.0 checkpoint.",
+    "Statistics still need one complete lean read on first use or refresh. No network-latency benchmark.",
+    "APK updates remain manual."
+  ],
+  "verifiedAt": "2026-10-15T17:14:28.856314+00:00",
+  "cleanup": {
+    "status": "PASS",
+    "avd": "KingScoreUi05135",
+    "serial": "emulator-5586",
+    "testPackageRemoved": true,
+    "syntheticApplicationDataCleared": true,
+    "unrelatedEmulatorsModified": false,
+    "emulatorStopped": true,
+    "fontScale": "1.0",
+    "settingsRestored": {
+      "window_animation_scale": "1.0",
+      "transition_animation_scale": "1.0",
+      "animator_duration_scale": "null",
+      "show_ime_with_hard_keyboard": "1"
+    }
+  }
+}

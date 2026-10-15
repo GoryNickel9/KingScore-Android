@@ -1,20 +1,28 @@
-# Stato della candidata 0.5.2/code 17
+# Stabile privata 0.5.2/code 17
 
-La 0.5.2 è in verifica. La stabile consegnata resta la 0.5.1/code 16, descritta nella sezione seguente. Non sono ancora attribuiti alla candidata esiti positivi di test, CI, build firmata o aggiornamento.
+La 0.5.2 è la stabile privata corrente. APK: `.work/releases/KingScore-0.5.2-17.apk`, 14.527.970 byte. SHA-256: `20a6a4867119ea43a3aca00ddb9c9b3ceb830fe1d6b93de568d3168efe720205`. Fonte pulita: `ca4908f16f2400a87c7276907dedc61ee47f01a4`. Il certificato SHA-256 resta `b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b`: installare sopra la 0.5.1 senza disinstallarla.
 
 L'implementazione comprende le tre schermate Partite, Statistiche e Giocatore nello stile approvato, card con tutti i partecipanti/punti e badge commenti, menu ricercabili e pannello Filtri. Home mette i preferiti prima delle ultime partite e rimuove Classifiche ELO; Rating ELO rimuove il dialogo dello storico punteggio. L'aggiornamento dei dati avviene trascinando verso il basso dalla cima, oppure con l'azione accessibile; restano i comandi di retry e recupero degli esiti incerti.
 
-Home e Statistiche condividono il riepilogo della sessione in RAM. La lettura statistica richiede pagine da 500 con i soli campi necessari, fino alla pagina vuota; ELO riusa la pubblicazione letta mantenendo il controllo online della sessione. Nessuna misura su telefono dimostra ancora il tempo percepito di questo aggiornamento. Primo accesso, refresh e dati non disponibili richiedono comunque il server.
+Home e Statistiche condividono il riepilogo della sessione in RAM. La lettura statistica richiede pagine da 500 con i soli campi necessari, fino alla pagina vuota; ELO riusa la pubblicazione letta mantenendo il controllo online della sessione. La fixture da 483 partite richiede due letture dati invece delle dieci precedenti, escluse Auth e cataloghi. Primo accesso e refresh richiedono comunque il server; la latenza di produzione e le prestazioni su telefono non sono misurate.
 
-| Verifica richiesta per code 17 | Stato |
+| Verifica della code 17 | Risultato |
 | --- | --- |
-| JVM, lint e build | Da qualificare sul codice finale |
-| UI nativa, gesture, menu, font grandi e commenti | Da qualificare con fixture sul PC |
-| CI GitHub del commit di consegna | Da verificare |
-| Firma e aggiornamento dalla 0.5.1/code 16 | Da verificare con dati cifrati conservati |
+| JVM, lint e build | 301 test sia debug sia release, zero fallimenti; lint: zero errori, 24 avvisi debug e 16 release; 40 controlli Node passati |
+| UI nativa | 106 casi distinti riusciti e due integrazioni escluse su 108 casi; cinque fallimenti iniziali chiusi con 31 prove delle classi coinvolte, inclusi due nuovi casi |
+| Font di sistema a 2× | Quattro prove menu e quattro prove delle nuove schermate passate |
+| CI della fonte dell'APK | [PASS sul commit ca4908f](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38774226906) |
+| Aggiornamento 16 → 17 | PASS: stesso UID, registri cifrati conservati, firma diversa rifiutata, run-as negato |
+| Login e rete della release | PASS: login a sessione vuota, avvio offline e disconnessione bloccati, riconnessione verificata |
 | Telefono fisico e nuovo collaudo remoto | Non verificati |
 
-Login obbligatorio, blocco senza Internet, commenti propri e permessi admin restano nel perimetro. Nessun ricalcolo ELO, modifica cloud o aggiornamento automatico dell'APK è introdotto dalla candidata. La promozione dovrà identificare il checksum e la fonte dell'APK effettivamente collaudato.
+La qualifica nativa combina il run completo iniziale da 106 casi, con 99 successi, cinque fallimenti e due assunzioni, e la ripetizione da 31 casi delle classi coinvolte sulla fonte finale. Non è un singolo run completo verde. L'ultima modifica produttiva riguarda il blocco del refresh del dettaglio Gioco durante il caricamento; la sua classe completa e `MetadataRefreshUiTest` sono ripetute con successo. Le altre correzioni riguardano il wrapper dei gesti e i selettori dei driver. Dettagli per caso nel report UI.
+
+Evidenze: [build](evidence/private-052-build.json), [UI](evidence/private-052-ui-validation.json), [aggiornamento](evidence/private-052-upgrade-validation.json), [qualifica](evidence/private-052-release-validation.json), [letture dati](evidence/private-052-data-reads-validation.json) e [misure PC](evidence/private-052-pc-performance.json). Il manifest iniziale di build resta candidato; il report di qualifica registra la promozione dello stesso APK.
+
+Le prove usano fixture ed emulatore API 35 sul PC, con ART precompilato. Le misure di scorrimento e memoria riguardano l'APK debug e repository sintetici, senza latenza di rete. Le due integrazioni escluse richiedono account remoti e il driver HTTP locale dedicato. Non è stato ripetuto il percorso autenticato sul backend reale della 0.5.0. Impostazioni dell'AVD ripristinate, dati sintetici cancellati, pacchetto test rimosso ed emulatore dedicato arrestato.
+
+Login obbligatorio, blocco senza Internet, commenti propri e permessi admin restano nel perimetro. Formula ELO, sito e cloud non sono modificati. Gli aggiornamenti dell'APK restano manuali.
 
 # Stabile privata 0.5.1: aggiornamento delle tre schermate
 

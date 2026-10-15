@@ -6,17 +6,17 @@ Piano iniziale: 13 ottobre 2026. Stato aggiornato: 15 ottobre 2026. Scelta nativ
 
 La prima stabile privata 0.5.0/code 15 ha l'editor admin abilitato. Backend e sito sono stati attivati il 15 ottobre su autorizzazione dell'utente; le preparazioni annullate delle fasi 4.1 e 4.2 restano storiche. Build firmata, aggiornamento RC4/code 12 → 15 e percorso UI completo con MainActivity e account reali sono verificati su emulatore API 35. I dati temporanei sono rimossi e il risultato ELO originale è verificato dopo cleanup. La CI della fonte dell'APK è passata; anche le pubblicazioni temporanee sono state rimosse. Report di consegna: [docs/STABILITY.md](docs/STABILITY.md) e [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
 
-La stabile privata corrente è la **0.5.1/code 16**: Home, classifica e dettaglio riallineati alle proposte web approvate; 258 test JVM, lint senza errori e aggiornamento 15 → 16 verificati. Le prove native coprono 92 casi distinti riusciti e due integrazioni condizionali escluse, dopo la correzione dei driver dell’editor. Nessuna modifica web o cloud per questo aggiornamento. Firma, limiti e report: [STABILITY.md](docs/STABILITY.md).
+La precedente stabile privata **0.5.1/code 16** ha riallineato Home, classifica e dettaglio alle proposte web approvate; 258 test JVM, lint senza errori e aggiornamento 15 → 16 verificati. Le prove native coprono 92 casi distinti riusciti e due integrazioni condizionali escluse, dopo la correzione dei driver dell’editor. Nessuna modifica web o cloud per quell'aggiornamento. Firma, limiti e report: [STABILITY.md](docs/STABILITY.md).
 
-## Aggiornamento 0.5.2/code 17 in verifica
+## Stabile privata corrente 0.5.2/code 17
 
-La candidata implementa le nove richieste approvate: stile web per Partite/Statistiche/Giocatore, rimozione del dialogo storico punteggio da Rating ELO, meno letture ripetute, gesto di aggiornamento dalla cima, rimozione di Classifiche ELO dalla Home, preferiti prima delle ultime partite, tre menu ridisegnati, badge commenti e tutti i partecipanti con i punti nelle card.
+La 0.5.2 implementa le nove richieste approvate: stile web per Partite/Statistiche/Giocatore, rimozione del dialogo storico punteggio da Rating ELO, meno letture ripetute, gesto di aggiornamento dalla cima, rimozione di Classifiche ELO dalla Home, preferiti prima delle ultime partite, tre menu ridisegnati, badge commenti e tutti i partecipanti con i punti nelle card.
 
 1. **Implementazione presente:** pannelli e selettori, conteggi commenti in batch, valori numerici esatti, refresh accessibile. Il dettaglio Giocatore conserva lo storico paginato senza presentare la prima pagina come totale.
 2. **Letture ridotte:** Home e Statistiche condividono un ViewModel della sessione; la scansione completa usa campi statistici ridotti e pagine richieste da 500. ELO riusa la pubblicazione in RAM, mantenendo la verifica online dell'accesso. La prima lettura richiede ancora la rete.
-3. **Qualifica da completare:** test JVM e nativi, lint, CI sul commit, APK firmato e aggiornamento 16 → 17 con dati conservati. La 0.5.1 resta la stabile finché queste verifiche non sono registrate.
+3. **Qualifica completata sul PC:** 301 test JVM debug e release, lint senza errori, CI della fonte `ca4908f` passata, APK firmato e aggiornamento 16 → 17 con dati conservati. Le prove native aggregano 106 casi distinti riusciti e due integrazioni escluse, dopo ripetizione delle classi con fallimenti iniziali; font di sistema a 2× verificato. Non è un singolo run completo verde.
 
-Login e Internet restano obbligatori. Il riuso in RAM non abilita consultazione offline; la perdita di accesso rimuove lo stato privato. Formula ELO, backend e sito non cambiano in questo aggiornamento. Gli APK continuano a essere installati manualmente.
+Login e Internet restano obbligatori. Il riuso in RAM non abilita consultazione offline; la perdita di accesso rimuove lo stato privato. Formula ELO, backend e sito non cambiano in questo aggiornamento. Gli APK continuano a essere installati manualmente. Telefoni fisici e un nuovo accesso autenticato al backend reale restano fuori dal collaudo della 0.5.2.
 
 ## Vincoli confermati
 

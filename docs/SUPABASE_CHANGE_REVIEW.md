@@ -53,4 +53,4 @@ Le pagine web sono state verificate separatamente nel browser con SDK reale e ri
 
 La successiva definizione ELO è verificata nel checkpoint [ELO_PUBLICATION_REVIEW.md](ELO_PUBLICATION_REVIEW.md): 286 test web complessivi, 28 casi PostgreSQL, typecheck, lint mirato e build passati. Nessuna modifica alla formula o ai servizi online.
 
-Il prossimo intervento necessario è allineare il contratto di lettura delle classifiche e preparare sul PC il collegamento dei worker e il cutover dei writer rimasti, prima di proporre l'applicazione online.
+Il successivo [contratto di lettura](ELO_READ_REVIEW.md) fissa una classifica unica globale: passano 323 test web e 38 casi PostgreSQL locali, con formula invariata. Decoder e proiezioni non sono ancora collegati alle pagine distribuite. Il prossimo intervento è preparare sul PC il collegamento del worker e dell'invalidazione dei writer prima di proporre l'applicazione online.

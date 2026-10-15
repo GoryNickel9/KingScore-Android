@@ -34,7 +34,7 @@ Run concluso: `.work/King-Score-atomic/.work/local-elo-publication/b14ee366b3504
 
 ## Decisioni prima dell'integrazione reale
 
-Il prototipo conserva lo storico per proprietario usato dal ricalcolo attuale. Alcune tabelle e letture esistenti invece mescolano account: occorre rendere esplicito l'ambito di ogni classifica prima di collegare i reader. Non è stata scelta implicitamente una nuova aggregazione per il sito pubblico.
+L'utente ha successivamente scelto una classifica pubblica unica con tutte le partite di tutti gli account. Il contratto aggiornato richiede `scopeId: "global"`; gli scope proprietario restano diagnostici. La formula rimane identica, applicata all'intero storico globale, senza sommare o mediare classifiche già calcolate per account.
 
 L'ordine dei partecipanti influisce sui punteggi assenti o uguali. Il core conserva esattamente il comportamento attuale, ma le query storiche non garantiscono quell'ordine. La prova usa un ordine persistito sintetico; la sua introduzione reale richiederà una verifica dello storico, senza riordinamento automatico per UUID.
 
@@ -44,4 +44,4 @@ Checkpoint web locale: `162ff30b6178baf2fe3016e7c673943e036fd325`, branch `codex
 
 Contratto tecnico, codice e report completo sono nel checkout web locale: `.work/King-Score-atomic/docs/ELO_PUBLICATION.md`, `src/utils/elo/publication.ts` e `docs/evidence/elo-publication-validation.json`. Per ripetere la prova: `./scripts/test-local-elo-publication.ps1` dalla radice del checkout web, con PostgreSQL e dipendenze Node già installati.
 
-Il prossimo passo è allineare il contratto di lettura delle classifiche prima del collegamento ai worker e ai writer reali.
+Il [contratto di lettura globale](ELO_READ_REVIEW.md) allinea ora decoder, proiezioni e prova database locale. Il prossimo passo è il collegamento dei worker e dell'invalidazione dei writer locali.

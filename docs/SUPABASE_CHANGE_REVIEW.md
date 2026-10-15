@@ -30,7 +30,7 @@ Schema, tabella delle ricevute e helper non sono accessibili ai client. Le ricev
 
 1. **Chiudere i percorsi legacy.** Inventariare i permessi reali, migrare o ritirare `replace_play_scores` e il DML diretto, coordinare i servizi e le vecchie schede browser. Le revoche definitive non sono ancora contenute in uno script di cutover verificato.
 2. **Gestire le cascade dei cataloghi.** Eliminare giochi o giocatori può cancellare partite o partecipanti fuori dalle RPC; le eliminazioni delle partite possono coinvolgere anche commenti. Revocare il solo DML su `plays` e `play_scores` non blocca le cascade delle FK.
-3. **Definire l'aggiornamento ELO.** Le nuove RPC salvano i dati della partita, non pubblicano una classifica coerente. Il vecchio ricalcolo legge per proprietario ma cancella rating per gioco, con richieste separate; anche alcune letture scrivono la cache. Servono invalidazione del vecchio/nuovo gioco e del proprietario corretto, coordinamento dei worker e pubblicazione verificabile. Questo lavoro non va dichiarato completato dall'installazione delle RPC.
+3. **Integrare l'aggiornamento ELO.** Il protocollo è ora definito e verificato sul PC: revisione sorgente, generazione completa, pubblicazione atomica e rifiuto dei calcoli superati, mantenendo la formula. Passano 36 nuovi test e 28 casi PostgreSQL. È un prototipo separato, non una migrazione o un worker attivato. Le nuove RPC partite non pubblicano ancora la classifica; restano ambito dei reader, ordine dei partecipanti, collegamento dei writer e ritiro delle cache legacy. Dettagli in [ELO_PUBLICATION_REVIEW.md](ELO_PUBLICATION_REVIEW.md).
 4. **Verificare lo schema effettivo e il ripristino.** Il preflight read-only preparato sul PC non certifica schema, Auth, RLS e grant oggi installati. Un inventario remoto richiederà autorizzazione. Vanno controllati anche eventuali consumer esterni con `ON CONFLICT`, incompatibile con l'UNIQUE reso deferrable.
 
 Queste dipendenze bloccano il deploy dell'integrazione completa. Il flag web `VITE_ATOMIC_PLAY_WRITES` resta disabilitato per impostazione predefinita; l'editor Android di produzione resta disabilitato.
@@ -51,4 +51,6 @@ Il checkpoint web locale è `10110365aa161518c69ee3af6c17f6a95c42dd80`, branch `
 
 Le pagine web sono state verificate separatamente nel browser con SDK reale e ricevitore HTTP sintetico: creazione, modifica di partita altrui, conflitto, eliminazione, import e recupero dopo reload. Non è una verifica Auth/RLS remota né un collaudo browser contro PostgreSQL. Risultati e comandi sono descritti in `.work/King-Score-atomic/docs/ATOMIC_PLAY_WEB.md`.
 
-Il prossimo intervento necessario è definire e collaudare sul PC il protocollo ELO e il cutover dei writer rimasti, prima di proporre l'applicazione online.
+La successiva definizione ELO è verificata nel checkpoint [ELO_PUBLICATION_REVIEW.md](ELO_PUBLICATION_REVIEW.md): 286 test web complessivi, 28 casi PostgreSQL, typecheck, lint mirato e build passati. Nessuna modifica alla formula o ai servizi online.
+
+Il prossimo intervento necessario è allineare il contratto di lettura delle classifiche e preparare sul PC il collegamento dei worker e il cutover dei writer rimasti, prima di proporre l'applicazione online.

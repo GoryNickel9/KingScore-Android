@@ -9,4 +9,4 @@ Il lavoro riguarda la prima versione stabile di KingScore-Android. Il 15 ottobre
 - La CI Android è riattivata con conferma esplicita del 15 ottobre 2026: Node, test JVM, lint e build APK.
 - Mantenere login obbligatorio e blocco senza Internet; escludere ricalcolo ELO, registrazione e modifica credenziali/avatar.
 - I nuovi salvataggi autorizzano gli amministratori su tutte le partite, come nel contratto locale confermato dall'utente.
-- Le preparazioni backend descritte nei documenti delle fasi 4.1 e 4.2 sono state annullate. Le RPC proposte non sono disponibili; l'editor partite resta disabilitato.
+- Le preparazioni backend delle fasi 4.1 e 4.2 restano annullate. La nuova attivazione del 15 ottobre usa le RPC verificate e la pubblicazione ELO globale; l'editor è abilitato nella candidata, che non va dichiarata stabile prima del collaudo finale.

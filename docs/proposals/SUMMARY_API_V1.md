@@ -1,6 +1,8 @@
 # API di riepilogo V1 — proposta da revisionare
 
-Stato: candidata implementata e collaudata nel PostgreSQL locale, 15 ottobre 2026. PASS: 45 gruppi di verifiche e tre benchmark; [risultati e limiti](SUMMARY_API_VALIDATION.md). Nessuna funzione, migrazione, configurazione o dato applicato a Supabase. Nessun deploy Vercel. Nessuna modifica al codice eseguibile Android o web.
+Stato al 15 ottobre 2026: SQL approvato dall'utente e applicato al progetto Supabase ScoreKing (`rixivmeipbizoxyvrvaf`), dopo verifica del progetto e preflight. Dati, revisione/pubblicazione ELO, policy, grant e RPC precedenti sono invariati; le cinque nuove letture passano il collaudo SQL con ruolo authenticated e rifiutano accesso HTTP anonimo. [Evidenza del rollout](../evidence/summary-api-live-validation.json). Integrazione Android in corso; nessun deploy Vercel o modifica al codice web.
+
+Il collaudo locale precedente comprende 45 gruppi di verifiche e tre benchmark: [risultati e limiti](SUMMARY_API_VALIDATION.md). Le sezioni sotto conservano il contratto approvato; le indicazioni di approvazione preventiva descrivono la procedura seguita, non un nuovo blocco per l'integrazione Android autorizzata.
 
 SQL completo: [installazione](../../local-tests/summary-api/01-install.sql) e [rollback](../../local-tests/summary-api/02-rollback.sql). [Runner e limiti del collaudo PC](../../local-tests/summary-api/README.md).
 

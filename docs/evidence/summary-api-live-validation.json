@@ -1,0 +1,94 @@
+{
+  "status": "PASS",
+  "projectRef": "rixivmeipbizoxyvrvaf",
+  "projectName": "ScoreKing",
+  "sourceRevision": "41",
+  "counts": {
+    "games": 18,
+    "players": 6,
+    "plays": 483,
+    "scores": 1359
+  },
+  "sourceUnchanged": true,
+  "policiesAndGrantsUnchanged": true,
+  "existingRpcUnchanged": true,
+  "newRpcAcl": [
+    {
+      "anon": false,
+      "authenticated": true,
+      "definer": true,
+      "name": "get_app_data_version_v1",
+      "service": false,
+      "stable": true
+    },
+    {
+      "anon": false,
+      "authenticated": true,
+      "definer": false,
+      "name": "get_app_summary_v1",
+      "service": false,
+      "stable": true
+    },
+    {
+      "anon": false,
+      "authenticated": true,
+      "definer": false,
+      "name": "get_elo_chart_v1",
+      "service": false,
+      "stable": true
+    },
+    {
+      "anon": false,
+      "authenticated": true,
+      "definer": false,
+      "name": "get_game_statistics_v1",
+      "service": false,
+      "stable": true
+    },
+    {
+      "anon": false,
+      "authenticated": true,
+      "definer": false,
+      "name": "get_statistics_overview_v1",
+      "service": false,
+      "stable": true
+    }
+  ],
+  "eloPublicationUnchanged": true,
+  "appliedSqlSha256": "1725065de23a85b3c357c5650482fb46adf0096ecbd87084026ddf5cc4e3c9a0",
+  "capturedAt": "2026-10-15",
+  "authenticatedRoleReadOnlySmoke": true,
+  "goTrueLoginTested": false,
+  "anonymousHttp": {
+    "status": "PASS",
+    "rows": [
+      {
+        "name": "get_app_data_version_v1",
+        "status": 401,
+        "code": "42501"
+      },
+      {
+        "name": "get_app_summary_v1",
+        "status": 401,
+        "code": "42501"
+      },
+      {
+        "name": "get_statistics_overview_v1",
+        "status": 401,
+        "code": "42501"
+      },
+      {
+        "name": "get_game_statistics_v1",
+        "status": 401,
+        "code": "42501"
+      },
+      {
+        "name": "get_elo_chart_v1",
+        "status": 401,
+        "code": "42501"
+      }
+    ]
+  },
+  "vercelChanged": false,
+  "sourceDataMutated": false
+}

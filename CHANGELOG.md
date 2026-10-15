@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.2 — Statistiche numeriche in collaudo
+
+- Rimossi da Statistiche Win Rate per Gioco e tutti i grafici ELO, inclusi quelli nelle schede dei giochi. Restano partite totali, medie, copertura dei dati e dettagli dei giocatori.
+- Rimosse anche le richieste ai grafici e ai relativi cataloghi. Paginazione numerica, aggiornamento dalla cima, login e blocco senza Internet restano attivi.
+- Rating ELO e la lettura di ELO v2 restano disponibili. [Perimetro](docs/STATISTICS_NUMERIC.md).
+
 ## 0.6.1 — compatibilità ELO v2
 
 - Classifiche e grafici leggono `kingscore-elo-rules-v2`, mantenendo v1 come compatibilità di lettura. Le versioni sconosciute e gli storici incoerenti restano rifiutati.

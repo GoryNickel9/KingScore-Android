@@ -20,6 +20,7 @@ La patch modifica soltanto Android. Le API statistiche basate su `winner=true` p
 
 | File | Contenuto |
 | --- | --- |
+| [Statistiche numeriche](docs/STATISTICS_NUMERIC.md) | Aggiornamento 0.6.2 in collaudo: rimozione di Win Rate per Gioco e di tutti i grafici da Statistiche |
 | [Compatibilità ELO v2](docs/ELO_V2_ANDROID.md) | Letture v1/v2, presentazione dei pareggi e dipendenze backend separate |
 | [ROADMAP.md](ROADMAP.md) | Fasi, stime e stato corrente |
 | [docs/STABILITY.md](docs/STABILITY.md) | Obiettivo stabile, criteri di uscita e lavoro autonomo residuo |

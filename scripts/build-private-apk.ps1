@@ -1,8 +1,8 @@
 #requires -Version 7.0
 [CmdletBinding()]
 param(
-    [ValidateRange(1,2147483647)][int]$VersionCode=19,
-    [ValidatePattern('^[0-9A-Za-z.+_-]{1,64}$')][string]$VersionName='0.6.1',
+    [ValidateRange(1,2147483647)][int]$VersionCode=20,
+    [ValidatePattern('^[0-9A-Za-z.+_-]{1,64}$')][string]$VersionName='0.6.2',
     [switch]$InitializeSigningKey,
     [switch]$Offline,
     [string]$AndroidSdk=(Join-Path $env:LOCALAPPDATA 'Android/Sdk')

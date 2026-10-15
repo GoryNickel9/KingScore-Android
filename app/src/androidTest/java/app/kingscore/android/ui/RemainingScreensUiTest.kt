@@ -80,10 +80,10 @@ class RemainingScreensUiTest {
         val overview = StatisticsOverview("1",true,listOf(WinRateStatistic(game.id,game.name,4,2,50)),
             listOf(GameStatistics(game.id,game.name,null,483,966,BigDecimal(100),2,BigDecimal(50),BigDecimal(60),2,BigDecimal(30),0)),1,null)
         compose.runOnIdle { state.value = StatisticsDetailsState(overview, loading = false) }
-        compose.onNodeWithText("50%").assertIsDisplayed()
+        compose.onNodeWithTag("statistics-game-${game.id}").assertIsDisplayed()
         capture("statistics")
         compose.runOnIdle { state.value = StatisticsDetailsState(overview, loading = true) }
-        compose.onNodeWithText("50%").assertIsDisplayed()
+        compose.onNodeWithTag("statistics-game-${game.id}").assertIsDisplayed()
         compose.onNodeWithTag("statistics-content").performScrollToNode(hasText("Durata disponibile per 2 di 483 partite"))
         compose.onNodeWithText("Durata disponibile per 2 di 483 partite").assertIsDisplayed()
         compose.onNodeWithText("Aggiorna statistiche").assertDoesNotExist()

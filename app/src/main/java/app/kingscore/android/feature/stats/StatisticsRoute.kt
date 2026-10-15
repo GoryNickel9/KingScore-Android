@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,22 +34,14 @@ fun StatisticsRoute(repository: StatisticsRepository, onAccessFailure: (AuthProb
     val revision = LocalPlayDataRevision.current
     PlayDataRefresh(model, onShow = { model.show(revision) }, onRefresh = { model.show(revision) })
     StatisticsScreen(state, model::refresh, model::moreGames, model::toggleGame,
-        { model.loadGame(it) }, { model.loadGame(it, true) }, { model.loadChart(it) }, model::nextChart,
-        model::previousChart, model::loadPlayerOptions, model::selectPlayers)
+        { model.loadGame(it) }, { model.loadGame(it, true) })
 }
 
 @Composable
 internal fun StatisticsScreen(state: StatisticsDetailsState, onRefresh: () -> Unit,
     onMoreGames: () -> Unit = {}, onToggle: (UUID) -> Unit = {}, onRetryGame: (UUID) -> Unit = {},
-    onMorePlayers: (UUID) -> Unit = {}, onRetryChart: (UUID?) -> Unit = {}, onNextChart: (UUID?) -> Unit = {},
-    onPreviousChart: (UUID?) -> Unit = {}, onOptions: () -> Unit = {}, onSelect: (UUID?, Set<UUID>) -> Unit = { _, _ -> },
+    onMorePlayers: (UUID) -> Unit = {},
 ) {
-    var choosePlayers by remember { mutableStateOf(false) }
-    var chartGame by remember { mutableStateOf<UUID?>(null) }
-    fun choose(id: UUID?) {
-        chartGame = id; choosePlayers = true
-        if (state.charts[id]?.options.isNullOrEmpty()) onOptions()
-    }
     OnlinePullRefresh(state.loading, onRefresh, Modifier.fillMaxSize()) {
         LazyColumn(Modifier.fillMaxSize().testTag("statistics-content"), contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -63,19 +54,12 @@ internal fun StatisticsScreen(state: StatisticsDetailsState, onRefresh: () -> Un
             if (state.loading && state.overview == null) item { KingScorePanel {
                 LinearProgressIndicator(Modifier.fillMaxWidth()); Text("Caricamento statistiche…")
             } }
-            state.overview?.let { overview -> item { WinRates(overview) } }
-            item { KingScorePanel {
-                SectionTitle("ELO Generale", Icons.Outlined.Star, Color(0xFFFBBF24))
-                StatisticsEloChart(state.charts[null] ?: StatisticsChartState(),
-                    { onRetryChart(null) }, { onNextChart(null) }, { onPreviousChart(null) }, { choose(null) })
-            } }
             item { SectionTitle("Statistiche per Gioco", Icons.Outlined.SportsEsports, MaterialTheme.colorScheme.primary) }
             state.overview?.let { overview ->
                 if (overview.games.isEmpty()) item { Text("Nessuna partita registrata.") }
                 items(overview.games, key = { it.id?.toString() ?: "unassigned" }) { game ->
                     StatisticsGameCard(game, game.id in state.expanded,
-                        game.id?.let { state.games[it] }, game.id?.let { state.charts[it] },
-                        onToggle, onRetryGame, onMorePlayers, onRetryChart, onNextChart, onPreviousChart, ::choose)
+                        game.id?.let { state.games[it] }, onToggle, onRetryGame, onMorePlayers)
                 }
                 if (overview.next != null) item {
                     Button(onClick = onMoreGames, enabled = !state.loading, modifier = Modifier.fillMaxWidth()) {
@@ -85,42 +69,11 @@ internal fun StatisticsScreen(state: StatisticsDetailsState, onRefresh: () -> Un
             }
         }
     }
-    if (choosePlayers) {
-        val options = state.charts[chartGame]?.options.orEmpty()
-        StatisticsPlayersDialog(if (options.isEmpty()) state else state.copy(playerOptions = options, optionsLoading = false, optionsProblem = null),
-            state.charts[chartGame]?.selection ?: state.charts[chartGame]?.data?.players?.map { it.id }?.toSet(),
-            { choosePlayers = false }, onOptions) { selection ->
-            onSelect(chartGame, selection); choosePlayers = false
-        }
-    }
 }
 
 @Composable
-private fun WinRates(overview: StatisticsOverview) {
-    KingScorePanel(Modifier.testTag("statistics-win-rates")) {
-        SectionTitle("Win Rate per Gioco (Top 10)", Icons.Outlined.EmojiEvents, Color(0xFFC084FC))
-        when {
-            !overview.linked -> Text("Profilo giocatore non collegato.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            overview.winRates.isEmpty() -> Text("Nessuna partecipazione registrata per il tuo giocatore.")
-            else -> overview.winRates.forEach { rate ->
-                Column(Modifier.testTag("win-rate-${rate.gameId}"), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(rate.name, Modifier.weight(1f), fontWeight = FontWeight.Medium)
-                        Text("${rate.percent}%", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                    }
-                    LinearProgressIndicator(progress = { rate.percent / 100f }, modifier = Modifier.fillMaxWidth().height(8.dp))
-                    Text("${rate.wins} vittorie su ${rate.participations} partecipazioni", style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun StatisticsGameCard(game: GameStatistics, expanded: Boolean, details: GameStatisticsState?, chart: StatisticsChartState?,
+private fun StatisticsGameCard(game: GameStatistics, expanded: Boolean, details: GameStatisticsState?,
     onToggle: (UUID) -> Unit, onRetry: (UUID) -> Unit, onMore: (UUID) -> Unit,
-    retryChart: (UUID?) -> Unit, nextChart: (UUID?) -> Unit, previousChart: (UUID?) -> Unit, choose: (UUID?) -> Unit,
 ) {
     KingScorePanel(Modifier.testTag("statistics-game-${game.id}").border(1.dp, MaterialTheme.colorScheme.outline, WebPanelShape)) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -175,8 +128,6 @@ private fun StatisticsGameCard(game: GameStatistics, expanded: Boolean, details:
                         Text("Altri giocatori (${data.players.size} di ${data.totalPlayers})")
                     }
                 }
-                Text("Evoluzione ELO nel tempo", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                StatisticsEloChart(chart ?: StatisticsChartState(), { retryChart(id) }, { nextChart(id) }, { previousChart(id) }, { choose(id) })
             }
         }
     }
@@ -205,7 +156,6 @@ internal fun StatisticsError(problem: DataProblem, retry: () -> Unit) {
         Text(when (problem) {
             DataProblem.FORBIDDEN -> "Non hai il permesso di leggere questi dati."
             DataProblem.REVISION_CHANGED -> "I dati sono cambiati durante il caricamento. Trascina dalla cima per ricaricare."
-            DataProblem.SELECTION_REQUIRED -> "Seleziona fino a 64 giocatori per il grafico."
             else -> "Non è stato possibile completare la lettura. Nessun dato parziale viene presentato come totale."
         }, color = MaterialTheme.colorScheme.error)
         TextButton(onClick = retry) { Text("Riprova") }
@@ -213,33 +163,3 @@ internal fun StatisticsError(problem: DataProblem, retry: () -> Unit) {
 }
 
 internal fun BigDecimal?.format(): String = this?.stripTrailingZeros()?.toPlainString()?.replace('.', ',') ?: "Non disponibile"
-
-@Composable
-private fun StatisticsPlayersDialog(state: StatisticsDetailsState, selected: Set<UUID>?, dismiss: () -> Unit,
-    retry: () -> Unit, apply: (Set<UUID>) -> Unit) {
-    var selection by remember { mutableStateOf(selected ?: emptySet()) }
-    var query by remember { mutableStateOf("") }
-    LaunchedEffect(state.playerOptions, state.optionsLoading, state.optionsProblem) {
-        if (!state.optionsLoading && state.optionsProblem == null)
-            selection = selection.intersect(state.playerOptions.map { it.id }.toSet())
-    }
-    AlertDialog(onDismissRequest = dismiss, title = { Text("Giocatori nel grafico") },
-        text = { Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("${selection.size} selezionati · massimo 64")
-            OutlinedTextField(query, { query = it.take(120) }, label = { Text("Cerca giocatore") }, singleLine = true)
-            if (state.optionsLoading) LinearProgressIndicator(Modifier.fillMaxWidth())
-            state.optionsProblem?.let { StatisticsError(it, retry) }
-            LazyColumn(Modifier.heightIn(max = 300.dp)) {
-                items(state.playerOptions.filter { it.name.contains(query, ignoreCase = true) }, key = { it.id }) { player ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(player.id in selection, { checked ->
-                            selection = if (!checked) selection - player.id else if (selection.size < 64) selection + player.id else selection
-                        }, enabled = player.id in selection || selection.size < 64,
-                            modifier = Modifier.semantics { contentDescription = player.name })
-                        Text(player.name, Modifier.weight(1f))
-                    }
-                }
-            }
-        } }, confirmButton = { TextButton(onClick = { apply(selection) }, enabled = selection.isNotEmpty() && !state.optionsLoading) { Text("Applica") } },
-        dismissButton = { TextButton(onClick = dismiss) { Text("Annulla") } })
-}

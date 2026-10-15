@@ -1,0 +1,175 @@
+{
+  "status": "PASS",
+  "versionName": "0.6.2",
+  "versionCode": 20,
+  "passed": 25,
+  "failed": 0,
+  "skipped": 0,
+  "scope": "All six affected/access classes: numeric statistics, ELO v2 draws, Home/history/detail and access gates",
+  "completeApplicationSuiteRepeated": false,
+  "baselineFullSuite": "private-060-ui-validation.json",
+  "log": ".work/statistics-062-native.log",
+  "logSha256": "e3b15acbbfcbf0b3b6199a0d0a8fa12471dd429f019e3d6d8f4041c41ffc0a42",
+  "cases": [
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "totalTieKeepsEveryPositionAndDrawLabelReachableAtFontTwo",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "cooperativeGroupWinStaysAVictoryEvenWithAStaleIndividualFlag",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "cooperativeLossNeverShowsDrawOrWinnerBadgesFromStaleIndividualFlags",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "sharedFirstsAreDrawsAcrossHomeHistoryAndDetailAndDisappearWithoutAccess",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.AccessUiTest",
+      "test": "loginExposesOnlyExistingAccountSignIn",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.AccessUiTest",
+      "test": "offlineStateContainsNoAuthenticatedNavigation",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.AccessUiTest",
+      "test": "accountScreenShowsRoleAndLogoutWithoutForbiddenSettings",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "disconnectRemovesDetailAndReconnectionReloadsWithoutCachedRows",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "cooperativeLossUsesStoredTeamResultAndPositions",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "historyOpensDetailAndBackPreservesPages",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "forbiddenOrMissingDetailIsNotPresentedAsEmptyHistory",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "logoutAndAccountChangeNeverRestorePreviousAccountPages",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "playerShowsIdentityAndPaginatedHistoryWithoutInventingGlobalStatistics",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "historyShowsEveryParticipantAndExactScoresAtLargeFont",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "commentBadgeIsAbsentForUnknownAndZeroAndOpensOnlyComments",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "statisticsNeverShowsPartialTotalsAndKeepsTheCompletedSnapshotDuringRefresh",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "incompleteOrFailedSummaryNeverInventsZeroTotalsOrHidesRecentPlays",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "redesignedCommentsExposeOnlyOwnActions",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "approvedScreensKeepPublishedValuesAndRemovePrivateContentWhenBlockedOrSignedOut",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "twiceSizedTextKeepsAllThreeScreensScrollableAndPreservesExactScore",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "playerExpansionKeepsAveragesAndCoverageWithoutCharts",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "numericGameCardsReplaceWinRatesAndAllStatisticsCharts",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "unlinkedPlayerStillSeesNumericGamesWithoutPersonalWinRateOrCharts",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "numericOverviewErrorOffersRetryAndThenShowsTheGameCards",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "fontTwoKeepsGameCoverageAndExpansionReachable",
+      "code": 0
+    }
+  ],
+  "screenshots": [
+    {
+      "path": ".work/ui-062-screenshots/statistics-font2.png",
+      "sha256": "8194c28013cd1a56d881a6514783415987bab82298b4e3a6d7c9f3e2fc85afd2",
+      "data": "synthetic fixture"
+    },
+    {
+      "path": ".work/ui-062-screenshots/statistics-game.png",
+      "sha256": "0090041c9519b49a0d83e446519ad60761c64530bca1a0e426682e121f2e8601",
+      "data": "synthetic fixture"
+    },
+    {
+      "path": ".work/ui-062-screenshots/statistics-player.png",
+      "sha256": "8ca4ad818fd135545faeb1c5bb73e3a2036d031cd08d4cabd700922416d39601",
+      "data": "synthetic fixture"
+    },
+    {
+      "path": ".work/ui-062-screenshots/statistics-top.png",
+      "sha256": "0090041c9519b49a0d83e446519ad60761c64530bca1a0e426682e121f2e8601",
+      "data": "synthetic fixture"
+    }
+  ],
+  "sourceManifestSha256": "e6f2af678ce6bb9c79265fac1c8e6a46cdeddccc4217a5b2f1ad3aa9d2b7da9b",
+  "debugApkSha256": "c3a7ea5b3c4d7e74e5b7884c3ef7b87c7a37c730ed3d681c9bb2e2725b1379f9",
+  "testApkSha256": "91834d143cf31d4a78ee51bc8f72cd4b1892c4998e7f2b24dc112440d05f95e7",
+  "environment": "Dedicated PC API 35 emulator emulator-5586; 384x832 density160; ART-precompiled; Compose font 2x verified",
+  "remoteAccountAuthenticationTested": false,
+  "remoteDatabaseContacted": false,
+  "statisticsRemoved": [
+    "Win Rate per Gioco",
+    "ELO Generale",
+    "per-game charts",
+    "chart player selection and pagination"
+  ],
+  "numericGameAndPlayerStatisticsPreserved": true
+}

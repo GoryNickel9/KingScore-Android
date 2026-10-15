@@ -2,8 +2,13 @@ package app.kingscore.android.ui
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.*
@@ -39,7 +44,7 @@ class RemainingScreensUiTest {
                 n == 1, null, null, n), player.copy(id = id(50 + n), name = "Partecipante $n", account_user_id = null)) }
         compose.setContent {
             val density = LocalDensity.current
-            CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) { KingScoreTheme {
+            CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) { TestSurface {
                 HistoryScreen(HistoryState(items = listOf(play.copy(scores = rows)), loading = false), "", {}, true, {}, {}, {}, {}, {}, {}, {}, {})
             } }
         }
@@ -54,7 +59,7 @@ class RemainingScreensUiTest {
         val count = mutableStateOf<Int?>(null)
         var opened = 0
         var comments = 0
-        compose.setContent { KingScoreTheme { Column {
+        compose.setContent { TestSurface { Column {
             PlayHistoryCard(play, { opened++ }, count.value, { comments++ })
         } } }
         compose.onNodeWithTag("play-comments-${play.play.id}").assertDoesNotExist()
@@ -69,7 +74,7 @@ class RemainingScreensUiTest {
 
     @Test fun statisticsNeverShowsPartialTotalsAndKeepsTheCompletedSnapshotDuringRefresh() {
         val state = mutableStateOf(StatisticsState(processed = 50))
-        compose.setContent { KingScoreTheme { StatisticsScreen(state.value, {}) } }
+        compose.setContent { TestSurface { StatisticsScreen(state.value, {}) } }
         compose.onNodeWithText("Lettura archivio: 50 partite…").assertIsDisplayed()
         compose.onNodeWithText("0 partite").assertDoesNotExist()
         compose.runOnIdle { state.value = StatisticsState(snapshot, loading = false) }
@@ -84,7 +89,7 @@ class RemainingScreensUiTest {
     }
 
     @Test fun playerShowsIdentityAndPaginatedHistoryWithoutInventingGlobalStatistics() {
-        compose.setContent { KingScoreTheme {
+        compose.setContent { TestSurface {
             PlayerScreen(PlayerState(player, loading = false), HistoryState(items = listOf(play), loading = false,
                 commentCounts = mapOf(play.play.id to 1)), player.account_user_id!!, {}, {}, {}, {}, {})
         } }
@@ -96,6 +101,14 @@ class RemainingScreensUiTest {
         compose.onNodeWithText("Win Rate").assertDoesNotExist()
         compose.onNodeWithText("Partite totali").assertDoesNotExist()
         capture("player")
+    }
+
+    @Composable
+    private fun TestSurface(content: @Composable () -> Unit) {
+        KingScoreTheme {
+            Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onBackground, content = content)
+        }
     }
 
     private fun capture(name: String) {

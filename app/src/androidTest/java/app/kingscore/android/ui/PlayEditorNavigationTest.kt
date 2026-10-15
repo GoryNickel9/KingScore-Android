@@ -180,7 +180,7 @@ class PlayEditorNavigationTest {
         compose.onNodeWithTag("sign-in").assertIsDisplayed()
     }
     @Test fun createRefreshesHistoryAndPreservesItsAppliedSourceFilter() {
-        history(); compose.onNodeWithText("Online").performClick()
+        history(); compose.onNode(hasText("Online") and hasClickAction() and !hasTestTag("play-$playId")).performClick()
         compose.waitForIdle(); val callsBefore = historyQueries.size
         compose.onNodeWithTag("create-play").performClick()
         click("editor-game"); compose.onNodeWithTag("editor-option-${game.id}").performClick()

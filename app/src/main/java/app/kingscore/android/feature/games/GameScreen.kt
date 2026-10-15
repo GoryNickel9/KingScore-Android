@@ -44,7 +44,7 @@ fun GameScreen(state: GameState, history: HistoryState, onRefresh: () -> Unit, o
     onRetry: () -> Unit, onOpenPlay: (UUID) -> Unit, onBack: () -> Unit, onOpenComments: ((UUID) -> Unit)? = null) {
     Column(Modifier.fillMaxSize().testTag("game-detail")) {
         ScreenHeader("Dettaglio gioco", onBack = onBack, backLabel = "Torna indietro")
-        OnlinePullRefresh(state.loading || history.loading, onRefresh, Modifier.weight(1f)) {
+        OnlinePullRefresh(state.loading || (state.game != null && history.loading), onRefresh, Modifier.weight(1f)) {
         when {
             state.loading -> Loading("Caricamento gioco…")
             state.problem != null -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp)) { DataError(state.problem, onRefresh) }

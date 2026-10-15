@@ -99,7 +99,7 @@ class FinalPcQaTest {
         }
         val before = memory()
         repeat(23) { page ->
-            // This fixture always has query, filters and updated-at headers before the cards.
+            // The unified search/filter header and the updated-at row precede the cards.
             compose.onNodeWithTag("history-content").performScrollToIndex((page + 1) * PAGE_SIZE + HISTORY_HEADERS)
             compose.onNodeWithTag("more-plays").assertIsDisplayed()
             compose.onNodeWithTag("more-plays").performClick()
@@ -217,7 +217,7 @@ class FinalPcQaTest {
         override suspend fun game(id: UUID) = game
     }
     companion object {
-        private const val HISTORY_HEADERS = 3
+        private const val HISTORY_HEADERS = 2
         private fun id(n: Int) = UUID(0, n.toLong())
         private val account = Account(id(5000), "Nome giocatore lungo per il collaudo", "account.locale@example.invalid", false)
         private val game = GameRow(id(6000), "Azul", null, null, 2, 4, Instant.EPOCH)

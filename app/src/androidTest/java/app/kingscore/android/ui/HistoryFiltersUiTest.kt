@@ -2,6 +2,8 @@ package app.kingscore.android.ui
 
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.ViewModelStore
@@ -53,8 +55,13 @@ class HistoryFiltersUiTest {
         val filters = repo.requests.last().first
         assertEquals(HistoryFilters("Finale", PlaySource.IRL, game.id, player.id,
             LocalDate.parse("2026-10-01"), LocalDate.parse("2026-10-13")), filters)
-        compose.onNodeWithTag("history-content").performScrollToNode(hasText("2 partecipanti"))
-        compose.onNodeWithText("2 partecipanti").assertIsDisplayed()
+        compose.onNodeWithTag("history-content").performScrollToNode(hasTestTag("play-${first.play.id}"))
+        first.scores.forEach { row ->
+            compose.onNodeWithTag("history-score-${row.score.id}", useUnmergedTree = true).assertIsDisplayed()
+            val name = row.player?.alias?.takeIf(String::isNotBlank) ?: row.player?.name ?: "Giocatore non disponibile"
+            val points = row.score.score?.toPlainString()?.replace('.', ',') ?: "punti non registrati"
+            compose.onNodeWithText("$name: $points", useUnmergedTree = true).assertIsDisplayed()
+        }
         capture("phase32-filtered-history")
         action("Carica altre partite")
         assertEquals(filters, repo.requests.last().first)
@@ -156,8 +163,12 @@ class HistoryFiltersUiTest {
     }
 
     private fun action(text: String) {
-        compose.onNodeWithTag("history-content").performScrollToNode(hasText(text))
-        compose.onNodeWithText(text).performClick()
+        val control = hasText(text) and hasClickAction() and hasAnyAncestor(hasTestTag("history-content")) and
+            SemanticsMatcher("history control outside a play card") {
+                it.config.getOrNull(SemanticsProperties.TestTag)?.startsWith("play-") != true
+            }
+        compose.onNodeWithTag("history-content").performScrollToNode(control)
+        compose.onNode(control).performClick()
     }
     private fun showApp() { compose.setContent { KingScoreTheme { AppContent(access.value, { _, _ -> }, {}, {}, {},
         playsFactory = { repo }, onAccessFailure = { access.value = AccessState.Blocked(it) }) } } }

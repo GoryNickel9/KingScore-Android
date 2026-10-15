@@ -343,5 +343,44 @@
     "cooperativeLossWithoutWinnersAllowed": true,
     "historicalMissingOrZeroDurationStillReadable": true,
     "statisticsGraphsAndWinRateRemoved": true
+  },
+  "sourceCi": {
+    "conclusion": "success",
+    "headSha": "6f5f908b5f99a110c14f0762747019925860540b",
+    "status": "completed",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38821149282"
+  },
+  "cleanup": {
+    "status": "PASS",
+    "avd": "KingScore063Release31",
+    "api": 31,
+    "serial": "emulator-5586",
+    "testPackageRemoved": true,
+    "syntheticApplicationDataCleared": true,
+    "unrelatedEmulatorsModified": false,
+    "emulatorStopped": true,
+    "settingsRestored": {
+      "system.font_scale": "null",
+      "secure.show_ime_with_hard_keyboard": "1",
+      "global.animator_duration_scale": "null",
+      "global.transition_animation_scale": "1.0",
+      "global.window_animation_scale": "1.0"
+    },
+    "uiDeviceCleanup": {
+      "status": "PASS",
+      "avd": "KingScore062Release31",
+      "api": 31,
+      "serial": "emulator-5588",
+      "syntheticPackagesRemoved": true,
+      "unrelatedEmulatorsModified": false,
+      "emulatorStopped": true,
+      "settingsRestored": {
+        "system.font_scale": "null",
+        "secure.show_ime_with_hard_keyboard": "1",
+        "global.transition_animation_scale": "1.0",
+        "global.window_animation_scale": "1.0",
+        "global.animator_duration_scale": "null"
+      }
+    }
   }
 }

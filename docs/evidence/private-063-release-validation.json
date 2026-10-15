@@ -1,0 +1,108 @@
+{
+  "status": "PASS",
+  "candidate": false,
+  "stable": true,
+  "versionName": "0.6.3",
+  "versionCode": 21,
+  "qualification": "private-mandatory-editor-inputs-update",
+  "sourceCommit": "6f5f908b5f99a110c14f0762747019925860540b",
+  "sourceDirtyAtBuild": false,
+  "apkSha256": "e65be7b90316d44b98f83e9720bf7a02dfccf4ec3cdba445f552f68e4b6e70b8",
+  "apkBytes": 14560738,
+  "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
+  "adminEditorEnabled": true,
+  "jvm": {
+    "tests": 339,
+    "failures": 0,
+    "errors": 0
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 16
+  },
+  "nodeContractTests": {
+    "passed": 41,
+    "failed": 0
+  },
+  "native": {
+    "affectedCasesPassed": 57,
+    "failed": 0,
+    "skipped": 0,
+    "api": 31,
+    "completeApplicationSuiteRepeated": false,
+    "evidence": "private-063-ui-validation.json",
+    "baselineFullSuite": "private-060-ui-validation.json",
+    "priorApi35Ui": "private-062-ui-validation.json"
+  },
+  "requirements": {
+    "minimumDurationMinutes": 1,
+    "appliesToCreateAndUpdate": true,
+    "competitiveMinimumWinners": 1,
+    "multipleWinnersAllowed": true,
+    "cooperativeLossWithoutWinnersAllowed": true,
+    "historicalMissingOrZeroDurationStillReadable": true,
+    "statisticsGraphsAndWinRateRemoved": true
+  },
+  "upgradeFrom18": "PASS",
+  "signedUpgradeApi": 31,
+  "requiredLogin": "PASS",
+  "liveOfflineAndReconnect": "PASS",
+  "sourceCi": {
+    "conclusion": "success",
+    "headSha": "6f5f908b5f99a110c14f0762747019925860540b",
+    "status": "completed",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38821149282"
+  },
+  "remoteDatabaseChanged": false,
+  "webChanged": false,
+  "vercelChanged": false,
+  "remoteAccountAuthenticationRetested": false,
+  "eloCalculatedOnAndroid": false,
+  "supportedAlgorithms": [
+    "kingscore-elo-legacy-v1",
+    "kingscore-elo-rules-v2"
+  ],
+  "transportV1HistoricalAndPendingCompatibilityPreserved": true,
+  "oldRequestPayloadsRewritten": false,
+  "backendValidation": "Backend RPCs must enforce the same rules; no backend changes or new live API validation in this patch.",
+  "limitations": [
+    "PC API 31 UI and signed-upgrade emulators; no physical phone or new GoTrue login test.",
+    "57 affected native cases passed; full baseline UI suite and PC HTTP/process-death integrations were not repeated.",
+    "ART-precompiled packages; no cold-start performance benchmark.",
+    "APK updates remain manual."
+  ],
+  "cleanup": {
+    "status": "PASS",
+    "avd": "KingScore063Release31",
+    "api": 31,
+    "serial": "emulator-5586",
+    "testPackageRemoved": true,
+    "syntheticApplicationDataCleared": true,
+    "unrelatedEmulatorsModified": false,
+    "emulatorStopped": true,
+    "settingsRestored": {
+      "system.font_scale": "null",
+      "secure.show_ime_with_hard_keyboard": "1",
+      "global.animator_duration_scale": "null",
+      "global.transition_animation_scale": "1.0",
+      "global.window_animation_scale": "1.0"
+    },
+    "uiDeviceCleanup": {
+      "status": "PASS",
+      "avd": "KingScore062Release31",
+      "api": 31,
+      "serial": "emulator-5588",
+      "syntheticPackagesRemoved": true,
+      "unrelatedEmulatorsModified": false,
+      "emulatorStopped": true,
+      "settingsRestored": {
+        "system.font_scale": "null",
+        "secure.show_ime_with_hard_keyboard": "1",
+        "global.transition_animation_scale": "1.0",
+        "global.window_animation_scale": "1.0",
+        "global.animator_duration_scale": "null"
+      }
+    }
+  },
+  "verifiedAt": "2026-10-15T23:15:38.820562+00:00"
+}

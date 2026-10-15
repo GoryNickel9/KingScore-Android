@@ -1,10 +1,12 @@
 # Changelog
 
-## 0.6.3 — Campi obbligatori in collaudo
+## 0.6.3 — Campi obbligatori
 
 - Durata obbligatoria di almeno un minuto sia in creazione sia in modifica, con indicazione e messaggio nel campo.
 - Almeno un vincitore nelle partite competitive; pareggi con più vincitori e cooperative perse senza vincitori restano validi.
 - Lettura dei dati storici, eliminazione e recupero delle richieste pregresse conservati. Nessuna modifica cloud o ricalcolo ELO. [Regole](docs/PLAY_EDITOR_REQUIREMENTS.md).
+
+APK code 21 dalla fonte pulita `6f5f908b5f99a110c14f0762747019925860540b`: 339 test JVM debug/release, 57 test nativi interessati, 41 controlli Node e lint senza errori. [CI](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38821149282) e aggiornamento 18 → 21 passati. [Qualifica](docs/evidence/private-063-release-validation.json).
 
 ## 0.6.2 — Statistiche numeriche
 

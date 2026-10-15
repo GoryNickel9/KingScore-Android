@@ -1,8 +1,8 @@
 # Distribuzione APK privato
 
-Stabile corrente **0.6.2/code 20**: `.work/releases/KingScore-0.6.2-20.apk`, 14.560.738 byte, SHA-256 `6bc382d954ed9a7d051cba527253574e9cb28d60f38141715354a3a1056c4f9f`. Fonte pulita `45193cfc5e5d53f3e1b0c58c46b972d32cc67b85`. Stesso certificato della 0.6.0; aggiornamento 18 → 20 con dati cifrati conservati. [Qualifica](evidence/private-062-release-validation.json) e [limiti](STABILITY.md).
+Stabile corrente **0.6.3/code 21**: `.work/releases/KingScore-0.6.3-21.apk`, 14.560.738 byte, SHA-256 `e65be7b90316d44b98f83e9720bf7a02dfccf4ec3cdba445f552f68e4b6e70b8`. Fonte pulita `6f5f908b5f99a110c14f0762747019925860540b`. Stesso certificato; aggiornamento 18 → 21 con dati cifrati conservati. La 0.6.2 ha già verificato l'aggiornamento 18 → 20. [Qualifica](evidence/private-063-release-validation.json) e [limiti](STABILITY.md).
 
-Conservare la chiave in `.work/signing`; non distribuire la probe. Il manifest `.apk.json` resta candidato e `.apk.release.json` registra la qualifica dello stesso checksum. [Statistiche numeriche](STATISTICS_NUMERIC.md) descrive questa patch; [ELO v2](ELO_V2_ANDROID.md) documenta compatibilità e dipendenze backend.
+Conservare la chiave in `.work/signing`; non distribuire la probe. Il manifest `.apk.json` resta candidato; `.apk.release.json` registra la qualifica dello stesso checksum. [Campi obbligatori](PLAY_EDITOR_REQUIREMENTS.md), [Statistiche numeriche](STATISTICS_NUMERIC.md) e [compatibilità ELO v2](ELO_V2_ANDROID.md).
 
 ## Build e firma sul PC Windows
 
@@ -12,8 +12,8 @@ Servono PowerShell 7, JDK 17 o successivo, Android SDK 36 e build-tools 35.0.0. 
 # Prima firma: crea una sola chiave locale, protetta dai permessi Windows.
 pwsh -NoProfile -File scripts/build-private-apk.ps1 -InitializeSigningKey
 
-# Build 0.6.2: riusa la stessa chiave; lo script rifiuta APK già presenti.
-pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 20 -VersionName 0.6.2
+# Build 0.6.3: riusa la stessa chiave; lo script rifiuta APK già presenti.
+pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 21 -VersionName 0.6.3
 ```
 
 Usare -Offline soltanto dopo che le dipendenze release sono state scaricate. Il workaround Java locale, quando necessario su questo PC, si configura nell'ambiente del comando come descritto in TESTING.md; non entra nell'APK o nella firma.
@@ -57,7 +57,7 @@ La RC3 supera aggiornamento 8 → 11, conservazione dei registri, rifiuto della 
 
 APK: `.work/releases/KingScore-0.5.0-rc3-11.apk`, 14.446.050 byte. SHA-256: `7f54b60fdf96d4bf63ca20d653d1d030b2d27a9f799203c5034248edb64e7a31`. Certificato SHA-256: `b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b`.
 
-Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI Android è attiva; la verifica della fonte 0.6.2 è passata. I checkpoint RC4 sottostanti conservano le verifiche locali del periodo in cui era sospesa.
+Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI Android è attiva; la verifica della fonte 0.6.3 è passata. I checkpoint RC4 sottostanti conservano le verifiche locali del periodo in cui era sospesa.
 
 ## Candidata RC4
 

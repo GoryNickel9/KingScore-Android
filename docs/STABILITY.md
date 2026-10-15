@@ -1,4 +1,28 @@
-# Stabile privata corrente 0.6.2/code 20
+# Stabile privata corrente 0.6.3/code 21
+
+## 0.6.3/code 21 — Campi obbligatori
+
+APK: `.work/releases/KingScore-0.6.3-21.apk`, 14.560.738 byte. SHA-256 `e65be7b90316d44b98f83e9720bf7a02dfccf4ec3cdba445f552f68e4b6e70b8`. Fonte pulita `6f5f908b5f99a110c14f0762747019925860540b`; stesso certificato. Installare sopra la 0.6.0 senza disinstallarla; aggiornamento 18 → 21 verificato.
+
+Creazione e modifica richiedono durata intera di almeno un minuto e almeno un vincitore nelle competitive. Più vincitori restano validi; le cooperative perse non richiedono vincitori. Vecchie partite con campi mancanti restano leggibili e, se modificabili secondo l'API, completabili prima del salvataggio. Eliminazione e recupero delle richieste pregresse conservano le protezioni esistenti. [Regole](PLAY_EDITOR_REQUIREMENTS.md).
+
+| Controllo | Risultato |
+| --- | --- |
+| JVM debug/release | 339 test per variante, zero fallimenti |
+| Lint | Zero errori; 16 avvisi debug e 16 release |
+| Contratti Node | 41 passati |
+| UI interessata | Singolo run verde di 57 casi su API 31; editor, navigazione, Statistiche, pareggi e accesso |
+| Aggiornamento 18 → 21 | Stesso UID e registri cifrati conservati; firma estranea rifiutata; run-as negato |
+| Gate release | Login con sessione vuota, blocco offline e disconnessione/riconnessione verificati |
+| CI della fonte | [PASS sul commit 6f5f908](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38821149282) |
+
+Sono due emulatori PC API 31 distinti, con ART precompilato; nessuna misura d'avvio a freddo. Le prove API 35 della 0.6.2 restano un checkpoint precedente. Non sono ripetute la suite UI integrale, le integrazioni HTTP/morte del processo sul PC o un nuovo login remoto. Telefoni fisici non verificati. Dati sintetici e probe rimossi, impostazioni ripristinate ed emulatori arrestati.
+
+Statistiche conserva la rimozione di Win Rate per Gioco e di tutti i grafici. Login, Internet e compatibilità ELO v2 restano attivi. Questa patch non modifica web, Vercel o Supabase: anche le RPC devono applicare le regole obbligatorie. I DTO V1 restano compatibili con dati storici e registri cifrati, senza riscrivere richieste già inviate. Aggiornamenti APK manuali.
+
+Evidenze: [build](evidence/private-063-build.json), [UI](evidence/private-063-ui-validation.json), [aggiornamento](evidence/private-063-upgrade-validation.json), [qualifica](evidence/private-063-release-validation.json). Il manifest iniziale di build resta candidato; la qualifica promuove lo stesso checksum.
+
+# Checkpoint precedente 0.6.2/code 20
 
 ## 0.6.2/code 20 — Statistiche numeriche
 

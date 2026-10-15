@@ -1,6 +1,7 @@
 package app.kingscore.android.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -21,15 +22,17 @@ fun OnlinePullRefresh(refreshing: Boolean, onRefresh: () -> Unit, modifier: Modi
     enabled: Boolean = true, content: @Composable () -> Unit) {
     val state = rememberPullToRefreshState()
     val refresh = { if (enabled && !refreshing) onRefresh() }
-    PullToRefreshBox(isRefreshing = refreshing, onRefresh = refresh, state = state,
-        modifier = modifier.fillMaxSize().testTag("pull-refresh").semantics {
-            customActions = if (enabled && !refreshing) listOf(CustomAccessibilityAction("Aggiorna") {
-                refresh(); true
-            }) else emptyList()
-        }, indicator = {
-            PullToRefreshDefaults.Indicator(state = state, isRefreshing = refreshing,
-                modifier = Modifier.align(Alignment.TopCenter),
-                containerColor = MaterialTheme.colorScheme.surface,
-                color = MaterialTheme.colorScheme.primary)
-        }) { content() }
+    Box(modifier.fillMaxSize()) {
+        PullToRefreshBox(isRefreshing = refreshing, onRefresh = refresh, state = state,
+            modifier = Modifier.fillMaxSize().testTag("pull-refresh").semantics {
+                customActions = if (enabled && !refreshing) listOf(CustomAccessibilityAction("Aggiorna") {
+                    refresh(); true
+                }) else emptyList()
+            }, indicator = {
+                PullToRefreshDefaults.Indicator(state = state, isRefreshing = refreshing,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    color = MaterialTheme.colorScheme.primary)
+            }) { content() }
+    }
 }

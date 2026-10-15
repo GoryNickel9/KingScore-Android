@@ -133,7 +133,7 @@ Criterio di uscita: timeout dopo commit e doppio invio non duplicano partite; pa
 4. Produrre APK firmato per beta privata, mantenendo la stessa chiave per gli aggiornamenti. Gestire la chiave di firma fuori da Git, dentro il perimetro locale autorizzato, con versioni, checksum, note di rilascio e istruzioni per gli aggiornamenti.
 5. Consegnare l'APK tramite un canale privato concordato, documentare i dati usati dall'app e raccogliere feedback sui percorsi consultazione, commento e inserimento partita. La prima versione non comprende AAB o pubblicazione su Google Play.
 
-File previsti: `app/src/test/`, `app/src/androidTest/`, `docs/BENCHMARKS.md`, `docs/RELEASE.md`, `CHANGELOG.md` e pipeline di rilascio.
+File: `app/src/test/`, `app/src/androidTest/`, `docs/BENCHMARKS.md`, `docs/PRIVATE_RELEASE.md`, `CHANGELOG.md` e pipeline di rilascio.
 
 Criterio di uscita: build ripetibile, controlli locali e CI superati, nessun bug noto che comprometta dati o permessi, installazione e aggiornamento verificati sugli emulatori del PC. La CI è sospesa e il suo criterio resta aperto: non eseguirla finché l'utente non la autorizza di nuovo. La verifica remota con account reali e le prove su telefoni non sono consentite dal perimetro corrente; non sostituirle con dichiarazioni non verificate. I benchmark devono distinguere dati misurati e casi non collaudati.
 
@@ -169,13 +169,13 @@ La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Ke
 
 ## Lavoro residuo per la versione 1.0 stabile
 
-Stima conservativa dopo i commenti propri, 13 ottobre 2026. Il lavoro sulle scritture admin rimane da valutare con le RPC nell'ambiente isolato; la fascia complessiva resta 58–96 ore fino a quelle prove. La 1.0 comprende il perimetro MVP concordato e distribuzione privata: consultazione, commenti propri, gestione partite admin, login obbligatorio e funzionamento solo con Internet. L'APK attuale è un'anteprima con firma debug; il superamento della CI non sostituisce le verifiche con account reali e telefoni.
+La stima iniziale del 13 ottobre 2026 era 58–96 ore, prima dei collaudi e della firma privata; non misura il lavoro residuo al 15 ottobre. La RC4 è ora una candidata firmata con 231 test release superati e aggiornamento RC3 → RC4 verificato su API 31 e 35. La 1.0 mantiene il perimetro concordato: consultazione, commenti propri, gestione partite admin, login e Internet obbligatori. Le scritture admin restano disabilitate fino alla disponibilità delle API reali e alla coerenza dei writer web/server. Non è ancora possibile fissare una data della stabile completa entro il solo perimetro Android.
 
-| Lavoro residuo | Stima effettiva | Criterio di completamento |
+| Voce della stima iniziale | Stima del 13 ottobre | Stato al 15 ottobre |
 | --- | --- | --- |
-| CRUD partite admin e integrazione backend | 28–48 ore | RPC atomiche deployate e testate in ambiente isolato, permessi, conflitti e retry verificati |
-| Verifica e release privata | 20–32 ore | Account reali, telefoni, rete e aggiornamento APK testati; chiave di firma definitiva e procedura di rilascio |
-| Totale con riserva del 20% | **58–96 ore** | Circa 7–12 giornate da 8 ore; stima di lavoro, non scadenza di calendario |
+| CRUD partite admin e integrazione backend | 28–48 ore | Client, editor e RPC candidati collaudati sul PC; API reali e writer esterni ancora da completare |
+| Verifica e release privata | 20–32 ore | RC4 firmata e collaudata su API 31 e 35; verifiche remote e CI escluse dai vincoli attuali |
+| Totale storico con riserva del 20% | **58–96 ore** | Stima iniziale conservata; non rappresenta le ore ancora necessarie |
 
 La dipendenza delle scritture admin resta irrisolta: le RPC proposte e i writer web sono stati ritirati. La stima sopra precede il nuovo vincolo di lavorare soltanto nella repo Android e va riesaminata prima di promettere il CRUD completo. Wrapped, import BGA nell'app e amministrazione completa dei cataloghi restano estensioni dopo l'MVP.
 
@@ -185,6 +185,6 @@ Il contratto dei salvataggi e le cinque RPC candidate sono implementati soltanto
 
 Il piano è definito in [docs/WRITER_INTEGRATION.md](docs/WRITER_INTEGRATION.md): mappa dei writer da verificare, contratti comuni, coerenza dei job su più partite, test dei consumer e ordine del rilascio. King-Score e rilasci Vercel/Supabase restano esclusi. Il test del cutover e l'adattatore server sono soltanto locali; nessun consumer reale è integrato. Le scritture partite Android restano disabilitate.
 
-Il client RPC Android, il journal cifrato, il controller e la schermata editor con fixture sono implementati: [PHASE4_ANDROID_RPC_CLIENT.md](docs/PHASE4_ANDROID_RPC_CLIENT.md) e [PLAY_EDITOR_STATE.md](docs/PLAY_EDITOR_STATE.md). I percorsi reali restano disabilitati. La candidata firmata 0.5.0-rc2 e la pipeline locale di aggiornamento sono descritte in [PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md). Il trattamento dei dati storici incompatibili resta conservativo: lettura completa e modifica bloccata.
+Il client RPC Android, il journal cifrato, il controller e la schermata editor sono implementati e collegati: [PHASE4_ANDROID_RPC_CLIENT.md](docs/PHASE4_ANDROID_RPC_CLIENT.md) e [PLAY_EDITOR_STATE.md](docs/PLAY_EDITOR_STATE.md). Il percorso HTTP locale supera due arresti forzati, replay senza duplicati, recupero della conferma, modifica e cancellazione. I percorsi reali restano disabilitati. La candidata firmata 0.5.0-rc4 e la pipeline di aggiornamento sono descritte in [PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md). Il trattamento dei dati storici incompatibili resta conservativo: lettura completa e modifica bloccata.
 
 L'obiettivo autonomo è ora la prima versione stabile, con commit e push nei passaggi principali. Stato e criteri di uscita: [STABILITY.md](docs/STABILITY.md). Non vengono chieste conferme per il lavoro già autorizzato nella repo; le dipendenze esterne restano esplicite.

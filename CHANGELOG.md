@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.0 — 15 ottobre 2026 (collaudo finale)
+
+- Abilitata la gestione di tutte le partite per gli amministratori: creazione, modifica ed eliminazione atomiche, conflitti e recupero esplicito degli esiti incerti.
+- Classifiche globali e storici letti dalla stessa pubblicazione. Formula ELO invariata; stati mancanti o in attesa di aggiornamento indicati senza mescolare generazioni diverse.
+- Ruolo admin verificato online prima degli invii e dopo il refresh della sessione. Risposte RPC limitate e UTF-8 verificato; richieste incerte conservate quando l'accesso viene negato.
+- Corrette le chiusure TLS sul thread UI dei pool RPC e immagini: svuotamento sul dispatcher HTTP e chiusura idempotente. Corretto il login mostrato prima della conclusione del logout, che poteva scartare un nuovo tentativo di accesso.
+- VersionCode 15 in preparazione. Login e Internet restano obbligatori; restano esclusi registrazione, modifica credenziali/avatar, uso offline e ricalcolo ELO dall'app.
+
+Checkpoint precedente code 14: 255 test JVM passati, lint con 0 errori e 24 avvisi preesistenti; firma e aggiornamento RC4/code 12 → 14 verificati, compresi dati cifrati e blocco offline. Il percorso UI reale conferma login, ELO, ricerca, dettaglio e modifica admin, poi incontra il crash del pool immagini al logout. Cinque casi SDK remoti passati; regola originale delle registrazioni ripristinata e registrazioni chiuse.
+
+Build e verifiche dell'APK code 15, UI reale completa, cleanup e CI finale ancora aperti. La versione non è ancora dichiarata stabile: [STABILITY.md](docs/STABILITY.md).
+
 ## 0.5.0-rc4 — 15 ottobre 2026
 
 - Risorse della navigazione conservate durante la rotazione e rimosse al cambio account, alla perdita di accesso o alla revoca del ruolo.
@@ -31,4 +43,4 @@ Candidata locale ritirata dopo il difetto del monitor rete riprodotto nel collau
 - Repository, pagine, bozza commento e invio in corso conservati durante ricreazione e rotazione dell'Activity. Logout, blocco, Checking e cambio account scartano lo stato precedente.
 - Login e Internet obbligatori; nessuna registrazione, modifica credenziali/avatar o ricalcolo ELO.
 
-L'editor partite admin resta disabilitato finché le API atomiche reali mancano. Questa versione è una candidata privata, non la stabile completa. Le prove rimangono sul PC; nessuna modifica a King-Score, Vercel o Supabase.
+Nota storica della RC1: l'editor partite admin era disabilitato per l'assenza delle API atomiche reali. Le prove di quella candidata erano limitate al PC, senza modifiche a King-Score, Vercel o Supabase.

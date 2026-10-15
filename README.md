@@ -1,14 +1,16 @@
 # KingScore Android
 
-App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-Score. La candidata privata 0.5.0-rc4 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e classifiche/storico ELO. Login e Internet rimangono obbligatori. Conserva gli esiti incerti dopo chiusura del processo e le bozze durante la rotazione. L'editor partite admin è collegato ma disabilitato: richiede ancora le RPC atomiche reali della fase 4.
+App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di KingScore. La candidata privata 0.5.0 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e gestione partite per gli amministratori. Login e Internet sono obbligatori.
 
-Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Score sono state annullate con il commit `a5e5dd6`; Vercel pubblica il codice ripristinato. Nessuna delle nuove migrazioni è stata applicata a Supabase. I documenti delle fasi 4.1 e 4.2 conservano risultati storici, non descrivono funzioni backend attualmente disponibili.
+Gli amministratori possono creare, modificare ed eliminare tutte le partite tramite salvataggi atomici. Classifiche generali, classifiche per gioco e storici leggono la stessa pubblicazione globale del backend. La formula ELO è invariata e l'app non esegue ricalcoli. Il registro cifrato conserva richieste incerte e conferme; il recupero richiede un'azione esplicita.
+
+La 0.5.0, versionCode 15, è in preparazione. L'APK precedente code 14 supera la modifica admin reale ma presenta un crash al logout, corretto nelle sorgenti della code 15 insieme a una race del successivo login. Firma e aggiornamento dalla RC4 sono verificati soltanto per la code 14. Build, prova UI completa, cleanup e CI della code 15 restano aperti. Backend e sito sono stati attivati il 15 ottobre 2026 su autorizzazione dell'utente. Stato e prove: [LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md) e [STABILITY.md](docs/STABILITY.md). I documenti delle fasi 4.1 e 4.2 descrivono preparazioni precedenti annullate.
 
 ## Perimetro confermato
 
 1. Login con account esistente e connessione Internet obbligatori.
 2. Consultazione di partite, statistiche e rating ELO; nessun calcolo o comando di ricalcolo ELO.
-3. Commenti propri per gli utenti; aggiunta, modifica ed eliminazione partite per gli admin secondo i permessi del sito.
+3. Commenti propri per gli utenti; creazione, modifica ed eliminazione di tutte le partite per gli amministratori.
 4. Nessuna registrazione, recupero password, modifica email/password/avatar o modalità offline.
 5. Distribuzione iniziale tramite APK privato firmato.
 
@@ -18,15 +20,16 @@ Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Sco
 | --- | --- |
 | [ROADMAP.md](ROADMAP.md) | Fasi, stime e stato corrente |
 | [docs/STABILITY.md](docs/STABILITY.md) | Obiettivo stabile, criteri di uscita e lavoro autonomo residuo |
+| [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md) | Attivazione backend e sito del 15 ottobre, verifiche e collaudo finale |
 | [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md) | Firma privata, chiave locale, checksum, installazione e aggiornamento |
 | [docs/ACTIVITY_LIFECYCLE.md](docs/ACTIVITY_LIFECYCLE.md) | Rotazione, ricreazione e pulizia della sessione |
 | [CHANGELOG.md](CHANGELOG.md) | Modifiche della candidata di rilascio |
 | [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md) | Schema reale, RLS e limiti delle verifiche |
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | API esistenti, DTO e RPC proposte |
-| [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Contratti V1 e candidata locale dei salvataggi, senza deploy |
+| [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Contratti V1 e prove locali dei salvataggi |
 | [docs/WRITER_INTEGRATION.md](docs/WRITER_INTEGRATION.md) | Piano dei writer web/server, test locali e dipendenze dell'editor Android |
-| [docs/PHASE4_ANDROID_RPC_CLIENT.md](docs/PHASE4_ANDROID_RPC_CLIENT.md) | Client RPC preparato e testato localmente, disabilitato per default |
-| [docs/PLAY_EDITOR_STATE.md](docs/PLAY_EDITOR_STATE.md) | Controller e schermata editor con fixture, bozze, conflitti e recupero; percorsi reali disabilitati |
+| [docs/PHASE4_ANDROID_RPC_CLIENT.md](docs/PHASE4_ANDROID_RPC_CLIENT.md) | Checkpoint storico della preparazione del client RPC |
+| [docs/PLAY_EDITOR_STATE.md](docs/PLAY_EDITOR_STATE.md) | Controller e schermata editor: bozze, conflitti e recupero; checkpoint locali |
 | [local-tests/README.md](local-tests/README.md) | PostgreSQL e HTTP sul PC, difetti riprodotti e 21 casi atomici |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Moduli e flusso dati Android |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Decisioni tecniche e vincoli |
@@ -55,8 +58,8 @@ Con Android SDK 36 e JDK 17 o successivo disponibili:
 
 Lo script di configurazione iniziale legge URL e chiave pubblica dal repository web; le configurazioni locali sono escluse da Git. Nel perimetro corrente usare la configurazione già presente oppure impostare manualmente SUPABASE_URL e SUPABASE_PUBLIC_KEY: [docs/PHASE2.md](docs/PHASE2.md). APK debug: `app/build/outputs/apk/debug/app-debug.apk`.
 
-La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e limiti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è attualmente sospesa; i checkpoint usano verifiche locali e commit con skip ci.
+La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e checkpoint precedenti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md), lo stato corrente in [docs/STABILITY.md](docs/STABILITY.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è riattivata e verifica contratti Node, test JVM, lint e build APK; l'esito sul commit finale di consegna resta da verificare.
 
 Per verificare le evidenze salvate: `node --test scripts/check-evidence.test.mjs`. Per compilare ed eseguire i test Kotlin: `./scripts/check-contracts.ps1` con Kotlin e Java 17 o successivo disponibili.
 
-Le cinque RPC per le partite sono implementate e verificate soltanto nel database locale di prova; non esistono sul backend reale. Eseguire `pwsh -NoProfile -File scripts/test-local-play-saves.ps1 -Atomic` per riprodurre il collaudo. L'editor Android resta disabilitato; non implementare un ripiego con scritture separate di partita e punteggi.
+Le RPC atomiche sono installate sul backend reale e l'editor Android è abilitato nella candidata 0.5.0. Eseguire `pwsh -NoProfile -File scripts/test-local-play-saves.ps1 -Atomic` per riprodurre il collaudo locale. L'app non ripiega su scritture separate di partita e punteggi.

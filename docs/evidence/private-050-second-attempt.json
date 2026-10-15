@@ -1,0 +1,20 @@
+{
+  "status": "FAIL",
+  "versionCode": 14,
+  "sourceCommit": "dd9dd44fe4d13c04857263c80a66446ebf8d9bad",
+  "apkSha256": "ee5ca0b96af47b26a556da0a0e26eeb95ec97dba8bcf7d66a4bb0036a9afcb3b",
+  "releaseBuildPassed": true,
+  "upgradeFrom12Passed": true,
+  "liveUiConfirmed": [
+    "admin_authenticated",
+    "global_standings_and_history",
+    "history_search_submitted",
+    "temporary_play_opened",
+    "admin_atomic_update_confirmed"
+  ],
+  "failure": "NetworkOnMainThreadException while closing the separate image HTTP connection pool during logout",
+  "transportCloseCrashResolved": true,
+  "stable": false,
+  "nextBuildVersionCode": 15,
+  "credentialsIncluded": false
+}

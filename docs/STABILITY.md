@@ -1,57 +1,42 @@
-# Prima versione stabile: stato e criteri
+# Prima stabile privata 0.5.0: stato e criteri
 
-Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Il 15 ottobre l'utente ha autorizzato anche modifiche Supabase/Vercel, CI Android e collaudo limitato con account temporanei. Backend e sito sono ora attivati; il collaudo finale della candidata è in corso. Lo stato operativo aggiornato è in [LIVE_ROLLOUT.md](LIVE_ROLLOUT.md); le sezioni successive conservano anche i checkpoint precedenti.
+La candidata 0.5.0, versionCode 15, è in preparazione, con editor admin abilitato e backend attivato il 15 ottobre 2026. Il sito pubblicato usa gli stessi salvataggi atomici e la stessa pubblicazione globale ELO. L'ultimo APK costruito è la code 14, non stabile; le sue prove non certificano la code 15. Stato del rollout: [LIVE_ROLLOUT.md](LIVE_ROLLOUT.md).
 
-La stabile mantiene il perimetro concordato: login e Internet obbligatori, consultazione, commenti propri e gestione partite admin atomica. Non comprende ricalcolo ELO, registrazione, modifica credenziali/avatar o uso offline. È disponibile la candidata privata firmata 0.5.0-rc4; la stabile completa non è ancora dichiarata raggiunta.
+Il perimetro comprende consultazione, commenti propri e gestione atomica di tutte le partite per gli amministratori. Login e Internet sono obbligatori. L'app non offre registrazione, recupero o modifica credenziali, modifica avatar, uso offline o ricalcolo ELO.
 
-| Requisito | Stato | Verifica necessaria per chiuderlo |
+| Area | Risultato verificato | Stato residuo |
 | --- | --- | --- |
-| Consultazione, login e blocco rete | Suite funzionali con fixture su API 31/35; 77 casi finali API 35, font grandi, tastiera e storico da 1.200 partite verificati | Nessuna certificazione Auth/RLS remota; misure PC con limiti espliciti in BENCHMARKS.md |
-| Commenti propri | Implementati, registro cifrato nell'Application; recupero dopo arresto del processo e percorsi di sessione verificati | Rilettura completa e conferma manuale prima di nuove scritture; nessuna promessa di idempotenza server |
-| Contratti e salvataggi atomici | Candidata e migrazione web predisposta: 21 casi superati anche sulla fonte install-only | API reali e writer web/server coerenti, oggi indisponibili |
-| Client RPC Android | Factory e journal per account preparati; percorso HTTP locale, navigazione e cifratura verificati insieme | Disponibilità delle API e condizioni backend; factory di produzione assente |
-| Writer web locale | Creazione/modifica/eliminazione/import collegati; 250 test, typecheck, lint senza errori e build passati; conflitti e recupero verificati nel browser con HTTP sintetico | Restano ELO, cutover legacy/cascade, ripristino e verifica backend reale; nessuna pubblicazione |
-| Compatibilità SQL | Preflight read-only: 19 casi; migrazione predisposta: 16 profili e 21 casi HTTP passati su PostgreSQL 17.4 | Cutover, caller reali e verifica backend restano da completare; nessuna modifica cloud |
-| Pubblicazione e lettura ELO backend | Classifica globale esplicita, formula invariata e proiezioni per generazione: 323 test web e 38 casi PostgreSQL passati sul PC | Ordine input persistito, worker/invalidation e collegamento dei caller reali ancora necessari; nessuna integrazione online o ricalcolo Android |
-| Recupero salvataggi | Percorso locale integrato passato: due arresti forzati, replay senza duplicati e conferma cifrata recuperata senza POST | Auth remoto e backend effettivo restano non verificati |
-| Editor partite | Navigazione collegata e inclusa nella RC4; creazione, modifica ed eliminazione passate contro RPC locali; disabilitato in produzione | Disponibilità delle API e condizioni backend |
-| APK privato e aggiornamenti | RC4 firmata, non debuggabile; 231 test release passati; aggiornamento RC3 11 → RC4 12, registri cifrati e rete verificati su API 31 e 35 | Conservare la chiave privata; nessuna verifica Auth remota |
-| CI GitHub | Riattivata su conferma del 15 ottobre; ultimo checkpoint storico passato aee9ac4 | Verificare il run sul commit della stabile |
+| Backend e sito | RPC atomiche installate, writer web attivati, vecchie scritture ritirate | Nessun blocco di disponibilità API ancora aperto |
+| Classifiche ELO | Pubblicazione globale condivisa fra tabelle e storici; formula invariata e risultato iniziale verificato all'installazione | Verificare il ritorno del risultato iniziale dopo il cleanup |
+| Client Android | La UI della code 14 conferma login, ELO, ricerca, dettaglio e modifica admin reale | Correzione del crash immagini al logout e della race login nelle sorgenti code 15; ripetere la UI completa |
+| Verifiche automatiche | Checkpoint code 14: 255 test JVM passati; lint: 0 errori e 24 avvisi preesistenti. Ultima suite con fixture su API 35: `OK (88 tests)` | Verifiche complete e CI della code 15 da concludere |
+| Auth e permessi remoti | Cinque casi SDK con account temporanei passati; regola originale delle registrazioni ripristinata esattamente e registrazioni chiuse | Rimuovere account e dati temporanei |
+| APK e aggiornamento | Precedente code 14 firmata dalla fonte pulita `dd9dd44`; aggiornamento RC4/code 12 → 14 passato, con dati cifrati e blocco offline verificati | Build, firma, checksum e aggiornamento della code 15 ancora da verificare |
 
-La proposta da esaminare prima di qualsiasi modifica Supabase è [SUPABASE_CHANGE_REVIEW.md](SUPABASE_CHANGE_REVIEW.md). Le RPC additive non risolvono da sole il ricalcolo ELO o le cancellazioni a cascata dei cataloghi.
+SHA-256 dell'APK precedente code 14, non stabile: `ee5ca0b96af47b26a556da0a0e26eeb95ec97dba8bcf7d66a4bb0036a9afcb3b`. Nessun checksum code 15 è ancora disponibile.
 
-## Ordine del lavoro autonomo
+I report precedenti della [build firmata code 14](evidence/private-050-build.json) e dell'[aggiornamento RC4 → code 14](evidence/private-050-upgrade-validation.json) riportano fonte, certificato, esclusione dei componenti di test e dati cifrati conservati. Non sono prove della code 15; la prova di aggiornamento non usa account remoti.
 
-1. Chiudere il recupero dei salvataggi e il ciclo di vita per account, conservando richiesta e risultato confermato in modo protetto.
-2. Implementare ViewModel e schermate editor con fixture, mantenendo i percorsi reali disabilitati.
-3. Rafforzare commenti, accessibilità e percorsi di rete/sessione; eseguire il collaudo completo sul PC.
-4. Preparare build di rilascio, firma privata e aggiornamento APK, con documentazione e CI ripetibili.
-5. Chiudere le dipendenze esterne prima di dichiarare completa la stabile e abilitare le scritture partite reali.
+Il collaudo della code 13 ha rilevato il crash di chiusura TLS nel trasporto RPC, corretto nella code 14. La code 14 conferma anche il salvataggio admin reale, poi rileva lo stesso problema nel pool immagini durante il logout. Le sorgenti code 15 correggono il pool immagini e la race che mostrava il login prima della conclusione del logout. La ripetizione completa del percorso UI è ancora aperta; il successo dei test SDK non la sostituisce.
 
-Le condizioni backend sono in [WRITER_INTEGRATION.md](WRITER_INTEGRATION.md). Il codice locale e i test non rendono disponibili le RPC sul sito. Non è consentito aggirarle con scritture multiple. Quando rimarranno soltanto attività esterne o verifiche che richiedono accesso dell'utente, servirà una decisione sull'ambito; nel frattempo il lavoro indipendente nella repo prosegue.
+## Gate finali
+
+1. Costruire e verificare la code 15 firmata, il suo aggiornamento dalla RC4 e la prova UI completa con MainActivity e backend reali: classifica globale, storico, modifica admin di una partita altrui, logout/login, commenti propri e blocco Internet. Registrare il perimetro effettivamente eseguito.
+2. Rimuovere account, partite, cataloghi e commenti temporanei e verificare il ritorno del risultato ELO iniziale. Revisione e UUID della pubblicazione possono avanzare: devono coincidere i dati del risultato, senza riavvolgere i contatori.
+3. Chiudere CI, commit e push della consegna; collegare APK, checksum e prove definitive prima di dichiarare la prima stabile privata.
 
 ## Journal dei salvataggi
 
-`PlayWriteJournal` gestisce una sola operazione per account e serializza i client che lo condividono. Il client conserva l'esatta richiesta prima dell'HTTP. `EncryptedPendingPlayStore` la salva con AES-GCM, chiavi Android Keystore e file atomico nella directory esclusa dai backup. Non memorizza endpoint o credenziali.
+`PlayWriteJournal` conserva la richiesta esatta prima dell'invio e la conferma prima di mostrare il successo. `EncryptedPendingPlayStore` usa AES-GCM, Android Keystore e file atomici esclusi dai backup. Non memorizza endpoint o credenziali. Il factory di produzione è collegato all'Application e l'editor è abilitato nella candidata; ogni account ha il proprio journal.
 
-Il recupero richiede prima rete e verifica dell'identità. Non invia automaticamente una richiesta: l'operazione incerta può essere ripetuta soltanto su comando esplicito. Record danneggiati, incompatibili o non salvabili bloccano l'invio e non vengono eliminati come se l'operazione fosse fallita sul server. La chiusura del client elimina la copia in memoria; il record cifrato rimane disponibile soltanto per il suo account.
+La perdita della connessione non genera una nuova richiesta automatica. Il recupero esplicito verifica rete, identità e ruolo admin e usa UUID e corpo originali. Una conferma già salvata si ripristina senza ripetere il POST. Negazione del ruolo o dell'accesso non elimina una richiesta incerta. Record corrotti, incompatibili o non salvabili bloccano nuove scritture.
 
-Una risposta valida viene conservata come conferma cifrata, anziché cancellare subito ogni traccia. Questo copre la chiusura dell'app fra risposta server e presentazione del risultato. Il recupero della conferma non esegue HTTP; restituisce un risultato marcato restored, distinto dal campo replayed del server. Una nuova operazione esplicita con un nuovo UUID sostituisce la conferma precedente. Riutilizzare il vecchio UUID con un contenuto diverso produce conflitto.
+La chiusura del client rimuove la copia in memoria e conserva il record cifrato per il suo account. Rotazione e ricreazione conservano la bozza; perdita di accesso, logout e cambio account rimuovono la sessione precedente. Le prove locali comprendono arresti del processo e ripristino cifrato: [EDITOR_RPC_PC_QA.md](EDITOR_RPC_PC_QA.md). Queste garanzie non coprono perdita del dispositivo, cancellazione dei dati dell'app o guasti del filesystem.
 
-Il client cancella una richiesta nuova soltanto dopo un rifiuto con codice macchina riconosciuto e coerente con lo stato HTTP. Un corpo vuoto, HTML o con codice inatteso conserva il comando originale e blocca nuovi salvataggi. Il checkpoint verifica 27 combinazioni ambigue e il replay dopo ricreazione del client con store in memoria: [android-play-rejection-validation.json](evidence/android-play-rejection-validation.json). Le prove non chiudono l'integrazione con l'editor, lo store cifrato o il backend reale.
+## Recupero delle letture e limiti
 
-Il factory preparato nell'Application condivide un journal per account e inietta lo store cifrato. La disponibilità del factory resta condizionata a ATOMIC_PLAY_EDITOR_ENABLED, oggi false; non viene creato alcun editor reale. Il costruttore standalone del client resta disabilitato per default e usa memoria. Le garanzie del file riguardano riavvio e arresto del processo; non certificano perdita del dispositivo, cancellazione dei dati dell'app o guasti del filesystem.
+Le risposte delle nuove RPC sono limitate a 32 KiB per le ricevute, 4 MiB per lo snapshot dell'editor e 16 MiB per la pubblicazione ELO. Il client rifiuta risposte troppo grandi o incoerenti. Classifica e storico condividono la stessa generazione; uno stato superato richiede una nuova lettura, senza ricalcoli dall'app. Il polling di aggiornamento si ferma quando la schermata perde il ciclo di vita attivo.
 
-Il registro AccountPlayJournals, il [controller](PLAY_EDITOR_STATE.md) e la schermata Compose sono collegati alle destinazioni admin. Il controller gestisce caricamento, validazione della bozza, conferma della cancellazione, conflitti e recupero esplicito. Rotazione e ricreazione conservano la bozza; perdita di accesso o ruolo rimuove la sessione. Alle prove con fixture di navigazione si aggiunge il [collaudo HTTP/cifratura sul PC](EDITOR_RPC_PC_QA.md), passato attraverso tre processi Android distinti. Auth e rete sono simulati. I percorsi reali non sono abilitati.
+Le prove native e le misure riguardano emulatori sul PC. Non certificano prestazioni su telefoni fisici. Il precedente reader REST generico non è stato esteso con i nuovi limiti delle risposte RPC. Il client rifiuta rating oltre l'intervallo Int32; il dataset sintetico da 1.200 partite verifica paginazione e navigazione, non definisce una capienza massima.
 
-## Lavoro restante
-
-Checkpoint del 15 ottobre: RC4 firmata e collaudata su API 31 e 35, con [metadati](evidence/private-rc4-build.json), [report API 31](evidence/private-rc4-api31-validation.json) e [report API 35](evidence/private-rc4-api35-validation.json). L'utente ha chiesto di riprendere dopo la sospensione al commit 76008a4. La verifica locale dell'APK prevista sulle due piattaforme è chiusa. Condizioni backend, verifica Auth remota e CI sospesa rimangono aperte; nessuna dichiarazione di stabile completa.
-
-Per chiudere la stabile completa resta la verifica della candidata con Auth e permessi reali insieme alla CI sul commit da rilasciare. API e writer sono ora attivati dopo la prova locale della transazione completa; il confronto online conferma il risultato ELO iniziale. I precedenti divieti cloud e CI sono stati revocati dall'utente. La consegna della stabile resta subordinata ai collaudi descritti in LIVE_ROLLOUT.md.
-
-Firma privata, installazione, aggiornamento, checksum e documentazione sono descritti in [PRIVATE_RELEASE.md](PRIVATE_RELEASE.md). La rc1 è stata ritirata dopo il difetto di perdita rete su Android 15; la rc2 corregge il monitor e supera le prove live su API 31 e 35. La rc3 aggiunge le correzioni per font grandi; il [collaudo finale con fixture](FINAL_PC_QA.md) passa su API 35. Le misure non certificano prestazioni su telefoni o autenticazione remota. Restano aperti i criteri esterni.
-
-Le preparazioni web precedenti restano locali e non vengono modificate nel perimetro attuale. Finché le API reali mancano, l'editor resta disabilitato. I checkpoint attuali usano verifiche sul PC; la CI è sospesa. Writer reali coerenti, migrazione compatibile e attivazione autorizzata del backend restano necessari prima della stabile completa. Stato e prove: [WRITER_INTEGRATION.md](WRITER_INTEGRATION.md).
-
-La [gestione della ricreazione](ACTIVITY_LIFECYCLE.md) conserva ora repository, ViewModel figli e bozze dei commenti attraverso le modifiche di configurazione. Le verifiche di accesso e le transizioni a Checking, blocco, logout o altro account continuano a rimuovere lo stato della sessione precedente. Le prove native eseguono la navigazione di produzione in un host debug con account sintetici; non certificano GoTrue remoto o MainActivity con credenziali reali.
+Le prove RC e i documenti delle precedenti preparazioni annullate restano riferimenti storici. Le API e il codice distribuiti oggi sono descritti in [LIVE_ROLLOUT.md](LIVE_ROLLOUT.md).

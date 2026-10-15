@@ -13,6 +13,7 @@ import coil3.request.maxBitmapSize
 import coil3.size.Size
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -25,6 +26,7 @@ import okio.buffer
 class AccountImages(context: Context, val endpoint: String, network: NetworkMonitor,
     verifyAccount: suspend () -> Unit, onAccessFailure: (AuthProblem) -> Unit,
     transport: okhttp3.Interceptor? = null) : AutoCloseable {
+    private val closed = AtomicBoolean(false)
     private val guard: ImageAccessGuard = ImageAccessGuard(network, verifyAccount) { problem ->
         withContext(Dispatchers.Main.immediate) { guard.checkOpen(); onAccessFailure(problem) }
     }
@@ -69,10 +71,16 @@ class AccountImages(context: Context, val endpoint: String, network: NetworkMoni
         }.build()
 
     override fun close() {
+        if (!closed.compareAndSet(false, true)) return
         guard.close()
         loader.shutdown()
         client.dispatcher.cancelAll()
-        client.connectionPool.evictAll()
+        val executor = client.dispatcher.executorService
+        // Closing an idle TLS socket can write close_notify; disposal runs on the UI thread.
+        executor.execute {
+            try { client.connectionPool.evictAll() }
+            finally { executor.shutdown() }
+        }
     }
 
     private companion object { const val MAX_IMAGE_BYTES = 8L * 1024 * 1024 }

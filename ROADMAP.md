@@ -2,23 +2,23 @@
 
 Avviare un'app Android nativa in Kotlin e Jetpack Compose, mantenendo Supabase e i dati condivisi con King-Score. La prima versione deve permettere di consultare lo storico, accedere con un account esistente, commentare e, per gli amministratori, aggiungere, modificare ed eliminare partite con gli stessi permessi del sito.
 
-Data: 13 ottobre 2026. Scelta nativa confermata dall'utente. Questa roadmap riguarda KingScore, l'app per giochi da tavolo.
+Piano iniziale: 13 ottobre 2026. Stato aggiornato: 15 ottobre 2026. Scelta nativa confermata dall'utente. Questa roadmap riguarda KingScore, l'app per giochi da tavolo.
 
-Vincolo aggiornato: lavorare soltanto in KingScore-Android. Le preparazioni backend e web delle fasi 4.1 e 4.2 sono state annullate; il codice di King-Score e il sito sono ripristinati. Le verifiche documentate restano storiche. Nessuna nuova migrazione era stata applicata a Supabase e le RPC proposte non sono disponibili.
+La candidata privata 0.5.0/code 15 è in preparazione, con editor admin abilitato. Backend e sito sono stati attivati il 15 ottobre su autorizzazione dell'utente; le preparazioni annullate delle fasi 4.1 e 4.2 restano storiche. Firma e aggiornamento dalla RC4 sono verificati per l'APK precedente code 14, che incontra un crash immagini al logout dopo la modifica admin reale. Le sorgenti code 15 correggono quel crash e la race del successivo login. Build, UI completa, cleanup e CI della code 15 restano aperti: [docs/STABILITY.md](docs/STABILITY.md) e [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
 
 ## Vincoli confermati
 
 1. L'app richiede una connessione Internet funzionante. In assenza di connessione mostra uno stato dedicato e blocca la consultazione e l'invio delle operazioni; non dispone di una modalità offline.
 2. L'app legge rating e storico ELO prodotti dal backend. Non calcola ELO e non espone né invoca comandi o endpoint di ricalcolo, neppure dopo il salvataggio di una partita.
 3. Gli utenti accedono con account esistenti. Registrazione, recupero o modifica password e modifica email restano nei flussi esterni all'app.
-4. Gli amministratori possono aggiungere, modificare ed eliminare partite, rispettando i permessi server del sito.
+4. Gli amministratori possono aggiungere, modificare ed eliminare tutte le partite, con controlli server sul ruolo.
 5. Gli utenti autenticati possono scrivere e gestire i propri commenti secondo i permessi esistenti. L'app non permette di cambiare avatar.
 
 Il login è obbligatorio per tutte le schermate funzionali: l'app non offre accesso pubblico, anche dove il sito lo consente. La prima versione sarà distribuita come APK privato da installare direttamente.
 
 ## Analisi dello stato attuale
 
-`KingScore-Android` contiene i contratti verificati della fase 1, login e sessione cifrata della fase 2, le schermate dati della fase 3 e i commenti propri della fase 4. La build 0.4.0 comprende Home, storico con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, creazione/modifica/eliminazione dei commenti propri, statistiche essenziali, classifiche e storico ELO. `../King-Score` contiene una web app React, TypeScript e Vite, con Supabase Auth, PostgreSQL, Storage e una funzione per il ricalcolo ELO notturno. L'app Android riusa il backend attraverso richieste verificate online.
+`KingScore-Android` contiene i contratti della fase 1, login e sessione cifrata della fase 2, le schermate dati della fase 3 e le scritture della fase 4. La candidata 0.5.0 comprende Home, storico con ricerca e filtri, dettagli partita/gioco/giocatore, immagini in lettura, commenti propri, statistiche essenziali e gestione partite admin. Classifiche globali e storici leggono la stessa pubblicazione ELO; la formula è invariata. La web app React/TypeScript/Vite usa lo stesso backend Supabase e gli stessi salvataggi atomici. L'app Android verifica le richieste online e non avvia ricalcoli.
 
 Schema, grant, policy e funzioni sono stati verificati sul progetto Supabase collegato il 13 ottobre 2026, con probe SQL read-only e richieste HTTP senza dati applicativi. Il dettaglio dei risultati e dei controlli ancora necessari è in [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md).
 
@@ -30,13 +30,12 @@ Schema, grant, policy e funzioni sono stati verificati sul progetto Supabase col
 
 Il ruolo proviene da `app_metadata.role`; `players.account_user_id` collega account e giocatore. Nascondere un comando nell'app deve accompagnarsi al controllo server del permesso. Il pannello admin completo e l'importazione sono estensioni dopo l'MVP.
 
-### Dipendenze da risolvere
+### Dipendenze e verifiche correnti
 
-1. Schema e tipi web coincidono per campi Row e nullabilità delle dieci tabelle pubbliche. Resta da allineare lo storico migrazioni e alcuni servizi che usano `games.user_id`, assente anche sul database reale. Il README descrive funzioni BGA non presenti nel catalogo locale.
-2. Le scritture complete partite richiedono un contratto atomico non disponibile nel backend corrente. La preparazione esterna è stata annullata; il lavoro consentito in questa repo non comprende modifiche al sito o al database.
-3. Documentare quando il backend aggiorna i rating e come mostrare dati ELO non ancora aggiornati dopo una modifica. Riutilizzare i processi server esistenti, senza portare in Android il ricalcolo avviato dal browser. Un eventuale intervento sul motore ELO è un'attività backend separata.
-4. Login, logout e rinnovo sono implementati nella fase 2. Verificare con account reali e aggiungere nella fase 3 la gestione dell'account non collegato a un giocatore, senza introdurre registrazione o modifica credenziali.
-5. Definire il comportamento quando Internet o Supabase non sono raggiungibili: blocco delle operazioni, messaggio chiaro e ripresa dopo il ritorno della connessione. Non basta verificare che il Wi-Fi sia acceso.
+1. Le RPC atomiche e i writer web sono attivi. I test automatici distruttivi restano sul PC; è autorizzato un collaudo remoto limitato con account e dati temporanei.
+2. La pubblicazione ELO è globale e verificata per generazione. Stati mancanti o superati richiedono nuove letture; la formula e l'ordine storico dei partecipanti sono conservati.
+3. Login, logout, rinnovo, account non collegati e blocco senza Internet sono implementati. La prova UI dell'APK firmato con account reali deve ancora concludersi.
+4. Il checkpoint precedente code 14 supera 255 test JVM e lint senza errori, con 24 avvisi preesistenti; firma e aggiornamento RC4/code 12 → 14 sono verificati. Questi risultati non certificano la code 15 in preparazione.
 
 ## Decisioni di architettura
 
@@ -60,7 +59,7 @@ La fase 2 usa Kotlin 2.1.20, Gradle 8.13, AGP 8.13.2, min SDK 26 e compile/targe
 
 ## Piano di implementazione
 
-Le stime sono ore di lavoro effettivo per una persona che conosce Kotlin e il backend. Includono implementazione, test e documentazione; escludono attese di pubblicazione e nuove funzionalità non descritte. Sono stime di pianificazione, da aggiornare dopo la prima fase.
+Le stime seguenti sono il piano iniziale del 13 ottobre, in ore di lavoro effettivo. Includono implementazione, test e documentazione; non misurano il lavoro residuo della candidata 0.5.0.
 
 | Ordine | Fase | Stima | Risultato verificabile |
 | --- | --- | --- | --- |
@@ -74,7 +73,7 @@ Totale MVP: **112–176 ore**; riserva iniziale del 20% per integrazione e corre
 
 ### Fase 1 Contratti e preparazione
 
-1. Verificare schema e RLS sul progetto collegato in sola lettura, senza esportare dati applicativi. Rigenerare e confrontare i tipi web e definire i corrispondenti DTO Kotlin, inclusi campi nullabili, date, identificatori e paginazione. Eseguire le future prove di scrittura in un ambiente di sviluppo isolato.
+1. Verificare schema e RLS sul progetto collegato in sola lettura, senza esportare dati applicativi. Rigenerare e confrontare i tipi web e definire i corrispondenti DTO Kotlin, inclusi campi nullabili, date, identificatori e paginazione. Eseguire le prove automatiche di scrittura su PostgreSQL/PostgREST locali con dati sintetici.
 2. Documentare la matrice login, utente e admin, compresi ownership, account linking e commenti. Bloccare tutte le schermate funzionali senza sessione valida; provare anche richieste dirette che l'interfaccia non espone. Escludere dalla UI le operazioni account vietate e il ricalcolo ELO. Il login obbligatorio nell'app non richiede di rimuovere l'accesso pubblico dal sito o cambiarne le policy.
 3. Specificare i contratti per creazione e modifica atomica di partita e punteggi, idempotenza e lettura dei rating pubblicati. Le migrazioni backend rimangono in `King-Score/supabase`.
 4. Fissare package ID, dispositivi supportati, versioni degli strumenti, ambienti e consegna dell'APK privato. Definire copertura schermate e fixture per pareggi, cooperative, punteggi nulli e zero, account non collegati e archivi oltre 1.000 record.
@@ -96,7 +95,7 @@ Criterio di uscita: APK installabile su emulatore e telefono; login, logout, ses
 
 ### Stato della fase 2
 
-Implementazione completata: progetto nativo, Auth, sessione cifrata, controllo rete, navigazione, adattatori JSON e pipeline CI. APK debug installato su emulatore API 31. Le verifiche correnti restano sul PC, con account sintetici: account remoti e telefoni non sono certificati. La CI storica ha superato i controlli sul commit 2d14b4f della fase 3; oggi è sospesa. Dettagli della build iniziale: [docs/PHASE2.md](docs/PHASE2.md).
+Implementazione completata: progetto nativo, Auth, sessione cifrata, controllo rete, navigazione, adattatori JSON e pipeline CI. APK debug iniziale installato su emulatore API 31. Il collaudo finale usa anche account remoti temporanei; i telefoni fisici non sono certificati. La CI Android è riattivata e va verificata sul commit di consegna. Dettagli storici della build iniziale: [docs/PHASE2.md](docs/PHASE2.md).
 ### Fase 3 Consultazione online
 
 1. Implementare storico paginato con ricerca e filtri, dettaglio partita, punteggi, vincitori, risultato cooperativo, note e commenti in lettura. Conservare la distinzione fra punteggio zero e assente.
@@ -114,10 +113,10 @@ Implementati pagine da 50 con cursori, dettaglio, punteggi e commenti in lettura
 
 ### Fase 4 Commenti e scritture admin
 
-I commenti propri sono implementati nella 0.4.0: ownership anche per admin, conferma eliminazione, Unicode, stato invio, esiti incerti e riconciliazione completa. Le verifiche usano account e dati sintetici. Le preparazioni delle RPC partite e dei writer web sono state annullate; l'editor Android è disabilitato. I test precedenti restano registrati nei documenti storici [docs/PHASE4_ADMIN_RPC.md](docs/PHASE4_ADMIN_RPC.md) e [docs/PHASE4_WEB_WRITERS.md](docs/PHASE4_WEB_WRITERS.md). I commenti Android restano invariati: [docs/PHASE4_COMMENTS.md](docs/PHASE4_COMMENTS.md).
+I commenti propri sono implementati dalla 0.4.0: ownership anche per admin, conferma eliminazione, Unicode, stato invio, esiti incerti e riconciliazione completa. La 0.5.0 aggiunge l'editor admin abilitato, le RPC atomiche, journal cifrato, conflitti e recupero esplicito. I writer web sono integrati e distribuiti. Le precedenti preparazioni annullate restano nei documenti storici [docs/PHASE4_ADMIN_RPC.md](docs/PHASE4_ADMIN_RPC.md) e [docs/PHASE4_WEB_WRITERS.md](docs/PHASE4_WEB_WRITERS.md). Stato corrente: [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
 
 1. Implementare e testare RPC transazionali per creazione e modifica di partita con punteggi. Usare identificatori di richiesta per retry idempotenti e controlli server su ruolo, partecipanti e valori. Verificare il contratto di `replace_play_scores` rispetto alle nuove RPC.
-2. Implementare aggiunta, modifica ed eliminazione partite per admin, selezione giochi e giocatori esistenti e creazione minima dove necessaria. Conservare i campi del modulo durante una perdita temporanea di rete finché il processo resta attivo; non accodare invii offline o inviare automaticamente dopo la riconnessione.
+2. Implementare aggiunta, modifica ed eliminazione partite per admin e selezione di giochi e giocatori esistenti. Conservare le bozze durante la rotazione; perdita di accesso e cambio account rimuovono la sessione. Conservare le richieste incerte nel journal cifrato, senza accodare invii offline o inviare automaticamente dopo la riconnessione.
 3. Mostrare separatamente partita salvata e rating disponibili. Dopo una scrittura rileggere i dati pubblicati senza richiedere il ricalcolo ELO; rispettare i tempi dei processi backend esistenti. Il comando di aggiornamento schermata esegue soltanto letture.
 4. Aggiungere commenti con modifica/eliminazione limitate all'autore anche per gli admin, riepilogo del profilo in lettura e statistiche essenziali. Gestire account non collegati senza offrire modifica avatar o credenziali.
 
@@ -129,13 +128,13 @@ Criterio di uscita: timeout dopo commit e doppio invio non duplicano partite; pa
 
 1. Eseguire test unitari di repository e ViewModel, test di integrazione Auth/RLS/RPC e test Compose dei percorsi principali. Confrontare statistiche e rating con le fixture del web.
 2. Provare rete lenta, perdita di connessione durante lettura o salvataggio, backend irraggiungibile con Wi-Fi attivo, scadenza sessione, rotazione, terminazione del processo e cambio account. Verificare che riconnettersi non reinvii operazioni ambigue o duplicati.
-3. Misurare avvio, prima pagina dello storico, fluidità di scorrimento, memoria e numero di richieste sul PC con emulatori e dati sintetici. Registrare emulatore, Android, dataset, rete, commit e build; fissare le soglie dopo la prima misurazione. Non usare Supabase remoto come ambiente di test.
+3. Misurare avvio, prima pagina dello storico, fluidità di scorrimento, memoria e numero di richieste sul PC con emulatori e dati sintetici. Registrare emulatore, Android, dataset, rete, commit e build. Mantenere separato il collaudo remoto limitato autorizzato il 15 ottobre e rimuoverne i dati temporanei al termine.
 4. Produrre APK firmato per beta privata, mantenendo la stessa chiave per gli aggiornamenti. Gestire la chiave di firma fuori da Git, dentro il perimetro locale autorizzato, con versioni, checksum, note di rilascio e istruzioni per gli aggiornamenti.
 5. Consegnare l'APK tramite un canale privato concordato, documentare i dati usati dall'app e raccogliere feedback sui percorsi consultazione, commento e inserimento partita. La prima versione non comprende AAB o pubblicazione su Google Play.
 
 File: `app/src/test/`, `app/src/androidTest/`, `docs/BENCHMARKS.md`, `docs/PRIVATE_RELEASE.md`, `CHANGELOG.md` e pipeline di rilascio.
 
-Criterio di uscita: build ripetibile, controlli locali e CI superati, nessun bug noto che comprometta dati o permessi, installazione e aggiornamento verificati sugli emulatori del PC. La CI è sospesa e il suo criterio resta aperto: non eseguirla finché l'utente non la autorizza di nuovo. La verifica remota con account reali e le prove su telefoni non sono consentite dal perimetro corrente; non sostituirle con dichiarazioni non verificate. I benchmark devono distinguere dati misurati e casi non collaudati.
+Criterio di uscita: build ripetibile, controlli locali e CI superati, nessun bug noto che comprometta dati o permessi, installazione e aggiornamento verificati sugli emulatori del PC. La CI è riattivata. La prova UI con accesso reale e il cleanup remoto devono concludersi prima della stabile. I benchmark devono distinguere dati misurati e casi non collaudati; i telefoni fisici restano fuori dai risultati verificati.
 
 ## Dopo la prima versione
 
@@ -165,26 +164,21 @@ Push, widget e funzionalità social aggiuntive richiedono un caso d'uso specific
 
 La ricognizione comprende routing, autenticazione, schema tipizzato, servizi dati, salvataggio partite, core ELO, import e migrazioni del repository web. Il codice backend è stato esaminato anche da un subagent in sola lettura. La fase 1 ha aggiunto catalogo remoto, confronto dei tipi, probe di permessi e contratti Kotlin: [docs/TESTING.md](docs/TESTING.md) contiene metodi e limiti.
 
-La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Keystore su emulatore API 31. La fase 3 estende questi controlli a letture, cursori e schermate dati. I risultati sono in [docs/TESTING.md](docs/TESTING.md). Login con account reali, telefono fisico e scritture isolate restano da verificare. Non sono stati eseguiti benchmark mobili né applicate migrazioni o modifiche dati remote.
+La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Keystore su emulatore API 31. La fase 3 estende questi controlli a letture, cursori e schermate dati. I risultati storici sono in [docs/TESTING.md](docs/TESTING.md). Il 15 ottobre sono state installate le RPC reali e verificate letture e cinque casi SDK con account temporanei. Il checkpoint code 14 supera 255 test JVM e lint senza errori; l'ultima suite nativa con fixture su API 35 restituisce `OK (88 tests)`. Il percorso UI reale completo e le verifiche della code 15 sono ancora da concludere. Le prove su telefoni fisici non sono comprese nei risultati.
 
-## Lavoro residuo per la versione 1.0 stabile
+## Lavoro residuo per la prima stabile privata 0.5.0
 
-La stima iniziale del 13 ottobre 2026 era 58–96 ore, prima dei collaudi e della firma privata; non misura il lavoro residuo al 15 ottobre. La RC4 è ora una candidata firmata con 231 test release superati e aggiornamento RC3 → RC4 verificato su API 31 e 35. La 1.0 mantiene il perimetro concordato: consultazione, commenti propri, gestione partite admin, login e Internet obbligatori. Le scritture admin restano disabilitate fino alla disponibilità delle API reali e alla coerenza dei writer web/server. Non è ancora possibile fissare una data della stabile completa entro il solo perimetro Android.
+La prima stabile privata mantiene la versione 0.5.0 e comprende consultazione, commenti propri e gestione partite admin, con login e Internet obbligatori. La candidata code 15 è in preparazione; le prove di firma e aggiornamento RC4/code 12 → 14 riguardano l'APK precedente. Backend e writer web sono attivi. La versione non è ancora dichiarata stabile.
 
-| Voce della stima iniziale | Stima del 13 ottobre | Stato al 15 ottobre |
+| Area | Stato al 15 ottobre | Lavoro residuo |
 | --- | --- | --- |
-| CRUD partite admin e integrazione backend | 28–48 ore | Client, editor e RPC candidati collaudati sul PC; API reali e writer esterni ancora da completare |
-| Verifica e release privata | 20–32 ore | RC4 firmata e collaudata su API 31 e 35; verifiche remote e CI escluse dai vincoli attuali |
-| Totale storico con riserva del 20% | **58–96 ore** | Stima iniziale conservata; non rappresenta le ore ancora necessarie |
+| CRUD partite admin e backend | RPC e writer reali attivi; editor Android abilitato | Concludere il percorso UI dell'APK firmato |
+| Verifica e rilascio privato | Firma, checksum, aggiornamento RC4 → code 14, cifratura e blocco offline verificati soltanto per l'APK precedente | Build e aggiornamento code 15, UI completa, cleanup, confronto ELO dopo cleanup e CI finale |
 
-La dipendenza delle scritture admin resta irrisolta: le RPC proposte e i writer web sono stati ritirati. La stima sopra precede il nuovo vincolo di lavorare soltanto nella repo Android e va riesaminata prima di promettere il CRUD completo. Wrapped, import BGA nell'app e amministrazione completa dei cataloghi restano estensioni dopo l'MVP.
+La stima residua iniziale del 13 ottobre era 58–96 ore, prima dei collaudi e della firma privata. È conservata come dato storico e non rappresenta le ore ancora necessarie. La chiusura dipende dagli esiti dei gate finali, non dall'implementazione di nuove funzioni. Wrapped, import BGA nell'app e amministrazione completa dei cataloghi restano estensioni dopo la prima stabile.
 
 ## Prossima attività
 
-Il contratto dei salvataggi e le cinque RPC candidate sono implementati soltanto sul PC: [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) e [local-tests/README.md](local-tests/README.md). Il collaudo supera 21 casi di accettazione, 1.592 vettori di ranking e 29 prove HTTP che caratterizzano la base precedente. Evidenze: [local-atomic-validation.json](docs/evidence/local-atomic-validation.json).
+Concludere il collaudo UI della candidata firmata con MainActivity e account reali, senza ripetere automaticamente scritture dall'esito incerto. Seguono pulizia dei dati temporanei, verifica del risultato ELO ripristinato e CI finale: [STABILITY.md](docs/STABILITY.md). La procedura e le prove del rollout sono in [LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
 
-Il piano è definito in [docs/WRITER_INTEGRATION.md](docs/WRITER_INTEGRATION.md): mappa dei writer da verificare, contratti comuni, coerenza dei job su più partite, test dei consumer e ordine del rilascio. King-Score e rilasci Vercel/Supabase restano esclusi. Il test del cutover e l'adattatore server sono soltanto locali; nessun consumer reale è integrato. Le scritture partite Android restano disabilitate.
-
-Il client RPC Android, il journal cifrato, il controller e la schermata editor sono implementati e collegati: [PHASE4_ANDROID_RPC_CLIENT.md](docs/PHASE4_ANDROID_RPC_CLIENT.md) e [PLAY_EDITOR_STATE.md](docs/PLAY_EDITOR_STATE.md). Il percorso HTTP locale supera due arresti forzati, replay senza duplicati, recupero della conferma, modifica e cancellazione. I percorsi reali restano disabilitati. La candidata firmata 0.5.0-rc4 e la pipeline di aggiornamento sono descritte in [PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md). Il trattamento dei dati storici incompatibili resta conservativo: lettura completa e modifica bloccata.
-
-L'obiettivo autonomo è ora la prima versione stabile, con commit e push nei passaggi principali. Stato e criteri di uscita: [STABILITY.md](docs/STABILITY.md). Non vengono chieste conferme per il lavoro già autorizzato nella repo; le dipendenze esterne restano esplicite.
+I 21 casi atomici locali, i vettori di ranking e le prove HTTP precedenti restano riproducibili: [local-tests/README.md](local-tests/README.md). I checkpoint del client e dell'editor sono documentati in [PHASE4_ANDROID_RPC_CLIENT.md](docs/PHASE4_ANDROID_RPC_CLIENT.md), [PLAY_EDITOR_STATE.md](docs/PLAY_EDITOR_STATE.md) e [EDITOR_RPC_PC_QA.md](docs/EDITOR_RPC_PC_QA.md). I dati storici incompatibili restano leggibili, con modifica bloccata.

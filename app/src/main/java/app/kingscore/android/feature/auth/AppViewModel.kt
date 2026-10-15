@@ -86,8 +86,8 @@ class AppViewModel(
         if (logout?.isActive == true) return
         logoutFailed = false
         operation?.cancel()
-        // Immediately remove the authenticated navigation tree before network work.
-        state.value = if (network.connected.value) AccessState.SignedOut() else AccessState.Blocked(AuthProblem.NETWORK_UNAVAILABLE)
+        // Remove authenticated content immediately; login must wait for logout cleanup.
+        state.value = if (network.connected.value) AccessState.Checking else AccessState.Blocked(AuthProblem.NETWORK_UNAVAILABLE)
         logout = viewModelScope.launch {
             try {
                 auth.signOut()

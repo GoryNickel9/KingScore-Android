@@ -184,6 +184,34 @@ class AppViewModelTest {
         assertEquals(restores, repository.restores)
     }
 
+    @Test fun `logout hides login until cleanup completes and then accepts a new sign in`() = runTest(dispatcher) {
+        repository.account = account()
+        val pendingLogout = CompletableDeferred<Unit>()
+        repository.logoutWait = pendingLogout
+        val model = AppViewModel(repository, network)
+        advanceUntilIdle()
+        assertTrue(model.access.value is AccessState.Connected)
+
+        model.signOut()
+        assertEquals(AccessState.Checking, model.access.value)
+        runCurrent()
+        assertNull(repository.account)
+        assertEquals(AccessState.Checking, model.access.value)
+
+        model.signIn("next@example.com", "next-password")
+        runCurrent()
+        assertEquals(0, repository.signIns)
+        assertEquals(AccessState.Checking, model.access.value)
+
+        pendingLogout.complete(Unit)
+        advanceUntilIdle()
+        assertEquals(AccessState.SignedOut(), model.access.value)
+        model.signIn("next@example.com", "next-password")
+        advanceUntilIdle()
+        assertEquals(1, repository.signIns)
+        assertTrue(model.access.value is AccessState.Connected)
+    }
+
     @Test fun `SDK session invalidation immediately removes authenticated navigation`() = runTest(dispatcher) {
         repository.account = account()
         val model = AppViewModel(repository, network)
@@ -198,6 +226,7 @@ class AppViewModelTest {
         override val invalidations = MutableSharedFlow<AuthProblem>()
         var account: Account? = null
         var restores = 0
+        var signIns = 0
         var failure: AuthProblem? = null
         var logoutFailure: AuthProblem? = null
         var restoreWait: CompletableDeferred<Account?>? = null
@@ -209,6 +238,7 @@ class AppViewModelTest {
             return if (pending != null) pending.await() else account
         }
         override suspend fun signIn(email: String, password: String): Account {
+            signIns++
             failure?.let { throw AuthFailure(it) }
             return account()
         }

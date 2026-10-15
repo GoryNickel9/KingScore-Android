@@ -1,6 +1,6 @@
 # APK privato firmato
 
-La prima stabile privata è la 0.5.0/code 15: `.work/releases/KingScore-0.5.0-15.apk`, SHA-256 `fd196d0e75f452c24a3cb6e0223732a8ab1f5f02e598f2a808dbfe0a269ff509`. Login e Internet sono obbligatori; l'editor admin usa le RPC reali. Firma, aggiornamento dalla RC4 e percorso UI con account temporanei sul backend reale sono verificati sul PC. I dati di prova sono stati rimossi. Fonte, certificato e prove: [STABILITY.md](STABILITY.md) e [release-validation](evidence/private-050-release-validation.json).
+La stabile privata corrente è la 0.5.1/code 16: `.work/releases/KingScore-0.5.1-16.apk`, SHA-256 `90306da33c1a75ed24607c7828e7f59c5c645fcbf127164a71c61aad4586c960`. Aggiornamento dalla 0.5.0 verificato con lo stesso certificato, UID e dati cifrati conservati. Login, blocco offline e riconnessione sono verificati sulla release; i test delle nuove schermate usano fixture locali. Fonte e limiti: [STABILITY.md](STABILITY.md) e [qualifica](evidence/private-051-release-validation.json). La 0.5.0 resta il precedente checkpoint con collaudo remoto autorizzato.
 
 Le RC precedenti restano storiche: la RC4 aveva l'editor disabilitato, la RC1 era stata ritirata per un difetto del monitor rete, la RC2 lo correggeva e la RC3 migliorava logout e navigazione con font grandi.
 
@@ -13,7 +13,7 @@ Servono PowerShell 7, JDK 17 o successivo, Android SDK 36 e build-tools 35.0.0. 
 pwsh -NoProfile -File scripts/build-private-apk.ps1 -InitializeSigningKey
 
 # Build successive: riusano obbligatoriamente la stessa chiave.
-pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 15 -VersionName 0.5.0
+pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 16 -VersionName 0.5.1
 ```
 
 Usare -Offline soltanto dopo che le dipendenze release sono state scaricate. Il workaround Java locale, quando necessario su questo PC, si configura nell'ambiente del comando come descritto in TESTING.md; non entra nell'APK o nella firma.
@@ -72,3 +72,9 @@ Il [primo tentativo API 31](evidence/private-rc4-api31-first-attempt.json) resta
 Il collaudo firmato API 35 della stessa RC4 passa il 15 ottobre dopo la ripresa del lavoro: aggiornamento 11 → 12 con UID 10209 invariato, registri cifrati conservati, firma debug rifiutata, run-as negato, blocco offline, login a sessione vuota e disconnessione/riconnessione live. Impostazioni ripristinate ed emulatore dedicato arrestato. [Report API 35](evidence/private-rc4-api35-validation.json). Le prove precedenti rimangono riferite ai loro APK; il checksum della RC4 è lo stesso su entrambe le piattaforme.
 
 La sospensione richiesta al checkpoint 76008a4 è stata revocata dall'utente con la richiesta di continuare. I collaudi firmati previsti su API 31 e 35 sono chiusi. Auth remoto, CI sospesa e dipendenze backend restano aperti; la candidata non viene dichiarata stabile completa.
+
+## Aggiornamento UI 0.5.1
+
+La qualifica usa la stabile 0.5.0/code 15 come baseline e il runner `test-private-apk.ps1` con `-CompileEmulatorPackages`. Il flag prepara ART sul solo emulatore esplicito: non cambia i byte degli APK e non rappresenta una misura delle prestazioni di avvio. È stato aggiunto dopo timeout osservati nell'avvio dell'instrumentation su API 35. I controlli di firma, cifratura, login e radio restano invariati. La probe firmata è un artefatto di test e non va distribuita.
+
+Build, aggiornamento 15 → 16 e CI della fonte sono passati. Non sono stati inseriti account reali né eseguite modifiche cloud per la 0.5.1. L'APK, il checksum e la promozione verificata sono in `.work/releases`; il manifest originale di build resta `candidate=true, stable=false`, mentre `.apk.release.json` registra la successiva qualifica. Le prove precedenti nelle sezioni RC restano riferite ai rispettivi artefatti.

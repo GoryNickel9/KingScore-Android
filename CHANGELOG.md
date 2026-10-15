@@ -7,6 +7,8 @@
 - Dettaglio con copertina, metadati, punteggi allineati, note e commenti. Restano disponibili navigazione al gioco/giocatore, gestione admin e azioni sui soli commenti propri.
 - Layout adattato al testo ingrandito e ai punteggi lunghi senza conversioni numeriche. Login e Internet restano obbligatori. Nessuna modifica al backend o al sito; aggiornamenti dell'APK ancora manuali.
 
+Code 16 costruita dalla fonte pulita `971e9237e7590bca6baaea8defc9544b43744f3b`: 258 test JVM passati, lint con 0 errori e 24 avvisi precedenti. Aggiornamento 15 → 16 verificato con lo stesso certificato e registri cifrati conservati; login e blocco/ripresa rete passano sulla release. Le prove native coprono 92 casi distinti riusciti e due integrazioni escluse; i tre fallimenti iniziali dei driver sono documentati con la ripetizione delle 27 prove editor. [CI della fonte](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38747712245) passata. Prove sul PC, senza un nuovo collaudo remoto o un telefono fisico: [STABILITY.md](docs/STABILITY.md).
+
 ## 0.5.0 — 15 ottobre 2026
 
 - Abilitata la gestione di tutte le partite per gli amministratori: creazione, modifica ed eliminazione atomiche, conflitti e recupero esplicito degli esiti incerti.

@@ -1,4 +1,20 @@
-# Prima stabile privata 0.5.0: stato e criteri
+# Stabile privata 0.5.1: aggiornamento delle tre schermate
+
+La 0.5.1, versionCode 16, implementa le proposte approvate per Home, classifica e dettaglio partita. Login e Internet restano obbligatori; gestione admin e commenti propri conservano i permessi precedenti. Formula ELO, web, Vercel e Supabase non cambiano in questo aggiornamento.
+
+APK: `.work/releases/KingScore-0.5.1-16.apk`, 14.511.586 byte. SHA-256: `90306da33c1a75ed24607c7828e7f59c5c645fcbf127164a71c61aad4586c960`. Fonte pulita: `971e9237e7590bca6baaea8defc9544b43744f3b`. Il certificato è quello della 0.5.0; installare sopra la versione precedente senza disinstallarla. Gli aggiornamenti restano manuali.
+
+| Verifica | Risultato |
+| --- | --- |
+| Release | 258 test JVM riusciti; lint: 0 errori e 24 avvisi preesistenti; firma e pacchetto senza hook di test verificati |
+| UI nativa | 92 casi distinti riusciti, due integrazioni condizionali escluse; font fino a 2×. Il run da 94 casi aveva tre fallimenti dei driver, risolti con una ripetizione da 27 casi delle classi editor |
+| Aggiornamento 15 → 16 | PASS: UID e registri cifrati conservati, firma diversa rifiutata, run-as negato |
+| Login e rete della release | PASS: sessione vuota mostra login; avvio offline e disconnessione bloccati; riconnessione ripristina login |
+| CI della fonte | [PASS](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38747712245) |
+
+Evidenze: [build](evidence/private-051-build.json), [UI](evidence/private-051-ui-validation.json), [aggiornamento](evidence/private-051-upgrade-validation.json), [qualifica](evidence/private-051-release-validation.json). Le prove usano l'emulatore API 35 sul PC e dati sintetici; nessun telefono fisico è verificato. I pacchetti ART sono precompilati per evitare il timeout di avvio dell'instrumentation sul PC: questi risultati non misurano l'avvio a freddo su un telefono. Il collaudo remoto della 0.5.0 resta storico e non viene attribuito alla 0.5.1.
+
+# Prima stabile privata 0.5.0: prove storiche
 
 La prima stabile privata 0.5.0, versionCode 15, è costruita e verificata dalla fonte pulita `df39f5b3bc1fad0e11991784864421193c983225`. L'editor admin è abilitato e usa il backend attivato il 15 ottobre 2026. Il sito pubblicato usa gli stessi salvataggi atomici e la stessa pubblicazione globale ELO. Stato del rollout: [LIVE_ROLLOUT.md](LIVE_ROLLOUT.md).
 

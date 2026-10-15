@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "qualification": "private-stable-ui-update",
+  "versionName": "0.5.1",
+  "versionCode": 16,
+  "sourceCommit": "971e9237e7590bca6baaea8defc9544b43744f3b",
+  "sourceDirtyAtBuild": false,
+  "apkSha256": "90306da33c1a75ed24607c7828e7f59c5c645fcbf127164a71c61aad4586c960",
+  "apkBytes": 14511586,
+  "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
+  "adminEditorEnabled": true,
+  "jvm": {
+    "errors": 0,
+    "failures": 0,
+    "tests": 258
+  },
+  "lint": {
+    "warnings": 24,
+    "errors": 0
+  },
+  "nodeContractTests": {
+    "passed": 40,
+    "failed": 0
+  },
+  "native": {
+    "uniquePassed": 92,
+    "explicitIntegrationSkips": 2,
+    "singleCompleteRunGreen": false,
+    "editorClassRerunPassed": 27,
+    "evidence": "private-051-ui-validation.json"
+  },
+  "upgradeFrom15": "PASS",
+  "requiredLogin": "PASS",
+  "liveOfflineAndReconnect": "PASS",
+  "sourceCi": {
+    "conclusion": "success",
+    "databaseId": 38747712245,
+    "headSha": "971e9237e7590bca6baaea8defc9544b43744f3b",
+    "status": "completed",
+    "updatedAt": "2026-10-15T14:05:18Z",
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38747712245"
+  },
+  "remoteAccountAuthenticationRetested": false,
+  "remoteDatabaseChanged": false,
+  "webChanged": false,
+  "vercelChanged": false,
+  "limitations": [
+    "PC API 35 emulator only; no physical phone qualification.",
+    "Native screens use synthetic repositories; real backend account/role/RPC testing belongs to 0.5.0 and was not repeated for this UI-only update.",
+    "The 94-case run had three test-driver failures; all 27 tests in the affected editor classes passed after test-only input/cleanup fixes. Two integration-driver assumptions remain explicit.",
+    "ART packages precompiled on the PC emulator after instrumentation startup ANRs; no cold-start performance claim.",
+    "APK updates remain manual."
+  ],
+  "verifiedAt": "2026-10-15T14:13:39.010719+00:00"
+}

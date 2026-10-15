@@ -1,10 +1,12 @@
 # KingScore Android
 
-App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di KingScore. La prima stabile privata 0.5.0 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e gestione partite per gli amministratori. Login e Internet sono obbligatori.
+App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di KingScore. La stabile privata 0.5.1 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e gestione partite per gli amministratori. Login e Internet sono obbligatori.
 
 Gli amministratori possono creare, modificare ed eliminare tutte le partite tramite salvataggi atomici. Classifiche generali, classifiche per gioco e storici leggono la stessa pubblicazione globale del backend. La formula ELO è invariata e l'app non esegue ricalcoli. Il registro cifrato conserva richieste incerte e conferme; il recupero richiede un'azione esplicita.
 
-La 0.5.0, versionCode 15, supera build firmata, aggiornamento dalla RC4 e percorso UI completo con MainActivity e account reali su emulatore API 35. Il collaudo verifica classifiche, modifica admin di una partita altrui, commenti propri e blocco senza Internet. Account, dati e pubblicazioni temporanei sono stati rimossi; il risultato ELO originale è verificato dopo la pulizia. La CI della fonte dell'APK è passata; lo stesso workflow verifica i report di consegna. Prove, checksum e limiti: [STABILITY.md](docs/STABILITY.md) e [LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md). I documenti delle fasi 4.1 e 4.2 descrivono preparazioni precedenti annullate.
+La 0.5.1, versionCode 16, aggiorna Home, classifica e dettaglio partita secondo le proposte approvate: colori slate/verde, riepilogo con grafico mensile, righe ELO compatte e punteggi allineati. Supera 258 test JVM, lint senza errori e aggiornamento dalla 0.5.0 con lo stesso certificato e dati cifrati conservati. Le prove native usano fixture sul PC: 92 casi riusciti e due integrazioni condizionali escluse; i dettagli dei tentativi e delle ripetizioni sono in [TESTING.md](docs/TESTING.md). Aggiornamenti APK ancora manuali.
+
+La precedente 0.5.0, versionCode 15, supera build firmata, aggiornamento dalla RC4 e percorso UI completo con MainActivity e account reali su emulatore API 35. Il collaudo verifica classifiche, modifica admin di una partita altrui, commenti propri e blocco senza Internet. Account, dati e pubblicazioni temporanei sono stati rimossi; il risultato ELO originale è verificato dopo la pulizia. La CI della fonte dell'APK è passata; lo stesso workflow verifica i report di consegna. Prove, checksum e limiti: [STABILITY.md](docs/STABILITY.md) e [LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md). I documenti delle fasi 4.1 e 4.2 descrivono preparazioni precedenti annullate.
 
 ## Perimetro confermato
 
@@ -58,7 +60,7 @@ Con Android SDK 36 e JDK 17 o successivo disponibili:
 
 Lo script di configurazione iniziale legge URL e chiave pubblica dal repository web; le configurazioni locali sono escluse da Git. Nel perimetro corrente usare la configurazione già presente oppure impostare manualmente SUPABASE_URL e SUPABASE_PUBLIC_KEY: [docs/PHASE2.md](docs/PHASE2.md). APK debug: `app/build/outputs/apk/debug/app-debug.apk`.
 
-La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e checkpoint precedenti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md), lo stato corrente in [docs/STABILITY.md](docs/STABILITY.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è riattivata e verifica contratti Node, test JVM, lint e build APK; l'esito sul commit finale di consegna resta da verificare.
+La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e checkpoint precedenti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md), lo stato corrente in [docs/STABILITY.md](docs/STABILITY.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è riattivata e verifica contratti Node, test JVM, lint e build APK; la [CI della fonte della 0.5.1](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38747712245) è passata.
 
 Per verificare le evidenze salvate: `node --test scripts/check-evidence.test.mjs`. Per compilare ed eseguire i test Kotlin: `./scripts/check-contracts.ps1` con Kotlin e Java 17 o successivo disponibili.
 

@@ -6,6 +6,8 @@ Piano iniziale: 13 ottobre 2026. Stato aggiornato: 15 ottobre 2026. Scelta nativ
 
 La prima stabile privata 0.5.0/code 15 ha l'editor admin abilitato. Backend e sito sono stati attivati il 15 ottobre su autorizzazione dell'utente; le preparazioni annullate delle fasi 4.1 e 4.2 restano storiche. Build firmata, aggiornamento RC4/code 12 → 15 e percorso UI completo con MainActivity e account reali sono verificati su emulatore API 35. I dati temporanei sono rimossi e il risultato ELO originale è verificato dopo cleanup. La CI della fonte dell'APK è passata; anche le pubblicazioni temporanee sono state rimosse. Report di consegna: [docs/STABILITY.md](docs/STABILITY.md) e [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
 
+La stabile privata corrente è la **0.5.1/code 16**: Home, classifica e dettaglio riallineati alle proposte web approvate; 258 test JVM, lint senza errori e aggiornamento 15 → 16 verificati. Le prove native coprono 92 casi distinti riusciti e due integrazioni condizionali escluse, dopo la correzione dei driver dell’editor. Nessuna modifica web o cloud per questo aggiornamento. Firma, limiti e report: [STABILITY.md](docs/STABILITY.md).
+
 ## Vincoli confermati
 
 1. L'app richiede una connessione Internet funzionante. In assenza di connessione mostra uno stato dedicato e blocca la consultazione e l'invio delle operazioni; non dispone di una modalità offline.

@@ -5,6 +5,7 @@ param(
     [Parameter(Mandatory=$true)][string]$CandidateApk,
     [Parameter(Mandatory=$true)][string]$ProbeApk,
     [Parameter(Mandatory=$true)][string]$WrongSignerApk,
+    [switch]$CompileEmulatorPackages,
     [string]$Serial='emulator-5582',
     [string]$Adb=(Join-Path $env:LOCALAPPDATA 'Android/Sdk/platform-tools/adb.exe')
 )
@@ -15,6 +16,7 @@ $repo=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $run=Join-Path $repo ('.work/private-apk/'+[Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $run -Force|Out-Null
 $report=[ordered]@{status='FAIL';serial=$Serial;api=$null;remoteAccountAuthenticationTested=$false;remoteDatabaseContacted=$false;baselineInstalled=$false;wrongSignerRejected=$false;upgradeInstalled=$false;encryptedRecordsPreserved=$false;offlineBlocked=$false;coldLoginVisible=$false;liveDisconnectBlocked=$false;liveReconnectRestored=$false;debuggingDenied=$false;settingsRestored=$false;failure=$null}
+$report.packagesPrecompiled=[bool]$CompileEmulatorPackages
 $radio=@{}
 function Invoke-Adb([string]$Name,[string[]]$Arguments,[switch]$AllowFailure) {
     $text=(& $Adb -s $Serial @Arguments 2>&1|Out-String);$code=$LASTEXITCODE
@@ -30,6 +32,14 @@ function PackageInfo([string]$Name) {
     $version=[int]$Matches[1]
     if($text -match 'pkgFlags=\[[^\]]*DEBUGGABLE') {throw 'Release app is debuggable'}
     return @{uid=$uid;version=$version}
+}
+function Compile-Package([string]$Name,[string]$Package) {
+    if ($CompileEmulatorPackages) {
+        # On a loaded PC emulator, cold instrumentation can exceed Android's process-start deadline.
+        # This prepares ART code only; it does not change APK bytes or measure cold-start performance.
+        $text=Invoke-Adb $Name @('shell','cmd','package','compile','-m','speed','-f',$Package)
+        if($text -notmatch '(?m)^Success\s*$') {throw "Emulator package compilation failed: $Package"}
+    }
 }
 function Probe([string]$Name,[string]$Mode) {
     $text=Invoke-Adb $Name @('shell','am','instrument','-w','-e','mode',$Mode,'app.kingscore.android.test/app.kingscore.android.data.local.PendingRecoveryProbe')
@@ -70,6 +80,8 @@ try {
     [void](Invoke-Adb 'baseline-install' @('install',$BaselineApk))
     $baseline=PackageInfo 'baseline-package';$report.baselineInstalled=$true
     [void](Invoke-Adb 'probe-install' @('install',$ProbeApk))
+    Compile-Package 'baseline-aot' 'app.kingscore.android'
+    Compile-Package 'probe-aot' 'app.kingscore.android.test'
     Probe 'write-before-wrong-signer' 'write'
     $denied=Invoke-Adb 'wrong-signer' @('install','-r',$WrongSignerApk) -AllowFailure
     if($denied -notmatch 'INSTALL_FAILED_UPDATE_INCOMPATIBLE') {throw 'Wrong signing certificate was not rejected as expected'}
@@ -79,6 +91,7 @@ try {
     Probe 'read-after-wrong-signer' 'read'
     Probe 'write-before-upgrade' 'write'
     [void](Invoke-Adb 'upgrade-install' @('install','-r',$CandidateApk))
+    Compile-Package 'candidate-aot' 'app.kingscore.android'
     $candidate=PackageInfo 'candidate-package'
     if($candidate.uid -ne $baseline.uid -or $candidate.version -le $baseline.version) {throw 'Upgrade must preserve UID and increase versionCode'}
     $report.upgradeInstalled=$true;$report.baselineVersion=$baseline.version;$report.candidateVersion=$candidate.version;$report.applicationUid=$candidate.uid

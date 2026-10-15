@@ -139,11 +139,13 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                         } else if (destination.route == "home" && repository != null) {
                             DashboardRoute(account, repository, onAccessFailure,
                                 onOpen = { navigation.navigate("play/$it") }, onHistory = { navigation.navigate("plays") },
-                                onRatings = { navigation.navigate("elo") })
+                                onRatings = { navigation.navigate("elo") }, statisticsRepository = statistics,
+                                onProfile = { navigation.navigate("account") { launchSingleTop = true } })
                         } else if (destination.route == "stats" && statistics != null) {
                             StatisticsRoute(statistics, onAccessFailure)
                         } else if (destination.route == "elo" && ratings != null) {
-                            RatingsRoute(account, ratings, onAccessFailure)
+                            RatingsRoute(account, ratings, onAccessFailure,
+                                onProfile = { navigation.navigate("account") { launchSingleTop = true } })
                         } else {
                             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                                 Text(destination.label, style = MaterialTheme.typography.headlineLarge)

@@ -19,6 +19,33 @@ class SupabaseStatisticsRepositoryTest {
     // November in Rome, still October in UTC: plays are calendar dates.
     private val clock = Clock.fixed(Instant.parse("2026-10-31T23:30:00Z"), ZoneId.of("Europe/Rome"))
 
+    @Test fun `dashboard months fill gaps exclude outside dates and count duplicate plays once`() = runBlocking {
+        val game = GameRow(id(30), "Azul", null, "https://example.com/azul.jpg", 2, 4, null)
+        val rows = listOf(
+            play(6, game.id, "2026-06-01"), play(5, game.id, "2026-10-31"), play(5, game.id, "2026-10-31"),
+            play(4, game.id, "2026-11-01"), play(3, game.id, "2026-05-31"),
+            play(2, game.id, "2025-11-01"), play(1, game.id, "2026-12-01"),
+        ).map { it.copy(game = game) }
+        val result = SupabaseStatisticsRepository(profile("[]"), account,
+            FakePlays { _, _ -> PlayPage(rows, null) }, clock).load {}
+        assertEquals(6, result.totalPlays)
+        assertEquals((6..11).map { java.time.YearMonth.of(2026, it) }, result.months.map { it.month })
+        assertEquals(listOf(1, 0, 0, 0, 1, 1), result.months.map { it.plays })
+        assertEquals("https://example.com/azul.jpg", result.games.single().imageUrl)
+        assertEquals(6, result.games.single().plays)
+    }
+
+    @Test fun `empty dashboard shows six zero months across the year boundary`() = runBlocking {
+        val january = Clock.fixed(Instant.parse("2027-01-01T12:00:00Z"), ZoneId.of("Europe/Rome"))
+        val result = SupabaseStatisticsRepository(profile("[]"), account,
+            FakePlays { _, _ -> PlayPage(emptyList(), null) }, january).load {}
+        assertEquals(0, result.totalPlays)
+        assertEquals(java.time.YearMonth.of(2026, 8), result.months.first().month)
+        assertEquals(java.time.YearMonth.of(2027, 1), result.months.last().month)
+        assertEquals(List(6) { 0 }, result.months.map { it.plays })
+        assertTrue(result.games.isEmpty())
+    }
+
     @Test fun `complete keyset scan exceeds one thousand plays without retaining pages`() = runBlocking {
         val rows = (1..1051).reversed().map { play(it) }
         var calls = 0

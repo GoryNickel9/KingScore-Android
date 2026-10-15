@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1 — 15 ottobre 2026
+
+- Home riallineata alla proposta approvata: intestazione KingScore, riepilogo completo, grafico degli ultimi sei mesi, partite recenti e giochi preferiti. I totali compaiono solo al termine della lettura autenticata; errori e caricamento restano distinti da zero partite.
+- Classifica con righe compatte, avatar, ELO a destra, indicazione del proprio giocatore e selezione generale/per gioco. Posizioni ex aequo, valori mancanti e storico conservano i dati pubblicati dal server.
+- Dettaglio con copertina, metadati, punteggi allineati, note e commenti. Restano disponibili navigazione al gioco/giocatore, gestione admin e azioni sui soli commenti propri.
+- Layout adattato al testo ingrandito e ai punteggi lunghi senza conversioni numeriche. Login e Internet restano obbligatori. Nessuna modifica al backend o al sito; aggiornamenti dell'APK ancora manuali.
+
 ## 0.5.0 — 15 ottobre 2026
 
 - Abilitata la gestione di tutte le partite per gli amministratori: creazione, modifica ed eliminazione atomiche, conflitti e recupero esplicito degli esiti incerti.

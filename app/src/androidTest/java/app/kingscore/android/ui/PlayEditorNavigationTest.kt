@@ -145,7 +145,6 @@ class PlayEditorNavigationTest {
         history()
         compose.onNodeWithTag("history-content").performScrollToNode(hasTestTag("play-$playId"))
         compose.onNodeWithTag("play-$playId").performClick()
-        compose.onNodeWithTag("detail-content").performScrollToNode(hasTestTag("manage-play"))
         compose.onNodeWithTag("manage-play").performClick(); compose.waitForIdle()
     }
     private fun click(tag: String) {
@@ -223,7 +222,6 @@ class PlayEditorNavigationTest {
         capture("editor-navigation-exit", "editor-exit-dialog")
         compose.onNodeWithTag("editor-confirm-exit").performClick()
         assertEquals(1, writers.single().closed); assertTrue(commands.isEmpty())
-        compose.onNodeWithTag("detail-content").performScrollToNode(hasTestTag("manage-play"))
         compose.onNodeWithTag("manage-play").performClick()
         compose.onNodeWithTag("editor-content").performScrollToNode(hasTestTag("editor-notes"))
         compose.onNodeWithTag("editor-notes").assertTextContains("Original")

@@ -4,6 +4,7 @@ import app.kingscore.android.data.repository.DataFailure
 import app.kingscore.android.data.repository.DataProblem
 import app.kingscore.android.data.repository.GameStatistic
 import app.kingscore.android.data.repository.HistoryFilters
+import app.kingscore.android.data.repository.MonthStatistic
 import app.kingscore.android.data.repository.PlayCursor
 import app.kingscore.android.data.repository.PlaysRepository
 import app.kingscore.android.data.repository.StatisticsRepository
@@ -27,6 +28,7 @@ class SupabaseStatisticsRepository(
     override suspend fun load(onProgress: (Int) -> Unit): StatisticsSnapshot {
         val linkedPlayer = linkedPlayer()
         val month = YearMonth.now(clock)
+        val months = (5L downTo 0L).associate { month.minusMonths(it) to 0 }.toMutableMap()
         val seenPlays = HashSet<UUID>()
         val players = HashSet<UUID>()
         val games = HashMap<UUID, GameTally>()
@@ -49,7 +51,9 @@ class SupabaseStatisticsRepository(
                 currentCoroutineContext().ensureActive()
                 val play = detail.play
                 if (!seenPlays.add(play.id)) continue
-                if (YearMonth.from(play.played_at) == month) monthPlays++
+                val playedMonth = YearMonth.from(play.played_at)
+                if (playedMonth == month) monthPlays++
+                if (playedMonth in months) months[playedMonth] = months.getValue(playedMonth) + 1
                 play.duration_minutes?.takeIf { it >= 0 }?.let {
                     recordedMinutes += it.toLong()
                     durationSamples++
@@ -57,7 +61,7 @@ class SupabaseStatisticsRepository(
                 play.game_id?.let { id ->
                     val tally = games.getOrPut(id) { GameTally() }
                     tally.plays++
-                    detail.game?.let { tally.name = it.name }
+                    detail.game?.let { tally.name = it.name; tally.imageUrl = it.image_url }
                 }
                 var participated = false
                 var won = false
@@ -84,11 +88,12 @@ class SupabaseStatisticsRepository(
             uniquePlayers = players.size,
             recordedMinutes = recordedMinutes,
             durationSamples = durationSamples,
-            games = games.map { (id, tally) -> GameStatistic(id, tally.name, tally.plays) }
+            games = games.map { (id, tally) -> GameStatistic(id, tally.name, tally.plays, tally.imageUrl) }
                 .sortedWith(compareByDescending<GameStatistic> { it.plays }.thenBy { it.gameId.toString() }),
             linkedPlayer = linkedPlayer,
             personalPlays = personalPlays,
             personalWins = personalWins,
+            months = months.map { (month, count) -> MonthStatistic(month, count) },
         )
     }
 
@@ -108,5 +113,5 @@ class SupabaseStatisticsRepository(
     private fun compare(a: PlayCursor, b: PlayCursor): Int =
         a.date.compareTo(b.date).takeIf { it != 0 } ?: a.id.toString().compareTo(b.id.toString())
 
-    private class GameTally(var name: String = "Gioco non disponibile", var plays: Int = 0)
+    private class GameTally(var name: String = "Gioco non disponibile", var plays: Int = 0, var imageUrl: String? = null)
 }

@@ -44,8 +44,8 @@ class PlayerUiTest {
         capture("phase34-player")
         compose.onNodeWithTag("player-content").performScrollToNode(hasTestTag("play-${second.play.id}"))
         compose.onNodeWithTag("play-${second.play.id}").performClick()
-        compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Punteggio: 0"))
-        compose.onNodeWithText("Punteggio: 0").assertIsDisplayed()
+        compose.onNodeWithTag("detail-content").performScrollToNode(hasContentDescription("Punteggio: 0"))
+        compose.onNodeWithContentDescription("Punteggio: 0").assertIsDisplayed()
         compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Luca"))
         compose.onNodeWithText("Luca").assertIsDisplayed()
         openParticipant()
@@ -149,7 +149,7 @@ class PlayerUiTest {
         val absent = first.copy(scores = first.scores.map { it.copy(score = it.score.copy(player_id = null), player = null) })
         compose.setContent { KingScoreTheme { DetailScreen(DetailState(absent, loading = false), account.id,
             {}, {}, {}, {}, onOpenPlayer = { fail("Missing player ID must not navigate") }) } }
-        compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Partecipanti"))
+        compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Punteggi"))
         compose.onAllNodesWithText("Apri giocatore").assertCountEquals(0)
     }
 

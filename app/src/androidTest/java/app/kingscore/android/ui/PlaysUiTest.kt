@@ -41,11 +41,11 @@ class PlaysUiTest {
         compose.onNodeWithTag("history-content").performScrollToNode(hasTestTag("play-${id(1)}"))
         compose.onNodeWithTag("play-${id(1)}").performClick()
         compose.onNodeWithText("Dettaglio partita").assertIsDisplayed()
-        compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Punteggio: 0"))
-        compose.onNodeWithText("Punteggio: 0").assertIsDisplayed()
+        compose.onNodeWithTag("detail-content").performScrollToNode(hasContentDescription("Punteggio: 0"))
+        compose.onNodeWithContentDescription("Punteggio: 0").assertIsDisplayed()
         compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Punteggio non registrato"))
         compose.onNodeWithText("Punteggio non registrato").assertIsDisplayed()
-        compose.onNodeWithText("Posizione: —").assertIsDisplayed()
+        compose.onNodeWithContentDescription("Posizione: —").assertIsDisplayed()
         compose.onNodeWithTag("detail-content").performScrollToNode(hasText("Sei tu"))
         compose.onNodeWithText("Sei tu").assertIsDisplayed()
         capture("phase3-detail")
@@ -112,7 +112,7 @@ class PlaysUiTest {
             scores = first.scores.map { it.copy(score = it.score.copy(position = 2, winner = false)) })
         compose.setContent { KingScoreTheme { DetailScreen(DetailState(detail = loss, loading = false), account.id, {}, {}, {}, {}) } }
         compose.onNodeWithText("Sconfitta della squadra").assertIsDisplayed()
-        compose.onAllNodesWithText("Posizione: 2").assertCountEquals(2)
+        compose.onAllNodesWithContentDescription("Posizione: 2").assertCountEquals(2)
         compose.onNodeWithText("Vincitore").assertDoesNotExist()
     }
 

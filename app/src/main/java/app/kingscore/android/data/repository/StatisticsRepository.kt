@@ -1,9 +1,11 @@
 package app.kingscore.android.data.repository
 
 import java.util.UUID
+import java.time.YearMonth
 import kingscore.contracts.v1.PlayerRow
 
-data class GameStatistic(val gameId: UUID, val name: String, val plays: Int)
+data class GameStatistic(val gameId: UUID, val name: String, val plays: Int, val imageUrl: String? = null)
+data class MonthStatistic(val month: YearMonth, val plays: Int)
 
 /** Complete scan totals. Missing durations are excluded; recorded zero is a sample. */
 data class StatisticsSnapshot(
@@ -17,6 +19,7 @@ data class StatisticsSnapshot(
     val linkedPlayer: PlayerRow?,
     val personalPlays: Int,
     val personalWins: Int,
+    val months: List<MonthStatistic> = emptyList(),
 )
 
 interface StatisticsRepository {

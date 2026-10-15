@@ -1,13 +1,27 @@
 package app.kingscore.android.feature.ratings
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.EmojiEvents
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -20,6 +34,9 @@ import app.kingscore.android.feature.plays.playerName
 import app.kingscore.android.ui.modelFactory
 import app.kingscore.android.ui.PlayerAvatar
 import app.kingscore.android.ui.GameCover
+import app.kingscore.android.ui.KingScoreHeader
+import app.kingscore.android.ui.WebPanelShape
+import app.kingscore.android.ui.WebBadge
 import app.kingscore.android.feature.navigation.PlayDataRefresh
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -27,7 +44,8 @@ import java.util.UUID
 import kotlinx.coroutines.delay
 
 @Composable
-fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailure: (AuthProblem) -> Unit) {
+fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailure: (AuthProblem) -> Unit,
+    onProfile: () -> Unit = {}) {
     val model: RatingsViewModel = viewModel(factory = modelFactory { RatingsViewModel(repository, onAccessFailure) })
     val state by model.ratings.collectAsStateWithLifecycle()
     var game by rememberSaveable { mutableStateOf<String?>(null) }
@@ -53,16 +71,29 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
                 }
             }
         })
-    LazyColumn(Modifier.fillMaxSize().testTag("ratings-content"), contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(Modifier.fillMaxSize()) {
+    KingScoreHeader(account.name, onProfile)
+    LazyColumn(Modifier.weight(1f).testTag("ratings-content"), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
-            Text("ELO", style = MaterialTheme.typography.headlineLarge)
-            Text("Classifiche globali pubblicate dal server", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(Icons.Outlined.EmojiEvents, null, tint = MaterialTheme.colorScheme.primary)
+                Text("Rating ELO", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            }
+            Text("Classifica globale del gruppo", color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 6.dp))
         }
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = game == null, onClick = { game = null }, label = { Text("Generale") })
-                    OutlinedButton(onClick = { query = ""; chooseGame = true }, enabled = state.games.isNotEmpty()) { Text("Per gioco") }
+                Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface, WebPanelShape).padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    TextButton(onClick = { game = null }, shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+                            .background(if (game == null) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent, RoundedCornerShape(8.dp))
+                            .semantics { selected = game == null }) { Text("Generale") }
+                    TextButton(onClick = { query = ""; chooseGame = true }, enabled = state.games.isNotEmpty(),
+                        shape = RoundedCornerShape(8.dp), modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+                            .background(if (game != null) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent, RoundedCornerShape(8.dp))
+                            .semantics { selected = game != null }) { Text("Per gioco") }
                 }
                 state.games.firstOrNull { it.id.toString() == game }?.let { selected ->
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
@@ -84,29 +115,27 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
         state.ranking?.let { ranking ->
             if (ranking.profile == null) item { Text("Profilo giocatore non collegato.", color = MaterialTheme.colorScheme.onSurfaceVariant) }
             if (ranking.entries.isEmpty()) item { Text("Nessun rating pubblicato per questa classifica.") }
+            if (ranking.entries.isNotEmpty()) item {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Outlined.StarOutline, null, tint = MaterialTheme.colorScheme.tertiary)
+                    Text(if (game == null) "ELO generale" else "Classifica per gioco", style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold)
+                }
+                Text("Tocca un giocatore per vedere lo storico", style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
+            }
             val positions = competitionRanks(ranking.entries)
             items(ranking.entries, key = { it.id.toString() }) { rating ->
-                Card(onClick = { model.select(rating) }, enabled = rating.playerId != null, modifier = Modifier.fillMaxWidth().testTag("rating-${rating.id}")) {
-                    Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            PlayerAvatar(rating.player?.avatar_url, playerName(rating.player))
-                            Text("${positions[rating.id]?.let { "$it. " } ?: ""}${playerName(rating.player)}",
-                                modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleLarge)
-                        }
-                        if (rating.player?.account_user_id == account.id) Text("Sei tu", color = MaterialTheme.colorScheme.primary)
-                        Text(rating.rating?.toString() ?: "Rating non disponibile", style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.primary)
-                        Text("Partite: ${rating.gamesPlayed ?: "—"} · V/P/S: ${rating.wins ?: "—"}/${rating.draws ?: "—"}/${rating.losses ?: "—"}")
-                        Text(rating.lastPlayedAt?.let { "Ultima partita: $it" } ?:
-                            rating.updatedAt?.let { "Rating aggiornato: ${formatTime(it)}" } ?: "Data del rating non disponibile",
-                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        if (rating.playerId != null) Text("Apri storico", style = MaterialTheme.typography.labelLarge)
-                    }
-                }
+                RatingCard(rating, positions[rating.id], rating.player?.account_user_id == account.id, game == null) { model.select(rating) }
+            }
+            if (ranking.entries.isNotEmpty()) item {
+                Text("V = vittorie · P = pareggi · S = sconfitte", style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         state.readAt?.let { item { Text("Classifica letta: ${formatTime(it)}", style = MaterialTheme.typography.bodySmall) } }
         if (!state.loading) item { TextButton(onClick = { model.refresh() }) { Text("Aggiorna classifica") } }
+    }
     }
     state.selected?.let { selected ->
         AlertDialog(onDismissRequest = model::closeHistory, title = { Text("Storico di ${playerName(selected.player)}") },
@@ -130,6 +159,48 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
                 }
             })
     }
+}
+
+@Composable
+private fun RatingCard(rating: PublishedRating, position: Int?, mine: Boolean, general: Boolean, onClick: () -> Unit) {
+    val highlight = if (general) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
+    Card(onClick, enabled = rating.playerId != null, shape = WebPanelShape,
+        border = if (mine) BorderStroke(1.dp, highlight.copy(alpha = 0.6f)) else null,
+        colors = CardDefaults.cardColors(containerColor = if (mine) highlight.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant),
+        modifier = Modifier.fillMaxWidth().testTag("rating-${rating.id}")) {
+        BoxWithConstraints(Modifier.fillMaxWidth().padding(12.dp)) {
+            val expanded = LocalDensity.current.fontScale > 1.3f || maxWidth < 270.dp || (rating.rating?.toString()?.length ?: 0) > 5
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Box(Modifier.size(if (expanded) 40.dp else 26.dp).background(MaterialTheme.colorScheme.surface, CircleShape)
+                    .semantics { contentDescription = "Posizione: ${position ?: "—"}" }, contentAlignment = Alignment.Center) {
+                    Text(position?.toString() ?: "—", style = MaterialTheme.typography.labelMedium)
+                }
+                if (!expanded) PlayerAvatar(rating.player?.avatar_url, playerName(rating.player), 34.dp)
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(playerName(rating.player), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                        if (mine) WebBadge("Tu", color = highlight)
+                    }
+                    val value = rating.rating
+                    if (value != null) Text(when {
+                        value >= 1500 -> "Maestro"; value >= 1100 -> "Esperto"; value >= 1050 -> "Intermedio"; else -> "Principiante"
+                    }, style = MaterialTheme.typography.bodySmall, color = if (value >= 1050) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("${rating.gamesPlayed ?: "—"} partite · ${rating.wins ?: "—"}V ${rating.draws ?: "—"}P ${rating.losses ?: "—"}S",
+                        style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (expanded) RatingValue(rating)
+                }
+                if (!expanded) RatingValue(rating)
+            }
+        }
+    }
+}
+
+@Composable
+private fun RatingValue(rating: PublishedRating) {
+    Text(rating.rating?.toString() ?: "Rating non disponibile",
+        style = if (rating.rating == null) MaterialTheme.typography.bodySmall else MaterialTheme.typography.headlineSmall,
+        fontWeight = FontWeight.Bold, modifier = Modifier.widthIn(max = if (rating.rating == null) 92.dp else 160.dp),
+        color = if ((rating.rating ?: 0) >= 1050) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 fun competitionRanks(entries: List<PublishedRating>): Map<UUID, Int?> {

@@ -56,7 +56,6 @@ class LiveBackendSmokeTest {
 
         openTemporaryPlay()
         waitFor("admin management control") { exists(hasTestTag("manage-play")) }
-        scrollTo("detail-content", hasTestTag("manage-play"))
         tapTag("manage-play")
         waitFor("real editor snapshot") { exists(hasTestTag("editor-game")) && exists(hasTestTag("editor-notes")) }
         scrollTo("editor-content", hasTestTag("editor-notes"))

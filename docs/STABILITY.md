@@ -1,6 +1,6 @@
 # Prima versione stabile: stato e criteri
 
-Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Commit e push accompagnano i passaggi principali. Il perimetro attuale limita le modifiche a KingScore-Android e sospende la CI GitHub. Le precedenti preparazioni web rimangono sul PC; la loro fonte SQL può essere letta dai test locali. Altri repository, Vercel e Supabase non vengono modificati.
+Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Commit e push accompagnano i passaggi principali. Dal 15 ottobre è autorizzato anche il codice web in un checkout locale separato, con test soltanto sul PC. Nessun deploy o modifica Vercel/Supabase; CI GitHub sospesa secondo l'istruzione corrente dell'utente.
 
 La stabile mantiene il perimetro concordato: login e Internet obbligatori, consultazione, commenti propri e gestione partite admin atomica. Non comprende ricalcolo ELO, registrazione, modifica credenziali/avatar o uso offline. È disponibile la candidata privata firmata 0.5.0-rc4; la stabile completa non è ancora dichiarata raggiunta.
 
@@ -10,12 +10,14 @@ La stabile mantiene il perimetro concordato: login e Internet obbligatori, consu
 | Commenti propri | Implementati, registro cifrato nell'Application; recupero dopo arresto del processo e percorsi di sessione verificati | Rilettura completa e conferma manuale prima di nuove scritture; nessuna promessa di idempotenza server |
 | Contratti e salvataggi atomici | Candidata e migrazione web predisposta: 21 casi superati anche sulla fonte install-only | API reali e writer web/server coerenti, oggi indisponibili |
 | Client RPC Android | Factory e journal per account preparati; percorso HTTP locale, navigazione e cifratura verificati insieme | Disponibilità delle API e condizioni backend; factory di produzione assente |
-| Writer web locale | Preparatore, trasporto mutazioni, journal con conferme e verifica account; 97 test web, typecheck/lint superati | Pagine, conflitti, collaudo browser e integrazione SQL ancora da completare; nessuna pubblicazione |
+| Writer web locale | Creazione/modifica/eliminazione/import collegati; 250 test, typecheck, lint senza errori e build passati; conflitti e recupero verificati nel browser con HTTP sintetico | Restano ELO, cutover legacy/cascade, ripristino e verifica backend reale; nessuna pubblicazione |
 | Compatibilità SQL | Preflight read-only: 19 casi; migrazione predisposta: 16 profili e 21 casi HTTP passati su PostgreSQL 17.4 | Cutover, caller reali e verifica backend restano da completare; nessuna modifica cloud |
 | Recupero salvataggi | Percorso locale integrato passato: due arresti forzati, replay senza duplicati e conferma cifrata recuperata senza POST | Auth remoto e backend effettivo restano non verificati |
 | Editor partite | Navigazione collegata e inclusa nella RC4; creazione, modifica ed eliminazione passate contro RPC locali; disabilitato in produzione | Disponibilità delle API e condizioni backend |
 | APK privato e aggiornamenti | RC4 firmata, non debuggabile; 231 test release passati; aggiornamento RC3 11 → RC4 12, registri cifrati e rete verificati su API 31 e 35 | Conservare la chiave privata; nessuna verifica Auth remota |
 | CI GitHub | Ultimo checkpoint noto passato: aee9ac4, run 38640169702; esecuzione attualmente sospesa | I checkpoint successivi hanno soltanto verifiche locali e commit con skip ci |
+
+La proposta da esaminare prima di qualsiasi modifica Supabase è [SUPABASE_CHANGE_REVIEW.md](SUPABASE_CHANGE_REVIEW.md). Le RPC additive non risolvono da sole il ricalcolo ELO o le cancellazioni a cascata dei cataloghi.
 
 ## Ordine del lavoro autonomo
 

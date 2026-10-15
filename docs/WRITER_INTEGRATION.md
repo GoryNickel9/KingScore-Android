@@ -2,7 +2,13 @@
 
 Definito il 14 ottobre 2026. Il piano è salvato in KingScore-Android. L'utente ha ora autorizzato modifiche al codice King-Score e preparazione della migrazione, con test soltanto sul PC. Pubblicazione del sito, Vercel e Supabase restano esclusi. I test backend usano account sintetici e destinazioni loopback.
 
-## Stato verificato e fonti
+## Aggiornamento del 15 ottobre 2026
+
+L'utente ha autorizzato l'integrazione web e i test locali, chiedendo di vedere le modifiche Supabase prima dell'applicazione. Nessun deploy è autorizzato in questa fase. Nel checkout web separato sono collegati creazione, modifica, eliminazione e import BGA alle RPC; 250 test web, typecheck, lint (0 errori, 16 warning) e build con flag disabilitato/abilitato sono passati. Il collaudo browser usa SDK reale e HTTP sintetico; il database è stato verificato separatamente con 16 profili e 21 casi. Non è un collaudo Auth/RLS remoto o browser contro PostgreSQL.
+
+La candidata Android attuale è RC4 (versionCode 12), già verificata con aggiornamento firmato su API 31/35 e recupero cifrato integrato contro RPC locali. L'editor resta disabilitato in produzione. I paragrafi seguenti conservano inventario e checkpoint storici; per i blocchi attuali, le modifiche proposte e il ripristino consultare [SUPABASE_CHANGE_REVIEW.md](SUPABASE_CHANGE_REVIEW.md). Il codice web è ancora soltanto locale e il checkout principale è invariato. Checkpoint: `10110365aa161518c69ee3af6c17f6a95c42dd80`, branch `codex/atomic-play-writers`; report in `.work/King-Score-atomic/docs/evidence/web-play-integration.json`.
+
+## Stato verificato e fonti (checkpoint precedenti)
 
 La candidata locale implementa cinque RPC, transazioni, ricevute e revisioni per partita. Il checkpoint 75a6c04 conserva 21 casi di accettazione superati, 1.592 confronti di ranking e 39 controlli Node. Risultati: [local-atomic-validation.json](evidence/local-atomic-validation.json). Questi risultati non certificano consumer reali o job ELO; la candidata SQL non è una migrazione pronta da applicare in produzione. Il 14 ottobre 2026 l'utente ha riattivato la CI Android e scelto di discutere prima le modifiche necessarie a web e backend.
 

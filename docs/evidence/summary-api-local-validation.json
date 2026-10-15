@@ -1,0 +1,259 @@
+{
+  "status": "PASS",
+  "host": "127.0.0.1",
+  "remoteContacted": false,
+  "mode": "acceptance-and-benchmarks-and-rollback",
+  "goTrueTested": false,
+  "androidChanged": false,
+  "cases": [
+    {
+      "name": "anonymous denied: get_app_data_version_v1",
+      "status": "PASS"
+    },
+    {
+      "name": "anonymous denied: get_app_summary_v1",
+      "status": "PASS"
+    },
+    {
+      "name": "anonymous denied: get_statistics_overview_v1",
+      "status": "PASS"
+    },
+    {
+      "name": "anonymous denied: get_game_statistics_v1",
+      "status": "PASS"
+    },
+    {
+      "name": "anonymous denied: get_elo_chart_v1",
+      "status": "PASS"
+    },
+    {
+      "name": "expired and invalid signature rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "authenticated role without subject rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "service role has no new execute privileges",
+      "status": "PASS"
+    },
+    {
+      "name": "empty database is a complete zero summary",
+      "status": "PASS"
+    },
+    {
+      "name": "month validation and supported calendar boundaries",
+      "status": "PASS"
+    },
+    {
+      "name": "all owners, date boundaries and zero-filled months",
+      "status": "PASS"
+    },
+    {
+      "name": "unlinked account and linked player without participations differ",
+      "status": "PASS"
+    },
+    {
+      "name": "approved win rate is 2/4 = 50%, not 2/10",
+      "status": "PASS"
+    },
+    {
+      "name": "nulls excluded, zero and negative scores included, duration not multiplied",
+      "status": "PASS"
+    },
+    {
+      "name": "no samples and game without plays return null averages",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid new numeric data fails explicitly instead of returning misleading averages",
+      "status": "PASS"
+    },
+    {
+      "name": "exact decimal strings above JavaScript safe integer and HALF_UP ties",
+      "status": "PASS"
+    },
+    {
+      "name": "game pages cover the null-game bucket with stable ordering",
+      "status": "PASS"
+    },
+    {
+      "name": "player pages sort exact means then stable IDs and keep names separate",
+      "status": "PASS"
+    },
+    {
+      "name": "cursor input, wrong account/view/game and page limits rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "committed edits invalidate pages, rollback and reads do not change revision",
+      "status": "PASS"
+    },
+    {
+      "name": "revision above 2^53 stays an exact decimal string; count overflow explicit",
+      "status": "PASS"
+    },
+    {
+      "name": "missing revision is an explicit service error, never a zero summary",
+      "status": "PASS"
+    },
+    {
+      "name": "RLS restrictions apply to every source table and personal lookup",
+      "status": "PASS"
+    },
+    {
+      "name": "score RLS can hide every score without hiding play durations",
+      "status": "PASS"
+    },
+    {
+      "name": "one snapshot during an uncommitted play+score transaction and after commit",
+      "status": "PASS"
+    },
+    {
+      "name": "uncommitted data and revision rollback together",
+      "status": "PASS"
+    },
+    {
+      "name": "current published ELO is projected without recalculation",
+      "status": "PASS"
+    },
+    {
+      "name": "ELO pagination keeps same-day plays distinct and seeds only existing ratings",
+      "status": "PASS"
+    },
+    {
+      "name": "ELO cursor binds account, view, selection and publication",
+      "status": "PASS"
+    },
+    {
+      "name": "ELO projection respects visible source rows",
+      "status": "PASS"
+    },
+    {
+      "name": "more than 64 ELO series require explicit selection without silent truncation",
+      "status": "PASS"
+    },
+    {
+      "name": "stale and missing publications never return chart points",
+      "status": "PASS"
+    },
+    {
+      "name": "all read functions keep source tables and publication unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "repeat install refuses occupied names without changing existing objects",
+      "status": "PASS"
+    },
+    {
+      "name": "existing cascade deletions remove their rows without inventing missing-reference data",
+      "status": "PASS"
+    },
+    {
+      "name": "independent reference verifies Home, win rate and game/player means on 1000 plays",
+      "status": "PASS"
+    },
+    {
+      "name": "independent reference verifies Home, win rate and game/player means on 10000 plays",
+      "status": "PASS"
+    },
+    {
+      "name": "independent reference verifies Home, win rate and game/player means on 100000 plays",
+      "status": "PASS"
+    },
+    {
+      "name": "rollback removes only the candidate, preserving source and ELO",
+      "status": "PASS"
+    },
+    {
+      "name": "preflight refuses negative historical duration atomically",
+      "status": "PASS"
+    },
+    {
+      "name": "preflight refuses non-finite historical score atomically",
+      "status": "PASS"
+    },
+    {
+      "name": "preflight refuses duplicate historical participant atomically",
+      "status": "PASS"
+    },
+    {
+      "name": "preflight refuses incomplete source revision coverage",
+      "status": "PASS"
+    },
+    {
+      "name": "clean reinstall after rollback succeeds",
+      "status": "PASS"
+    }
+  ],
+  "benchmarks": [
+    {
+      "plays": 1000,
+      "scoreRows": 2000,
+      "summaryBytes": 779,
+      "summaryRequests": 1,
+      "summaryHttpMs": [
+        9.707500000000437,
+        14.31590000000142,
+        16.266200000001845
+      ],
+      "summaryMedianMs": 14.31590000000142,
+      "scanBytes": 351454,
+      "scanRequests": 3,
+      "scanHttpMs": 78.12359999999899,
+      "indexAdded": false
+    },
+    {
+      "plays": 10000,
+      "scoreRows": 20000,
+      "summaryBytes": 795,
+      "summaryRequests": 1,
+      "summaryHttpMs": [
+        44.92189999999755,
+        46.19340000000011,
+        42.737600000000384
+      ],
+      "summaryMedianMs": 44.92189999999755,
+      "scanBytes": 3514618,
+      "scanRequests": 21,
+      "scanHttpMs": 4120.501800000002,
+      "indexAdded": false
+    },
+    {
+      "plays": 100000,
+      "scoreRows": 200000,
+      "summaryBytes": 808,
+      "summaryRequests": 1,
+      "summaryHttpMs": [
+        569.4745000000039,
+        615.7270999999964,
+        669.6223000000027
+      ],
+      "summaryMedianMs": 615.7270999999964,
+      "scanBytes": 35146258,
+      "scanRequests": 201,
+      "scanHttpMs": 292714.0482,
+      "indexAdded": false
+    }
+  ],
+  "ownGatewayStopped": true,
+  "ownPostgresStopped": true,
+  "startedAt": "2026-10-15T18:07:56.484Z",
+  "installSha256": "1725065de23a85b3c357c5650482fb46adf0096ecbd87084026ddf5cc4e3c9a0",
+  "rollbackSha256": "50056d12e1915a058e8c3a56e037a2eaead33958982ba85f6fb198843b88981b",
+  "postgres": "PostgreSQL 17.4 on x86_64-windows, compiled by msvc-19.42.34436, 64-bit",
+  "postgrest": "PostgREST 14.1",
+  "node": "v24.19.0",
+  "initialRevision": "29",
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) i3-10100F CPU @ 3.60GHz",
+    "logicalCpus": 8,
+    "totalMemoryBytes": 34294738944,
+    "os": "Windows_NT 10.0.26200 x64",
+    "repetitions": 3,
+    "seed": "deterministic-series-v1"
+  },
+  "finishedAt": "2026-10-15T18:14:01.402Z",
+  "requests": 378
+}

@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve reviewed SQL hashes, including the byte-identical pinned local fixture.
+local-tests/summary-api/*.sql -text

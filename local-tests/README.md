@@ -1,5 +1,7 @@
 # Prove dei salvataggi sul PC
 
+Per le nuove funzioni di riepilogo e Statistiche, vedere [Summary API V1](summary-api/README.md): suite locale separata, SQL completo di installazione/rollback e benchmark. Non richiede o contatta Supabase remoto.
+
 Questo ambiente usa un cluster PostgreSQL dedicato e un gateway PostgREST, entrambi su 127.0.0.1. Tutti i file nuovi restano in KingScore-Android. Non usa Supabase CLI, Docker, SDK collegati al cloud, .env o credenziali reali; non modifica il repository web, Vercel o Supabase remoto.
 
 ## Esecuzione

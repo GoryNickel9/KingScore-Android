@@ -1,0 +1,20 @@
+-- Candidate rollback: removes only Summary V1 objects, never source data or ELO V1.
+BEGIN;
+SET LOCAL search_path='';
+SET LOCAL lock_timeout='5s';
+DROP FUNCTION public.get_elo_chart_v1(uuid,uuid,text,integer,uuid[]);
+DROP FUNCTION public.get_game_statistics_v1(uuid,text,text,integer);
+DROP FUNCTION public.get_statistics_overview_v1(text,text,integer);
+DROP FUNCTION public.get_app_summary_v1(date);
+DROP FUNCTION kingscore_summary.game_rows(uuid);
+DROP FUNCTION kingscore_summary.linked_player();
+DROP FUNCTION kingscore_summary.read_cursor(text,text,text,text,boolean);
+DROP FUNCTION kingscore_summary.make_cursor(text,text,text,bigint);
+DROP FUNCTION kingscore_summary.check_revision(text,text);
+DROP FUNCTION kingscore_summary.envelope(text);
+DROP FUNCTION kingscore_summary.decimal_value(numeric,boolean);
+DROP FUNCTION kingscore_summary.count_value(bigint);
+DROP FUNCTION public.get_app_data_version_v1();
+DROP SCHEMA kingscore_summary;
+NOTIFY pgrst,'reload schema';
+COMMIT;

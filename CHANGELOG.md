@@ -1,5 +1,13 @@
 # Changelog
 
+## In preparazione — API riepilogo e Statistiche
+
+- Candidata SQL locale con cinque RPC autenticate per riepilogo Home, panoramica Statistiche, dettaglio gioco e finestre dei grafici ELO. Riusa la revisione dati e la pubblicazione esistenti, senza nuovi writer, tabelle o ricalcoli ELO.
+- Win rate sulle partite del proprio giocatore; medie senza valori mancanti, con campioni disponibili. Cursori legati ad account e revisione, calcoli NUMERIC esatti e controlli RLS.
+- SQL di installazione e rollback, runner PostgreSQL/PostgREST sul PC e benchmark su 1.000, 10.000 e 100.000 partite. Nessuna applicazione cloud o nuova versione APK in questa attività.
+
+La pagina Statistiche della 0.5.2 conserva il riepilogo derivato dalla Home: l'allineamento di stile non copre ancora i grafici ELO e le schede statistiche del web. Il [nuovo contratto](docs/proposals/SUMMARY_API_V1.md) e il [confronto delle schermate](docs/proposals/STATISTICS_WEB_PARITY.md) preparano quell'integrazione.
+
 ## 0.5.2 — 15 ottobre 2026
 
 - Partite, Statistiche e dettaglio Giocatore riallineati alle proposte approvate. Le card dello storico mostrano tutti i partecipanti e i punteggi, compresi negativi, zero e valori mancanti, senza ricalcolare posizioni o vincitori.

@@ -1,6 +1,6 @@
 # Prima versione stabile: stato e criteri
 
-Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Commit e push accompagnano i passaggi principali. Dal 15 ottobre è autorizzato anche il codice web in un checkout locale separato, con test soltanto sul PC. Nessun deploy o modifica Vercel/Supabase; CI GitHub sospesa secondo l'istruzione corrente dell'utente.
+Obiettivo operativo dal 14 ottobre 2026: completare la prima versione stabile privata dell'app, procedendo senza richiedere conferma a ogni incremento. Il 15 ottobre l'utente ha autorizzato anche modifiche Supabase/Vercel, CI Android e collaudo limitato con account temporanei. Backend e sito sono ora attivati; il collaudo finale della candidata è in corso. Lo stato operativo aggiornato è in [LIVE_ROLLOUT.md](LIVE_ROLLOUT.md); le sezioni successive conservano anche i checkpoint precedenti.
 
 La stabile mantiene il perimetro concordato: login e Internet obbligatori, consultazione, commenti propri e gestione partite admin atomica. Non comprende ricalcolo ELO, registrazione, modifica credenziali/avatar o uso offline. È disponibile la candidata privata firmata 0.5.0-rc4; la stabile completa non è ancora dichiarata raggiunta.
 
@@ -16,7 +16,7 @@ La stabile mantiene il perimetro concordato: login e Internet obbligatori, consu
 | Recupero salvataggi | Percorso locale integrato passato: due arresti forzati, replay senza duplicati e conferma cifrata recuperata senza POST | Auth remoto e backend effettivo restano non verificati |
 | Editor partite | Navigazione collegata e inclusa nella RC4; creazione, modifica ed eliminazione passate contro RPC locali; disabilitato in produzione | Disponibilità delle API e condizioni backend |
 | APK privato e aggiornamenti | RC4 firmata, non debuggabile; 231 test release passati; aggiornamento RC3 11 → RC4 12, registri cifrati e rete verificati su API 31 e 35 | Conservare la chiave privata; nessuna verifica Auth remota |
-| CI GitHub | Ultimo checkpoint noto passato: aee9ac4, run 38640169702; esecuzione attualmente sospesa | I checkpoint successivi hanno soltanto verifiche locali e commit con skip ci |
+| CI GitHub | Riattivata su conferma del 15 ottobre; ultimo checkpoint storico passato aee9ac4 | Verificare il run sul commit della stabile |
 
 La proposta da esaminare prima di qualsiasi modifica Supabase è [SUPABASE_CHANGE_REVIEW.md](SUPABASE_CHANGE_REVIEW.md). Le RPC additive non risolvono da sole il ricalcolo ELO o le cancellazioni a cascata dei cataloghi.
 
@@ -48,7 +48,7 @@ Il registro AccountPlayJournals, il [controller](PLAY_EDITOR_STATE.md) e la sche
 
 Checkpoint del 15 ottobre: RC4 firmata e collaudata su API 31 e 35, con [metadati](evidence/private-rc4-build.json), [report API 31](evidence/private-rc4-api31-validation.json) e [report API 35](evidence/private-rc4-api35-validation.json). L'utente ha chiesto di riprendere dopo la sospensione al commit 76008a4. La verifica locale dell'APK prevista sulle due piattaforme è chiusa. Condizioni backend, verifica Auth remota e CI sospesa rimangono aperte; nessuna dichiarazione di stabile completa.
 
-Per chiudere la stabile completa restano tre condizioni: API atomiche effettivamente disponibili, writer web/server coerenti con quelle API, verifica della candidata con Auth e permessi reali insieme alla CI sul commit da rilasciare. I test sul PC dimostrano il comportamento del codice e dei contratti candidati, non l'attivazione di quelle condizioni. Il perimetro attuale vieta modifiche esterne e l'esecuzione della CI: non è possibile fissare una data della stabile completa considerando soltanto le ore Android residue.
+Per chiudere la stabile completa resta la verifica della candidata con Auth e permessi reali insieme alla CI sul commit da rilasciare. API e writer sono ora attivati dopo la prova locale della transazione completa; il confronto online conferma il risultato ELO iniziale. I precedenti divieti cloud e CI sono stati revocati dall'utente. La consegna della stabile resta subordinata ai collaudi descritti in LIVE_ROLLOUT.md.
 
 Firma privata, installazione, aggiornamento, checksum e documentazione sono descritti in [PRIVATE_RELEASE.md](PRIVATE_RELEASE.md). La rc1 è stata ritirata dopo il difetto di perdita rete su Android 15; la rc2 corregge il monitor e supera le prove live su API 31 e 35. La rc3 aggiunge le correzioni per font grandi; il [collaudo finale con fixture](FINAL_PC_QA.md) passa su API 35. Le misure non certificano prestazioni su telefoni o autenticazione remota. Restano aperti i criteri esterni.
 

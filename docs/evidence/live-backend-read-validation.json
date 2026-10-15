@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "projectRef": "rixivmeipbizoxyvrvaf",
+  "sourceRevision": "1",
+  "publicationId": "d3624ecc-6da3-400b-b2dd-005dce795c9c",
+  "plays": 483,
+  "processedPlays": 482,
+  "skippedPlays": 1,
+  "globalResultMatchesPreInstall": true,
+  "publicWorkerDenied": true,
+  "formulaChanged": false,
+  "verifiedAt": "2026-10-15T10:08:15.597Z"
+}

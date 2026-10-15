@@ -62,6 +62,19 @@ class AuthenticatedResourcesTest {
         assertNotSame(revoked, unavailable)
         resources.release(unavailable)
     }
+    @Test fun `access removal closes the ratings publication source only once`() {
+        val resources = AuthenticatedResources()
+        var closed = 0
+        val ratings = object : RatingsRepository {
+            override suspend fun games() = emptyList<kingscore.contracts.v1.GameRow>()
+            override suspend fun ranking(gameId: UUID?) = Ranking(null, emptyList())
+            override suspend fun history(rating: PublishedRating, after: RatingHistoryCursor?) = RatingHistoryPage(emptyList(), null)
+            override fun close() { closed++ }
+        }
+        val session = resources.acquire(account, null, null, { ratings })
+        resources.release(session); resources.release(session)
+        assertEquals(1, closed)
+    }
     private class ProbeModel : ViewModel() {
         var cleared = 0
         override fun onCleared() { cleared++ }

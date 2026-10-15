@@ -52,11 +52,13 @@ class SupabaseAuthRepository(private val client: SupabaseClient) : AuthRepositor
         }
     }
 
-    suspend fun <T> withVerifiedSession(expectedAccount: UUID, request: suspend (SupabaseClient, String) -> T): T = mutex.withLock {
+    suspend fun <T> withVerifiedSession(expectedAccount: UUID, verifyAccount: (Account) -> Unit = {},
+        request: suspend (SupabaseClient, String) -> T): T = mutex.withLock {
         translateFailures {
             var refreshed = false
             val account = verifyCurrentSession { refreshed = true } ?: throw AuthFailure(AuthProblem.INVALID_CREDENTIALS)
             if (account.id != expectedAccount) throw AuthFailure(AuthProblem.INVALID_CREDENTIALS)
+            verifyAccount(account)
             try {
                 request(client, client.auth.currentAccessTokenOrNull() ?: throw AuthFailure(AuthProblem.INVALID_CREDENTIALS))
             } catch (failure: AuthFailure) {
@@ -70,6 +72,7 @@ class SupabaseAuthRepository(private val client: SupabaseClient) : AuthRepositor
                     client.auth.stopAutoRefreshForCurrentSession()
                     val verified = client.auth.retrieveUserForCurrentSession(updateSession = true).toAccount()
                     if (verified.id != expectedAccount) throw AuthFailure(AuthProblem.INVALID_CREDENTIALS)
+                    verifyAccount(verified)
                     request(client, client.auth.currentAccessTokenOrNull() ?: throw AuthFailure(AuthProblem.INVALID_CREDENTIALS))
                 } catch (rejected: RestException) {
                     if (rejected.statusCode !in listOf(400, 401, 403)) throw rejected

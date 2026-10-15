@@ -23,7 +23,7 @@ class AuthenticatedResources : ViewModel() {
         internal fun close() {
             if (closed) return
             closed = true
-            viewModelStore.clear(); plays?.commentWrites?.close()
+            viewModelStore.clear(); plays?.commentWrites?.close(); ratings?.close()
         }
     }
     private var current: Session? = null

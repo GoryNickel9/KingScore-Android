@@ -11,7 +11,8 @@ import app.kingscore.android.data.repository.RatingsRepository
 import app.kingscore.android.data.repository.StatisticsRepository
 import app.kingscore.android.data.repository.AccountCommentOutcomes
 import app.kingscore.android.data.local.EncryptedCommentOutcomeStore
-import app.kingscore.android.data.remote.SupabaseRatingsRepository
+import app.kingscore.android.data.remote.SupabasePublishedRatingsRepository
+import app.kingscore.android.data.remote.SupabaseEloPublication
 import app.kingscore.android.data.remote.SupabaseStatisticsRepository
 import app.kingscore.android.data.remote.SupabaseCommentWrites
 import java.util.UUID
@@ -31,7 +32,7 @@ import app.kingscore.android.data.repository.PlayWrites
 import app.kingscore.android.data.remote.SupabasePlayWrites
 
 // Enable only after the backend and legacy writer cutover have been authorized and verified.
-internal const val ATOMIC_PLAY_EDITOR_ENABLED = false
+internal const val ATOMIC_PLAY_EDITOR_ENABLED = true
 
 class KingScoreApplication : Application() {
     lateinit var network: AndroidNetworkMonitor
@@ -52,7 +53,8 @@ class KingScoreApplication : Application() {
 
     fun plays(accountId: UUID): PlaysRepository = SupabasePlaysRepository(SupabaseReader(checkNotNull(auth), network), accountId,
         SupabaseCommentWrites(checkNotNull(auth), network, accountId, outcomes = commentOutcomes.forAccount(accountId)))
-    fun ratings(accountId: UUID): RatingsRepository = SupabaseRatingsRepository(SupabaseReader(checkNotNull(auth), network), accountId)
+    fun ratings(accountId: UUID): RatingsRepository = SupabasePublishedRatingsRepository(SupabaseReader(checkNotNull(auth), network),
+        accountId, SupabaseEloPublication(checkNotNull(auth), network))
     fun statistics(accountId: UUID): StatisticsRepository = SupabaseStatisticsRepository(SupabaseReader(checkNotNull(auth), network), accountId, plays(accountId))
     fun images(accountId: UUID, onAccessFailure: (AuthProblem) -> Unit) = AccountImages(this, BuildConfig.SUPABASE_URL,
         network, verifyAccount = {

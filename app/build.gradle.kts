@@ -16,8 +16,8 @@ fun config(name: String): String = System.getenv(name) ?: supabaseProperties.get
 fun quoted(value: String): String = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r") + "\""
 val publicKey = config("SUPABASE_PUBLIC_KEY")
 val supabaseUrl = config("SUPABASE_URL")
-val apkVersionCode = providers.gradleProperty("kingScoreVersionCode").orElse("12").get().toInt()
-val apkVersionName = providers.gradleProperty("kingScoreVersionName").orElse("0.5.0-rc4").get()
+val apkVersionCode = providers.gradleProperty("kingScoreVersionCode").orElse("13").get().toInt()
+val apkVersionName = providers.gradleProperty("kingScoreVersionName").orElse("0.5.0").get()
 require(apkVersionCode > 0 && apkVersionName.matches(Regex("[0-9A-Za-z.+_-]{1,64}"))) { "Versione APK non valida" }
 if (publicKey.isNotBlank()) {
     val legacyPayload = runCatching {

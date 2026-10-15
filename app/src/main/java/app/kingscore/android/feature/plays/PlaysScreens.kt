@@ -252,7 +252,7 @@ internal fun DataError(problem: DataProblem, onRetry: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(when (problem) {
             DataProblem.FORBIDDEN -> "Non hai il permesso di leggere questi dati."
-            DataProblem.INVALID_RESPONSE -> "Non è stato possibile leggere i risultati. Riprova."
+            else -> "Non è stato possibile leggere i risultati. Riprova."
         }, color = MaterialTheme.colorScheme.error)
         Button(onClick = onRetry) { Text("Riprova") }
     }

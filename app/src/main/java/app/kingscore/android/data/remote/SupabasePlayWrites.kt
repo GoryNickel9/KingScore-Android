@@ -23,7 +23,9 @@ fun interface PlayRpcTransport : AutoCloseable {
 
 /** Reuses the existing single-exchange HTTP protection without changing comment writes. */
 class NoRetryPlayRpcTransport : PlayRpcTransport {
-    private val delegate = NoRetryCommentTransport(captureErrorCode = true)
+    private val delegate = NoRetryCommentTransport(captureErrorCode = true, maxSuccessBytes = {
+        if (it.url.pathSegments.last() == "get_play_editor_v1") 4L * 1048576 else 32768L
+    })
     override suspend fun send(request: Request): PlayRpcResponse = try {
         delegate.send(request).let { PlayRpcResponse(it.status, it.body) }
     } catch (_: CommentFailure) { throw PlayWriteFailure(PlayWriteProblem.UNCERTAIN) }
@@ -44,14 +46,14 @@ class SupabasePlayWrites(
         checkAccess()
         if (!journal.mutex.tryLock()) throw PlayWriteFailure(PlayWriteProblem.BUSY)
         try {
-            return auth.withVerifiedSession(accountId) { _, _ -> checkAccess(); restoreJournal(); checkAccess(); journal.pendingRequest }
+            return auth.withVerifiedSession(accountId, ::verifyAdministrator) { _, _ -> checkAccess(); restoreJournal(); checkAccess(); journal.pendingRequest }
         } finally { journal.releaseCache(); journal.mutex.unlock() }
     }
     override suspend fun restoreCompleted(): PlayWriteResult? {
         checkAccess()
         if (!journal.mutex.tryLock()) throw PlayWriteFailure(PlayWriteProblem.BUSY)
         try {
-            return auth.withVerifiedSession(accountId) { _, _ ->
+            return auth.withVerifiedSession(accountId, ::verifyAdministrator) { _, _ ->
                 checkAccess(); restoreJournal(); checkAccess()
                 journal.pending?.takeIf { it.confirmedResponse != null }?.let(::confirmedResult)
             }
@@ -89,7 +91,7 @@ class SupabasePlayWrites(
         checkAccess()
         if (!journal.mutex.tryLock()) throw PlayWriteFailure(PlayWriteProblem.BUSY)
         try {
-            return auth.withVerifiedSession(accountId) { client, token ->
+            return auth.withVerifiedSession(accountId, ::verifyAdministrator) { client, token ->
                 checkAccess(); restoreJournal()
                 val previous = journal.pending
                 if (previous?.confirmedResponse != null && (newRequest == null || previous.requestId == newRequest.requestId)) {
@@ -114,7 +116,7 @@ class SupabasePlayWrites(
     }
     private suspend fun send(rpc: String, body: String): PlayRpcResponse {
         checkAccess()
-        return auth.withVerifiedSession(accountId) { client, token ->
+        return auth.withVerifiedSession(accountId, ::verifyAdministrator) { client, token ->
             checkAccess(); exchange(client.supabaseHttpUrl, client.supabaseKey, token, rpc, body)
         }
     }
@@ -163,6 +165,9 @@ class SupabasePlayWrites(
     }
     private inline fun <T> decode(write: Boolean, action: () -> T): T = try { action() }
         catch (_: Exception) { throw PlayWriteFailure(if (write) PlayWriteProblem.UNCERTAIN else PlayWriteProblem.INVALID_RESPONSE) }
+    private fun verifyAdministrator(account: Account) {
+        if (!account.isAdmin) throw PlayWriteFailure(PlayWriteProblem.FORBIDDEN)
+    }
     private fun checkAccess() {
         if (!enabled) throw PlayWriteFailure(PlayWriteProblem.UNAVAILABLE)
         if (closed.get()) throw PlayWriteFailure(PlayWriteProblem.CLOSED)

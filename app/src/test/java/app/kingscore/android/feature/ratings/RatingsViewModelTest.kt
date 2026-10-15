@@ -90,6 +90,26 @@ class RatingsViewModelTest {
         assertEquals(DataProblem.FORBIDDEN, model.ratings.value.problem)
         assertNull(model.ratings.value.ranking)
     }
+    @Test fun `stale and missing publication discard old standings and history before a successful retry`() = runTest(dispatcher) {
+        val model = RatingsViewModel(repo) { fail("Publication status does not invalidate login") }
+        for (problem in listOf(DataProblem.PUBLICATION_STALE, DataProblem.PUBLICATION_MISSING)) {
+            repo.fetch = { Ranking(null, listOf(rating(1, 1100))) }
+            repo.historyFetch = { RatingHistoryPage(listOf(history(1)), null) }
+            model.refresh(); advanceUntilIdle()
+            model.select(model.ratings.value.ranking!!.entries.first()); advanceUntilIdle()
+            assertFalse(model.ratings.value.history.isEmpty())
+            repo.fetch = { throw DataFailure(problem) }
+            model.refresh()
+            assertNull(model.ratings.value.ranking); assertTrue(model.ratings.value.history.isEmpty())
+            advanceUntilIdle()
+            assertEquals(problem, model.ratings.value.problem)
+            assertNull(model.ratings.value.ranking)
+            repo.fetch = { Ranking(null, listOf(rating(1, 1200))) }
+            model.refresh(); advanceUntilIdle()
+            assertNull(model.ratings.value.problem)
+            assertEquals(1200, model.ratings.value.ranking!!.entries.first().rating)
+        }
+    }
     private class FakeRatings : RatingsRepository {
         var catalog: List<GameRow> = emptyList()
         var fetch: suspend (UUID?) -> Ranking = { Ranking(null, emptyList()) }

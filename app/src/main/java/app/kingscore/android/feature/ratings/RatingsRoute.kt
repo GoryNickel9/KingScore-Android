@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.kingscore.android.core.auth.*
 import app.kingscore.android.data.repository.*
@@ -21,6 +24,7 @@ import app.kingscore.android.feature.navigation.PlayDataRefresh
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import kotlinx.coroutines.delay
 
 @Composable
 fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailure: (AuthProblem) -> Unit) {
@@ -31,6 +35,13 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
     var query by remember { mutableStateOf("") }
     PlayDataRefresh(model, selection = game, onShow = { model.show(game?.let(UUID::fromString)) },
         onRefresh = { model.refresh(game?.let(UUID::fromString)) })
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(model, lifecycle, state.problem, state.gameId) {
+        if (state.problem == DataProblem.PUBLICATION_STALE) lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            delay(5_000)
+            model.refresh()
+        }
+    }
     if (chooseGame) AlertDialog(onDismissRequest = { chooseGame = false }, title = { Text("Scegli gioco") },
         confirmButton = { TextButton(onClick = { chooseGame = false }) { Text("Chiudi") } }, text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -45,7 +56,7 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
     LazyColumn(Modifier.fillMaxSize().testTag("ratings-content"), contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Text("ELO", style = MaterialTheme.typography.headlineLarge)
-            Text("Rating pubblicati dal backend", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Classifiche globali pubblicate dal server", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -63,7 +74,11 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
         }
         if (state.loading) item { CircularProgressIndicator(); Text("Caricamento classifica…") }
         state.problem?.let { item {
-            Text("Non è stato possibile leggere la classifica.", color = MaterialTheme.colorScheme.error)
+            Text(when (state.problem) {
+                DataProblem.PUBLICATION_STALE -> "La classifica è in attesa di aggiornamento. Riprova dopo la pubblicazione dei nuovi risultati."
+                DataProblem.PUBLICATION_MISSING -> "La classifica non è ancora stata pubblicata."
+                else -> "Non è stato possibile leggere la classifica."
+            }, color = MaterialTheme.colorScheme.error)
             Button(onClick = { model.refresh() }) { Text("Riprova") }
         } }
         state.ranking?.let { ranking ->
@@ -82,7 +97,8 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
                         Text(rating.rating?.toString() ?: "Rating non disponibile", style = MaterialTheme.typography.headlineMedium,
                             color = MaterialTheme.colorScheme.primary)
                         Text("Partite: ${rating.gamesPlayed ?: "—"} · V/P/S: ${rating.wins ?: "—"}/${rating.draws ?: "—"}/${rating.losses ?: "—"}")
-                        Text(rating.updatedAt?.let { "Rating aggiornato: ${formatTime(it)}" } ?: "Data del rating non disponibile",
+                        Text(rating.lastPlayedAt?.let { "Ultima partita: $it" } ?:
+                            rating.updatedAt?.let { "Rating aggiornato: ${formatTime(it)}" } ?: "Data del rating non disponibile",
                             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         if (rating.playerId != null) Text("Apri storico", style = MaterialTheme.typography.labelLarge)
                     }
@@ -98,7 +114,8 @@ fun RatingsRoute(account: Account, repository: RatingsRepository, onAccessFailur
                 LazyColumn(Modifier.heightIn(max = 420.dp).testTag("rating-history"), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(state.history, key = { it.id.toString() }) { item ->
                         Column {
-                            Text(formatTime(item.date))
+                            Text(if (selected.publicationId != null) DateTimeFormatter.ofPattern("d MMM yyyy")
+                                .withZone(java.time.ZoneOffset.UTC).format(item.date) else formatTime(item.date))
                             Text("${item.rating} · ${if (item.rating_change > 0) "+" else ""}${item.rating_change}")
                         }
                     }

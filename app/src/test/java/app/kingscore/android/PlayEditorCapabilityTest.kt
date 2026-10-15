@@ -4,8 +4,7 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class PlayEditorCapabilityTest {
-    @Test fun `production editor factory is absent before backend activation`() {
-        assertFalse(ATOMIC_PLAY_EDITOR_ENABLED)
+    @Test fun `editor factory stays absent without configured authentication`() {
         assertNull(KingScoreApplication().playWritesFactory)
     }
 }

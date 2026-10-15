@@ -1,8 +1,8 @@
 #requires -Version 7.0
 [CmdletBinding()]
 param(
-    [ValidateRange(1,2147483647)][int]$VersionCode=12,
-    [ValidatePattern('^[0-9A-Za-z.+_-]{1,64}$')][string]$VersionName='0.5.0-rc4',
+    [ValidateRange(1,2147483647)][int]$VersionCode=13,
+    [ValidatePattern('^[0-9A-Za-z.+_-]{1,64}$')][string]$VersionName='0.5.0',
     [switch]$InitializeSigningKey,
     [switch]$Offline,
     [string]$AndroidSdk=(Join-Path $env:LOCALAPPDATA 'Android/Sdk')
@@ -40,7 +40,10 @@ try {
     $signed=& (Join-Path $PSScriptRoot 'sign-private-apk.ps1') -InputApk $unsigned -OutputApk $destination -InitializeSigningKey:$InitializeSigningKey -AndroidSdk $AndroidSdk
     $tests=@(Get-ChildItem (Join-Path $repo 'app/build/test-results/testReleaseUnitTest/TEST-*.xml')|ForEach-Object {[xml]$xml=Get-Content $_.FullName;$xml.testsuite})
     [xml]$lint=Get-Content (Join-Path $repo 'app/build/reports/lint-results-release.xml')
-    $metadata=[ordered]@{status='PASS';candidate=$true;stable=$false;versionName=$VersionName;versionCode=$VersionCode;applicationId='app.kingscore.android';sourceCommit=(& git rev-parse HEAD).Trim();sourceDirty=[bool](& git status --porcelain);apk=$signed.apk;sha256=$signed.sha256;certificateSha256=$signed.certificateSha256;debuggable=$false;testHooksExcluded=$true;adminEditorEnabled=$false;remoteDatabaseContacted=$false;jvm=@{tests=[int]($tests|Measure-Object tests -Sum).Sum;failures=[int]($tests|Measure-Object failures -Sum).Sum;errors=[int]($tests|Measure-Object errors -Sum).Sum};lint=@{errors=@($lint.issues.issue|Where-Object severity -EQ Error).Count;warnings=@($lint.issues.issue|Where-Object severity -EQ Warning).Count}}
+    $applicationSource=Get-Content -LiteralPath (Join-Path $repo 'app/src/main/java/app/kingscore/android/KingScoreApplication.kt') -Raw
+    if ($applicationSource -notmatch 'internal const val ATOMIC_PLAY_EDITOR_ENABLED = (true|false)') { throw 'Editor rollout flag could not be verified' }
+    $adminEditorEnabled=$Matches[1] -eq 'true'
+    $metadata=[ordered]@{status='PASS';candidate=$true;stable=$false;versionName=$VersionName;versionCode=$VersionCode;applicationId='app.kingscore.android';sourceCommit=(& git rev-parse HEAD).Trim();sourceDirty=[bool](& git status --porcelain);apk=$signed.apk;sha256=$signed.sha256;certificateSha256=$signed.certificateSha256;debuggable=$false;testHooksExcluded=$true;adminEditorEnabled=$adminEditorEnabled;remoteDatabaseContacted=$false;jvm=@{tests=[int]($tests|Measure-Object tests -Sum).Sum;failures=[int]($tests|Measure-Object failures -Sum).Sum;errors=[int]($tests|Measure-Object errors -Sum).Sum};lint=@{errors=@($lint.issues.issue|Where-Object severity -EQ Error).Count;warnings=@($lint.issues.issue|Where-Object severity -EQ Warning).Count}}
     $metadata|ConvertTo-Json -Depth 5|Set-Content "$destination.json" -Encoding utf8
     [IO.File]::WriteAllText("$destination.sha256","$($signed.sha256)  $([IO.Path]::GetFileName($destination))`n")
     [IO.File]::WriteAllText("$destination.manifest.log",$manifest)

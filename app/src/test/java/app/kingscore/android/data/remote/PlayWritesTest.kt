@@ -25,10 +25,11 @@ import org.junit.Test
 class PlayWritesTest {
     private val f = PlayWriteFixtures
     private class Network : NetworkMonitor { override val connected = MutableStateFlow(true) }
-    private fun check(action: suspend (SupabaseAuthRepository, Network) -> Unit) = runBlocking {
-        val user = """{"id":"${f.account}","aud":"authenticated","app_metadata":{"role":"admin"}}"""
+    private fun check(role: () -> String = { "admin" }, action: suspend (SupabaseAuthRepository, Network) -> Unit) = runBlocking {
         val client = createSupabaseClient("https://example.test", "public-test-key") {
-            httpEngine = MockEngine { request -> respond(if (request.url.encodedPath == "/auth/v1/token")
+            httpEngine = MockEngine { request ->
+                val user = """{"id":"${f.account}","aud":"authenticated","app_metadata":{"role":"${role()}"}}"""
+                respond(if (request.url.encodedPath == "/auth/v1/token")
                 """{"access_token":"new-access","refresh_token":"new-refresh","expires_in":3600,"token_type":"bearer","user":$user}""" else user,
                 headers = headersOf(HttpHeaders.ContentType, "application/json")) }
             defaultLogLevel = LogLevel.NONE
@@ -84,6 +85,61 @@ class PlayWritesTest {
         authProblem(AuthProblem.INVALID_CREDENTIALS) { SupabasePlayWrites(auth, network, UUID(0, 99), transport, true).create(f.create()) }
         auth.signOut(); authProblem(AuthProblem.INVALID_CREDENTIALS) { writer.create(f.create()) }
         assertEquals(0, calls); assertNull(writer.pendingRequest)
+    }
+    @Test fun `fresh ordinary role blocks every admin path before RPC or journal changes`() = check(role = { "user" }) { auth, network ->
+        var calls = 0
+        val store = MemoryPendingPlayStore()
+        val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; PlayRpcResponse(200, f.saved()) },
+            true, PlayWriteJournal(f.account, store))
+        for (action in listOf<suspend () -> Any?>(
+            { writer.editor(f.play) }, { writer.create(f.create()) }, { writer.update(f.update()) },
+            { writer.delete(f.delete()) }, { writer.restorePending() }, { writer.restoreCompleted() }, { writer.retryPending() },
+        )) problem(PlayWriteProblem.FORBIDDEN, action)
+        assertEquals(0, calls); assertNull(store.load(f.account))
+        assertFalse(auth.restoreVerifiedAccount()!!.isAdmin)
+        writer.close()
+    }
+    @Test fun `demotion before recovery preserves the original uncertain request across client restart`() {
+        var role = "admin"
+        check(role = { role }) { auth, network ->
+            val store = MemoryPendingPlayStore()
+            var calls = 0
+            val first = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; throw IOException("Lost response") },
+                true, PlayWriteJournal(f.account, store))
+            problem(PlayWriteProblem.UNCERTAIN) { first.create(f.create()) }
+            val pending = checkNotNull(store.load(f.account))
+            first.close()
+            role = "user"
+            val restarted = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport { calls++; PlayRpcResponse(200, f.saved()) },
+                true, PlayWriteJournal(f.account, store))
+            for (action in listOf<suspend () -> Any?>(
+                { restarted.restorePending() }, { restarted.restoreCompleted() }, { restarted.retryPending() },
+                { restarted.create(f.create().copy(request_id = UUID(0, 999))) },
+            )) {
+                problem(PlayWriteProblem.FORBIDDEN, action)
+                assertEquals(pending, store.load(f.account))
+            }
+            assertEquals(1, calls)
+            restarted.close()
+        }
+    }
+    @Test fun `demotion discovered after token refresh cannot replay or erase an uncertain request`() {
+        var role = "admin"
+        check(role = { role }) { auth, network ->
+            val store = MemoryPendingPlayStore()
+            val pending = StoredPlayMutation(accountId = f.account.toString(), requestId = f.request.toString(),
+                playId = null, kind = PlayMutationKind.CREATE, body = PlaySaveJson.createArguments(f.create()).toString())
+            store.save(f.account, pending)
+            var calls = 0
+            val writer = SupabasePlayWrites(auth, network, f.account, PlayRpcTransport {
+                calls++; role = "user"; PlayRpcResponse(401, """{"code":"PT401"}""")
+            }, true, PlayWriteJournal(f.account, store))
+            problem(PlayWriteProblem.FORBIDDEN) { writer.retryPending() }
+            assertEquals(1, calls)
+            assertEquals(pending, store.load(f.account))
+            assertFalse(auth.restoreVerifiedAccount()!!.isAdmin)
+            writer.close()
+        }
     }
     @Test fun `confirmed HTTP rejection clears only a fresh request`() = check { auth, network ->
         for ((status, code, expected) in listOf(Triple(400, "PT400", PlayWriteProblem.INVALID_INPUT),

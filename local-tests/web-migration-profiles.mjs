@@ -43,7 +43,7 @@ function seed(h) {
       (${literal(scores[1])}::uuid,${literal(play)}::uuid,${literal(players[1])}::uuid,4,false,'blue','farmer',2);`);
 }
 function rows(h) { return h.sql(`SELECT jsonb_build_object('play',(SELECT to_jsonb(p) FROM public.plays p WHERE p.id=${literal(play)}::uuid),
-  'scores',(SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM public.play_scores s WHERE s.play_id=${literal(play)}::uuid))::text`); }
+  'scores',(SELECT jsonb_agg(to_jsonb(s)-'elo_ordinal' ORDER BY id) FROM public.play_scores s WHERE s.play_id=${literal(play)}::uuid))::text`); }
 function fingerprint(h) {
   return h.sql(`SELECT jsonb_build_object(
     'namespaces',(SELECT jsonb_agg(jsonb_build_object('name',nspname,'owner',nspowner,'acl',nspacl) ORDER BY nspname)
@@ -103,10 +103,25 @@ try {
   test('captured-date-schema-installs-preserving-rows-and-legacy-grants', () => {
     const h = clone(); seed(h); const before = rows(h);
     install(h); assert.equal(rows(h), before);
+    assert.equal(h.sql('SELECT count(*) FROM public.play_scores WHERE elo_ordinal IS NOT NULL'), '0', 'Installation must not invent historical participant order');
     assert.equal(h.sql("SELECT has_table_privilege('authenticated','public.plays','INSERT')"), 't');
     assert.equal(h.sql("SELECT to_regprocedure('kingscore_atomic.apply_positions(uuid,text,uuid[],integer[])') IS NULL"), 't');
     assert.equal(h.sql("SELECT has_schema_privilege('authenticated','kingscore_atomic','USAGE')"), 'f');
     assert.equal(h.sql("SELECT has_function_privilege('anon','public.create_play_v1(uuid,jsonb)','EXECUTE')"), 'f');
+  });
+
+  test('explicit-score-order-is-preserved-on-metadata-only-edit', () => {
+    const h = clone(); seed(h);
+    h.sql('ALTER TABLE public.play_scores ADD COLUMN elo_ordinal integer NULL; DROP TRIGGER update_play_scores_updated_at ON public.play_scores');
+    h.sql(`UPDATE public.play_scores SET elo_ordinal=CASE id WHEN ${literal(scores[0])}::uuid THEN 1 ELSE 0 END`);
+    install(h);
+    const snapshot = invoke(h, 'get_play_editor_v1', `${literal(play)}::uuid`);
+    assert.deepEqual(snapshot.detail.scores.map(row => row.score.id), [scores[1],scores[0]]);
+    const payload = { game_id:game,played_at:'2026-10-14',duration_minutes:null,source:'online',notes:'Metadata only',
+      is_cooperative:false,team_won:null,scores:snapshot.detail.scores.map(({score:s}) => ({id:s.id,player_id:s.player_id,
+        score:s.score,winner:s.winner,color:s.color,role:s.role})) };
+    invoke(h,'update_play_v1',`${literal(id(80008))}::uuid,${literal(play)}::uuid,${literal(snapshot.revision)},${literal(JSON.stringify(payload))}::jsonb`);
+    assert.equal(h.sql(`SELECT string_agg(id::text,',' ORDER BY elo_ordinal) FROM public.play_scores WHERE play_id=${literal(play)}::uuid`),`${scores[1]},${scores[0]}`);
   });
 
   test('valid-timestamp-trigger-and-created-metadata-preserved', () => {

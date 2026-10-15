@@ -22,7 +22,13 @@ test('the HTTP test exception is restricted to debug loopback and absent from re
   assert.equal(domains[0][1], '127.0.0.1');
   assert.match(domains[0][0], /includeSubdomains="false"/);
   const app = await readFile(new URL('../app/src/main/java/app/kingscore/android/KingScoreApplication.kt', import.meta.url), 'utf8');
-  assert.match(app, /ATOMIC_PLAY_EDITOR_ENABLED = false/);
+  if (/ATOMIC_PLAY_EDITOR_ENABLED = true/.test(app)) {
+    const activation = await readJson('../docs/evidence/live-backend-read-validation.json');
+    assert.equal(activation.status, 'PASS');
+    assert.equal(activation.projectRef, 'rixivmeipbizoxyvrvaf');
+    assert.equal(activation.globalResultMatchesPreInstall, true);
+    assert.equal(activation.publicWorkerDenied, true);
+  }
 });
 
 test('remote audit was read-only and every exposed table has RLS', () => {

@@ -27,7 +27,8 @@ fun interface CommentTransport : AutoCloseable {
 }
 
 /** A write is never replayed by the HTTP engine, including a 503 Retry-After response. */
-class NoRetryCommentTransport(private val captureErrorCode: Boolean = false) : CommentTransport {
+class NoRetryCommentTransport(private val captureErrorCode: Boolean = false,
+    private val maxSuccessBytes: ((Request) -> Long)? = null) : CommentTransport {
     private val maxErrorCodeBytes = 8192L
     private val closed = AtomicBoolean(false)
     private val client = OkHttpClient.Builder().retryOnConnectionFailure(false)
@@ -47,12 +48,21 @@ class NoRetryCommentTransport(private val captureErrorCode: Boolean = false) : C
             override fun onFailure(call: Call, e: IOException) { continuation.resumeWithException(CommentFailure(CommentProblem.UNCERTAIN)) }
             override fun onResponse(call: Call, response: Response) {
                 val result = try {
-                    response.use { CommentHttpResponse(it.code, if (it.isSuccessful) it.body?.string().orEmpty()
+                    response.use { CommentHttpResponse(it.code, if (it.isSuccessful) successBody(it)
                         else if (captureErrorCode) errorCode(it) else "") }
                 } catch (_: IOException) { continuation.resumeWithException(CommentFailure(CommentProblem.UNCERTAIN)); return }
                 continuation.resume(result)
             }
         })
+    }
+    private fun successBody(response: Response): String {
+        val limit = maxSuccessBytes?.invoke(response.request) ?: return response.body?.string().orEmpty()
+        require(limit in 1 until Long.MAX_VALUE)
+        val source = response.body?.source() ?: return ""
+        source.request(limit + 1)
+        if (source.buffer.size > limit) throw IOException("Response exceeds limit")
+        return try { Charsets.UTF_8.newDecoder().decode(java.nio.ByteBuffer.wrap(source.readByteArray())).toString() }
+            catch (_: java.nio.charset.CharacterCodingException) { throw IOException("Invalid response encoding") }
     }
     private fun errorCode(response: Response): String {
         val source = response.body?.source() ?: return ""

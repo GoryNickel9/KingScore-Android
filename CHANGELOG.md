@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0-rc4 — 15 ottobre 2026
+
+- Risorse della navigazione conservate durante la rotazione e rimosse al cambio account, alla perdita di accesso o alla revoca del ruolo.
+- Editor partite collegato alla navigazione, con conferma prima di uscire dalla bozza e aggiornamento delle letture dopo un esito confermato. Rimane disabilitato in produzione.
+- Richieste partite dall'esito ambiguo conservate; il collaudo HTTP locale verifica replay senza duplicati, journal cifrato e recupero dopo due arresti forzati.
+- Release verificata senza componenti o eccezione HTTP dei test. Stessa chiave privata; versionCode 12. CI sospesa e dipendenze backend ancora aperte.
+
 ## 0.5.0-rc3 — 14 ottobre 2026
 
 - Profilo scorrevole: logout raggiungibile con font a 1,8× su display da 320 dp.

@@ -1,6 +1,6 @@
 # APK privato firmato
 
-La versione 0.5.0-rc3 è una candidata privata. Mantiene login e Internet obbligatori, consultazione e commenti propri. L'editor partite admin resta disabilitato perché le API atomiche reali non sono disponibili. Non dichiarare questa candidata la stabile completa. La rc1 è stata ritirata dopo un difetto del monitor rete riprodotto su Android 15; la rc2 lo corregge. La rc3 rende raggiungibile il logout con font grandi e adatta l'altezza delle etichette di navigazione.
+La versione 0.5.0-rc4 è una candidata privata. Mantiene login e Internet obbligatori, consultazione e commenti propri. Include il collegamento dell'editor e la gestione del ciclo di vita per account, ma l'editor partite admin resta disabilitato perché le API atomiche reali non sono disponibili. Non dichiarare questa candidata la stabile completa. La rc1 è stata ritirata dopo un difetto del monitor rete riprodotto su Android 15; la rc2 lo corregge. La rc3 rende raggiungibile il logout con font grandi e adatta l'altezza delle etichette di navigazione.
 
 ## Build e firma sul PC Windows
 
@@ -11,12 +11,12 @@ Servono PowerShell 7, JDK 17 o successivo, Android SDK 36 e build-tools 35.0.0. 
 pwsh -NoProfile -File scripts/build-private-apk.ps1 -InitializeSigningKey
 
 # Build successive: riusano obbligatoriamente la stessa chiave.
-pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 11 -VersionName 0.5.0-rc3
+pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 12 -VersionName 0.5.0-rc4
 ```
 
 Usare -Offline soltanto dopo che le dipendenze release sono state scaricate. Il workaround Java locale, quando necessario su questo PC, si configura nell'ambiente del comando come descritto in TESTING.md; non entra nell'APK o nella firma.
 
-Lo script esegue testReleaseUnitTest, lintRelease e assembleRelease. Verifica package, versione, flag debuggable e assenza di host/probe di test nel manifest e nei DEX. Firma l'APK con il tool Android, confronta il certificato con quello conservato localmente e verifica firma v2 e allineamento ZIP a 16 KiB. Non sovrascrive un APK già prodotto.
+Lo script esegue testReleaseUnitTest, lintRelease e assembleRelease. Verifica package, versione, flag debuggable e assenza di host/probe di test nel manifest e nei DEX. Controlla il booleano cleartext nel formato aapt e rifiuta il manifest o la risorsa dell'eccezione HTTP locale di debug. Firma l'APK con il tool Android, confronta il certificato con quello conservato localmente e verifica firma v2 e allineamento ZIP a 16 KiB. Non sovrascrive un APK già prodotto.
 
 L'output è in .work/releases: APK, SHA-256, metadati, log di build e verifica. La release non abilita la minificazione: questo incremento privilegia il comportamento già collaudato. Non contiene chiavi amministrative del server; la chiave pubblica del client è inclusa come negli altri client Supabase.
 
@@ -53,4 +53,18 @@ La RC3 supera aggiornamento 8 → 11, conservazione dei registri, rifiuto della 
 
 APK: `.work/releases/KingScore-0.5.0-rc3-11.apk`, 14.446.050 byte. SHA-256: `7f54b60fdf96d4bf63ca20d653d1d030b2d27a9f799203c5034248edb64e7a31`. Certificato SHA-256: `b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b`.
 
-Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI Android è riattivata dal 14 ottobre 2026 su autorizzazione dell'utente; le prove locali della RC3 precedenti alla riattivazione restano documentate con CI non eseguita.
+Le prove di aggiornamento non sostituiscono le suite funzionali né verificano un salvataggio completo sul server. I risultati effettivi e i limiti sono in [TESTING.md](TESTING.md). La CI Android è attualmente sospesa; le precedenti esecuzioni autorizzate restano documentate sui rispettivi commit. I checkpoint RC4 usano verifiche locali e skip ci.
+
+## Candidata RC4
+
+APK: `.work/releases/KingScore-0.5.0-rc4-12.apk`, 14.462.434 byte, versionCode 12. SHA-256: `247dcf22d6f091ce5e283d1c13b548cbae4ae1da06e06775dbeee7f4d6dabd58`. Il certificato conserva il SHA-256 della RC3. La fonte è il commit `bc6789607e5b9e3eb310a07411f4f7917308a897`, con working tree pulito al momento della firma.
+
+La build release esegue 231 test JVM senza errori; lint riporta zero errori e 24 avvisi. Il primo controllo del manifest non riconosceva il formato booleano tipizzato di aapt: il verificatore è stato corretto e la procedura completata. Entrambi i log restano in .work. Il manifesto vieta cleartext, l'eccezione HTTP debug non è nei resources e host/probe non sono nel manifest o nei DEX. Firma privata e allineamento a 16 KiB sono verificati. [Metadati della build](evidence/private-rc4-build.json).
+
+Il collaudo di aggiornamento della RC4 usa la RC3 come baseline, conserva i dati del suo account Android e non autentica account Supabase. Le prove precedenti della RC3 restano riferite alla RC3; i risultati RC4 vengono registrati separatamente.
+
+La RC4 supera il collaudo completo su API 31: aggiornamento 11 → 12 con UID 10145 invariato, registri cifrati conservati, firma debug rifiutata, run-as negato, avvio offline bloccato, login con sessione vuota e disconnessione/riconnessione live. Le impostazioni sono ripristinate e l'emulatore dedicato viene arrestato. [Report API 31](evidence/private-rc4-api31-validation.json).
+
+Il [primo tentativo API 31](evidence/private-rc4-api31-first-attempt.json) resta FAIL sul controllo offline. Il runner disabilitava i radio soltanto prima degli install/probe e non verificava la rete del sistema al momento dell'avvio dell'app. La diagnosi separata mostra il blocco corretto dopo l'assenza della rete predefinita. Il nuovo runner disabilita nuovamente i radio prima dell'avvio offline e attende «Active default network: none» anche per la disconnessione live; la prova completa passa su un altro emulatore nuovo, con lo stesso APK. Non sono state modificate schermate o asserzioni.
+
+Il collaudo firmato API 35 della RC4 rimane da eseguire. Le prove di API 35 dei checkpoint precedenti restano evidenze distinte. Il 15 ottobre l'utente richiede la sospensione dopo il successivo commit e push: al checkpoint restano aperti API 35, Auth remoto e dipendenze backend; la candidata non viene dichiarata stabile completa.

@@ -1,6 +1,6 @@
 # KingScore Android
 
-App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-Score. La candidata privata 0.5.0-rc3 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e classifiche/storico ELO. Login e Internet rimangono obbligatori. Conserva gli esiti incerti dopo chiusura del processo e le bozze durante la rotazione. L'editor partite admin richiede ancora le RPC atomiche della fase 4.
+App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di King-Score. La candidata privata 0.5.0-rc4 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e classifiche/storico ELO. Login e Internet rimangono obbligatori. Conserva gli esiti incerti dopo chiusura del processo e le bozze durante la rotazione. L'editor partite admin è collegato ma disabilitato: richiede ancora le RPC atomiche reali della fase 4.
 
 Il lavoro è limitato a questo repository. Le modifiche preparatorie in King-Score sono state annullate con il commit `a5e5dd6`; Vercel pubblica il codice ripristinato. Nessuna delle nuove migrazioni è stata applicata a Supabase. I documenti delle fasi 4.1 e 4.2 conservano risultati storici, non descrivono funzioni backend attualmente disponibili.
 
@@ -55,7 +55,7 @@ Con Android SDK 36 e JDK 17 o successivo disponibili:
 
 Lo script di configurazione iniziale legge URL e chiave pubblica dal repository web; le configurazioni locali sono escluse da Git. Nel perimetro corrente usare la configurazione già presente oppure impostare manualmente SUPABASE_URL e SUPABASE_PUBLIC_KEY: [docs/PHASE2.md](docs/PHASE2.md). APK debug: `app/build/outputs/apk/debug/app-debug.apk`.
 
-La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e limiti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è riattivata su autorizzazione dell'utente del 14 ottobre 2026; non esegue deploy.
+La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e limiti sono in [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md). Gli APK sono in `.work/releases`, esclusi da Git. La chiave privata rimane in `.work/signing` e deve essere conservata per gli aggiornamenti. La CI Android è attualmente sospesa; i checkpoint usano verifiche locali e commit con skip ci.
 
 Per verificare le evidenze salvate: `node --test scripts/check-evidence.test.mjs`. Per compilare ed eseguire i test Kotlin: `./scripts/check-contracts.ps1` con Kotlin e Java 17 o successivo disponibili.
 

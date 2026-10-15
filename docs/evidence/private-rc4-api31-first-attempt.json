@@ -1,0 +1,21 @@
+{
+  "status": "FAIL",
+  "serial": "emulator-5576",
+  "api": 31,
+  "remoteAccountAuthenticationTested": false,
+  "remoteDatabaseContacted": false,
+  "baselineInstalled": true,
+  "wrongSignerRejected": true,
+  "upgradeInstalled": true,
+  "encryptedRecordsPreserved": true,
+  "offlineBlocked": false,
+  "coldLoginVisible": false,
+  "liveDisconnectBlocked": false,
+  "liveReconnectRestored": false,
+  "debuggingDenied": true,
+  "settingsRestored": true,
+  "failure": "Expected release UI not shown: offline",
+  "baselineVersion": 11,
+  "candidateVersion": 12,
+  "applicationUid": 10145
+}

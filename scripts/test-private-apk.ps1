@@ -50,6 +50,14 @@ function Capture-Ui([string]$Name) {
     $process=Start-Process -FilePath $Adb -ArgumentList @('-s',$Serial,'exec-out','screencap','-p') -WindowStyle Hidden -Wait -PassThru -RedirectStandardOutput $path -RedirectStandardError (Join-Path $run "$Name-capture.log")
     if($process.ExitCode -ne 0 -or (Get-Item -LiteralPath $path).Length -lt 100) {throw 'Release screenshot capture failed'}
 }
+function Wait-OfflineNetwork([string]$Name) {
+    for($attempt=0;$attempt -lt 20;$attempt++) {
+        $text=Invoke-Adb "$Name-network-$attempt" @('shell','dumpsys','connectivity')
+        if($text -match 'Active default network: none') { return }
+        Start-Sleep -Milliseconds 500
+    }
+    throw "Android still has a default network during the offline test: $Name"
+}
 try {
     if((Invoke-Adb 'boot' @('shell','getprop','sys.boot_completed')).Trim() -ne '1') {throw 'Emulator is not booted'}
     $report.api=[int](Invoke-Adb 'api' @('shell','getprop','ro.build.version.sdk')).Trim()
@@ -79,6 +87,10 @@ try {
     if($debugging -notmatch 'not debuggable') {throw 'run-as should be denied for the release app'}
     $report.debuggingDenied=$true
     [void](Invoke-Adb 'offline-cold-stop' @('shell','am','force-stop','app.kingscore.android'))
+    # First-boot provisioning can change radios while the APK/probe installs are running.
+    [void](Invoke-Adb 'offline-wifi-off' @('shell','svc','wifi','disable'))
+    [void](Invoke-Adb 'offline-data-off' @('shell','svc','data','disable'))
+    Wait-OfflineNetwork 'offline'
     [void](Invoke-Adb 'launch-offline' @('shell','am','start','-W','-n','app.kingscore.android/.MainActivity'))
     [void](Wait-Ui 'offline' 'text="Connessione Internet non disponibile\."');$report.offlineBlocked=$true
     Capture-Ui 'offline'
@@ -91,6 +103,7 @@ try {
     Capture-Ui 'cold-login'
     [void](Invoke-Adb 'live-wifi-off' @('shell','svc','wifi','disable'))
     [void](Invoke-Adb 'live-data-off' @('shell','svc','data','disable'))
+    Wait-OfflineNetwork 'live-disconnect'
     [void](Wait-Ui 'live-disconnect' 'text="Connessione Internet non disponibile\."');$report.liveDisconnectBlocked=$true
     Capture-Ui 'live-disconnect'
     [void](Invoke-Adb 'live-wifi-on' @('shell','svc','wifi','enable'))

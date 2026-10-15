@@ -1,33 +1,33 @@
 # Prima stabile privata 0.5.0: stato e criteri
 
-La candidata 0.5.0, versionCode 15, è in preparazione, con editor admin abilitato e backend attivato il 15 ottobre 2026. Il sito pubblicato usa gli stessi salvataggi atomici e la stessa pubblicazione globale ELO. L'ultimo APK costruito è la code 14, non stabile; le sue prove non certificano la code 15. Stato del rollout: [LIVE_ROLLOUT.md](LIVE_ROLLOUT.md).
+La prima stabile privata 0.5.0, versionCode 15, è costruita e verificata dalla fonte pulita `df39f5b3bc1fad0e11991784864421193c983225`. L'editor admin è abilitato e usa il backend attivato il 15 ottobre 2026. Il sito pubblicato usa gli stessi salvataggi atomici e la stessa pubblicazione globale ELO. Stato del rollout: [LIVE_ROLLOUT.md](LIVE_ROLLOUT.md).
 
 Il perimetro comprende consultazione, commenti propri e gestione atomica di tutte le partite per gli amministratori. Login e Internet sono obbligatori. L'app non offre registrazione, recupero o modifica credenziali, modifica avatar, uso offline o ricalcolo ELO.
 
 | Area | Risultato verificato | Stato residuo |
 | --- | --- | --- |
-| Backend e sito | RPC atomiche installate, writer web attivati, vecchie scritture ritirate | Nessun blocco di disponibilità API ancora aperto |
-| Classifiche ELO | Pubblicazione globale condivisa fra tabelle e storici; formula invariata e risultato iniziale verificato all'installazione | Verificare il ritorno del risultato iniziale dopo il cleanup |
-| Client Android | La UI della code 14 conferma login, ELO, ricerca, dettaglio e modifica admin reale | Correzione del crash immagini al logout e della race login nelle sorgenti code 15; ripetere la UI completa |
-| Verifiche automatiche | Checkpoint code 14: 255 test JVM passati; lint: 0 errori e 24 avvisi preesistenti. Ultima suite con fixture su API 35: `OK (88 tests)` | Verifiche complete e CI della code 15 da concludere |
-| Auth e permessi remoti | Cinque casi SDK con account temporanei passati; regola originale delle registrazioni ripristinata esattamente e registrazioni chiuse | Rimuovere account e dati temporanei |
-| APK e aggiornamento | Precedente code 14 firmata dalla fonte pulita `dd9dd44`; aggiornamento RC4/code 12 → 14 passato, con dati cifrati e blocco offline verificati | Build, firma, checksum e aggiornamento della code 15 ancora da verificare |
+| Backend e sito | RPC atomiche installate, writer web attivati, vecchie scritture ritirate | Interfaccia browser del sito non verificata |
+| Classifiche ELO | Pubblicazione globale condivisa fra tabelle e storici; formula invariata; risultato originale identico dopo cleanup | Quattro pubblicazioni temporanee eliminate; iniziale e corrente conservate |
+| Client Android | APK firmato, MainActivity e account reali: `PASS_FULL` in 38,037 secondi su API 35 | Prove su emulatore del PC, senza certificazione di telefoni fisici |
+| Verifiche automatiche | 256 test JVM passati; lint: 0 errori e 24 avvisi preesistenti. CI della fonte `df39f5b` passata | [Run dei report e della documentazione](https://github.com/GoryNickel9/KingScore-Android/actions/workflows/android-ci.yml) |
+| Auth e permessi remoti | Cinque casi SDK passati; account e dati temporanei rimossi; regola originale delle registrazioni ripristinata esattamente e registrazioni chiuse | Collaudo remoto limitato al perimetro autorizzato |
+| APK e aggiornamento | Code 15 firmata con la chiave RC4; aggiornamento code 12 → 15 passato, dati cifrati conservati e blocco offline verificato | Conservare la chiave privata per gli aggiornamenti |
 
-SHA-256 dell'APK precedente code 14, non stabile: `ee5ca0b96af47b26a556da0a0e26eeb95ec97dba8bcf7d66a4bb0036a9afcb3b`. Nessun checksum code 15 è ancora disponibile.
+APK: `.work/releases/KingScore-0.5.0-15.apk`. SHA-256: `fd196d0e75f452c24a3cb6e0223732a8ab1f5f02e598f2a808dbfe0a269ff509`. Certificato SHA-256: `b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b`.
 
-I report precedenti della [build firmata code 14](evidence/private-050-build.json) e dell'[aggiornamento RC4 → code 14](evidence/private-050-upgrade-validation.json) riportano fonte, certificato, esclusione dei componenti di test e dati cifrati conservati. Non sono prove della code 15; la prova di aggiornamento non usa account remoti.
+Le prove della [build firmata code 15](evidence/private-050-build.json), dell'[aggiornamento RC4 → code 15](evidence/private-050-upgrade-validation.json), del [percorso UI reale](evidence/private-050-ui-validation.json) e del [rilascio](evidence/private-050-release-validation.json) identificano APK e fonte. Il test di aggiornamento usa dati sintetici; il percorso UI successivo usa account remoti temporanei. La [CI della fonte dell'APK](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38725386747) è passata; non è il run del successivo commit dei report.
 
-Il collaudo della code 13 ha rilevato il crash di chiusura TLS nel trasporto RPC, corretto nella code 14. La code 14 conferma anche il salvataggio admin reale, poi rileva lo stesso problema nel pool immagini durante il logout. Le sorgenti code 15 correggono il pool immagini e la race che mostrava il login prima della conclusione del logout. La ripetizione completa del percorso UI è ancora aperta; il successo dei test SDK non la sostituisce.
+Il percorso UI code 15 verifica login admin, ELO globale e storico, ricerca e dettaglio partita, modifica atomica di una partita altrui, logout, login ordinario senza editor, creazione/modifica/eliminazione di un commento proprio, blocco senza Internet, ripresa della connessione e logout finale. I crash TLS dei precedenti APK code 13/14 sono corretti nei pool RPC e immagini. `AccountImagesCloseTest` fallisce sulla code 14 e passa sulla code 15; è corretta anche la race che mostrava il login prima della conclusione del logout.
 
-## Gate finali
+## Chiusura della consegna
 
-1. Costruire e verificare la code 15 firmata, il suo aggiornamento dalla RC4 e la prova UI completa con MainActivity e backend reali: classifica globale, storico, modifica admin di una partita altrui, logout/login, commenti propri e blocco Internet. Registrare il perimetro effettivamente eseguito.
-2. Rimuovere account, partite, cataloghi e commenti temporanei e verificare il ritorno del risultato ELO iniziale. Revisione e UUID della pubblicazione possono avanzare: devono coincidere i dati del risultato, senza riavvolgere i contatori.
-3. Chiudere CI, commit e push della consegna; collegare APK, checksum e prove definitive prima di dichiarare la prima stabile privata.
+Account e dati temporanei sono rimossi; il [report di cleanup](evidence/live-backend-cleanup-validation.json) verifica il risultato ELO originale e i conteggi iniziali: 483 partite, 1.359 partecipazioni, 18 giochi, 6 giocatori e 7 commenti. Le registrazioni sono chiuse. Revisione e UUID della pubblicazione avanzano normalmente, senza riavvolgere i contatori.
+
+La pulizia elimina anche quattro pubblicazioni intermedie, conservando quelle iniziale e corrente. Le verifiche finali rilevano zero account, ricevute e pubblicazioni di prova. I commit successivi raccolgono report e documentazione e sono verificati dalla CI Android; l'APK resta quello costruito dalla fonte immutabile `df39f5b3bc1fad0e11991784864421193c983225`.
 
 ## Journal dei salvataggi
 
-`PlayWriteJournal` conserva la richiesta esatta prima dell'invio e la conferma prima di mostrare il successo. `EncryptedPendingPlayStore` usa AES-GCM, Android Keystore e file atomici esclusi dai backup. Non memorizza endpoint o credenziali. Il factory di produzione è collegato all'Application e l'editor è abilitato nella candidata; ogni account ha il proprio journal.
+`PlayWriteJournal` conserva la richiesta esatta prima dell'invio e la conferma prima di mostrare il successo. `EncryptedPendingPlayStore` usa AES-GCM, Android Keystore e file atomici esclusi dai backup. Non memorizza endpoint o credenziali. Il factory di produzione è collegato all'Application e l'editor è abilitato nella 0.5.0; ogni account ha il proprio journal.
 
 La perdita della connessione non genera una nuova richiesta automatica. Il recupero esplicito verifica rete, identità e ruolo admin e usa UUID e corpo originali. Una conferma già salvata si ripristina senza ripetere il POST. Negazione del ruolo o dell'accesso non elimina una richiesta incerta. Record corrotti, incompatibili o non salvabili bloccano nuove scritture.
 

@@ -4,7 +4,7 @@ Avviare un'app Android nativa in Kotlin e Jetpack Compose, mantenendo Supabase e
 
 Piano iniziale: 13 ottobre 2026. Stato aggiornato: 15 ottobre 2026. Scelta nativa confermata dall'utente. Questa roadmap riguarda KingScore, l'app per giochi da tavolo.
 
-La candidata privata 0.5.0/code 15 è in preparazione, con editor admin abilitato. Backend e sito sono stati attivati il 15 ottobre su autorizzazione dell'utente; le preparazioni annullate delle fasi 4.1 e 4.2 restano storiche. Firma e aggiornamento dalla RC4 sono verificati per l'APK precedente code 14, che incontra un crash immagini al logout dopo la modifica admin reale. Le sorgenti code 15 correggono quel crash e la race del successivo login. Build, UI completa, cleanup e CI della code 15 restano aperti: [docs/STABILITY.md](docs/STABILITY.md) e [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
+La prima stabile privata 0.5.0/code 15 ha l'editor admin abilitato. Backend e sito sono stati attivati il 15 ottobre su autorizzazione dell'utente; le preparazioni annullate delle fasi 4.1 e 4.2 restano storiche. Build firmata, aggiornamento RC4/code 12 → 15 e percorso UI completo con MainActivity e account reali sono verificati su emulatore API 35. I dati temporanei sono rimossi e il risultato ELO originale è verificato dopo cleanup. La CI della fonte dell'APK è passata; anche le pubblicazioni temporanee sono state rimosse. Report di consegna: [docs/STABILITY.md](docs/STABILITY.md) e [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
 
 ## Vincoli confermati
 
@@ -34,8 +34,8 @@ Il ruolo proviene da `app_metadata.role`; `players.account_user_id` collega acco
 
 1. Le RPC atomiche e i writer web sono attivi. I test automatici distruttivi restano sul PC; è autorizzato un collaudo remoto limitato con account e dati temporanei.
 2. La pubblicazione ELO è globale e verificata per generazione. Stati mancanti o superati richiedono nuove letture; la formula e l'ordine storico dei partecipanti sono conservati.
-3. Login, logout, rinnovo, account non collegati e blocco senza Internet sono implementati. La prova UI dell'APK firmato con account reali deve ancora concludersi.
-4. Il checkpoint precedente code 14 supera 255 test JVM e lint senza errori, con 24 avvisi preesistenti; firma e aggiornamento RC4/code 12 → 14 sono verificati. Questi risultati non certificano la code 15 in preparazione.
+3. Login, logout, rinnovo, account non collegati e blocco senza Internet sono implementati. La prova UI dell'APK firmato con account reali restituisce `PASS_FULL` e comprende cambio account, commenti propri e modifica admin di una partita altrui.
+4. La code 15 supera 256 test JVM e lint senza errori, con 24 avvisi preesistenti; firma e aggiornamento RC4/code 12 → 15 sono verificati. La CI della fonte `df39f5b` è passata; lo stesso workflow verifica documentazione e report di consegna.
 
 ## Decisioni di architettura
 
@@ -134,7 +134,7 @@ Criterio di uscita: timeout dopo commit e doppio invio non duplicano partite; pa
 
 File: `app/src/test/`, `app/src/androidTest/`, `docs/BENCHMARKS.md`, `docs/PRIVATE_RELEASE.md`, `CHANGELOG.md` e pipeline di rilascio.
 
-Criterio di uscita: build ripetibile, controlli locali e CI superati, nessun bug noto che comprometta dati o permessi, installazione e aggiornamento verificati sugli emulatori del PC. La CI è riattivata. La prova UI con accesso reale e il cleanup remoto devono concludersi prima della stabile. I benchmark devono distinguere dati misurati e casi non collaudati; i telefoni fisici restano fuori dai risultati verificati.
+Criterio di uscita: build ripetibile, controlli locali e CI superati, nessun bug noto che comprometta dati o permessi, installazione e aggiornamento verificati sugli emulatori del PC. La code 15 supera la prova UI con accesso reale e il cleanup dei dati temporanei; la CI della fonte dell'APK è passata. I benchmark distinguono dati misurati e casi non collaudati; telefoni fisici e interfaccia browser del sito restano fuori dai risultati verificati.
 
 ## Dopo la prima versione
 
@@ -164,21 +164,21 @@ Push, widget e funzionalità social aggiuntive richiedono un caso d'uso specific
 
 La ricognizione comprende routing, autenticazione, schema tipizzato, servizi dati, salvataggio partite, core ELO, import e migrazioni del repository web. Il codice backend è stato esaminato anche da un subagent in sola lettura. La fase 1 ha aggiunto catalogo remoto, confronto dei tipi, probe di permessi e contratti Kotlin: [docs/TESTING.md](docs/TESTING.md) contiene metodi e limiti.
 
-La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Keystore su emulatore API 31. La fase 3 estende questi controlli a letture, cursori e schermate dati. I risultati storici sono in [docs/TESTING.md](docs/TESTING.md). Il 15 ottobre sono state installate le RPC reali e verificate letture e cinque casi SDK con account temporanei. Il checkpoint code 14 supera 255 test JVM e lint senza errori; l'ultima suite nativa con fixture su API 35 restituisce `OK (88 tests)`. Il percorso UI reale completo e le verifiche della code 15 sono ancora da concludere. Le prove su telefoni fisici non sono comprese nei risultati.
+La fase 2 aggiunge build Android, test JVM per Auth/stati/JSON e test Compose/Keystore su emulatore API 31. La fase 3 estende questi controlli a letture, cursori e schermate dati. I risultati storici sono in [docs/TESTING.md](docs/TESTING.md). Il 15 ottobre sono state installate le RPC reali e verificati cinque casi SDK con account temporanei. La code 15 supera 256 test JVM, lint senza errori e il percorso UI completo dell'APK firmato con accesso reale su API 35. La regressione immagini è verificata come RED sulla code 14 e GREEN sulla code 15. Firma, aggiornamento e prove finali sono in [docs/STABILITY.md](docs/STABILITY.md). Le prove su telefoni fisici non sono comprese nei risultati.
 
-## Lavoro residuo per la prima stabile privata 0.5.0
+## Prima stabile privata 0.5.0
 
-La prima stabile privata mantiene la versione 0.5.0 e comprende consultazione, commenti propri e gestione partite admin, con login e Internet obbligatori. La candidata code 15 è in preparazione; le prove di firma e aggiornamento RC4/code 12 → 14 riguardano l'APK precedente. Backend e writer web sono attivi. La versione non è ancora dichiarata stabile.
+La prima stabile privata 0.5.0/code 15 comprende consultazione, commenti propri e gestione partite admin, con login e Internet obbligatori. Le prove verificano la fonte pulita `df39f5b3bc1fad0e11991784864421193c983225`, la firma privata conservata, l'aggiornamento RC4/code 12 → 15 e il percorso UI completo dell'APK con Auth e backend reali. Backend e writer web sono attivi.
 
 | Area | Stato al 15 ottobre | Lavoro residuo |
 | --- | --- | --- |
-| CRUD partite admin e backend | RPC e writer reali attivi; editor Android abilitato | Concludere il percorso UI dell'APK firmato |
-| Verifica e rilascio privato | Firma, checksum, aggiornamento RC4 → code 14, cifratura e blocco offline verificati soltanto per l'APK precedente | Build e aggiornamento code 15, UI completa, cleanup, confronto ELO dopo cleanup e CI finale |
+| CRUD partite admin e backend | RPC e writer reali attivi; editor Android abilitato; modifica di una partita altrui confermata dalla UI reale | Nessuna implementazione aggiuntiva nel perimetro 0.5.0 |
+| Verifica e rilascio privato | Firma, checksum, aggiornamento RC4 → code 15, cifratura, UI reale e blocco offline verificati; dati temporanei rimossi ed ELO originale verificato | Quattro pubblicazioni temporanee eliminate; workflow Android attivo anche per i report |
 
-La stima residua iniziale del 13 ottobre era 58–96 ore, prima dei collaudi e della firma privata. È conservata come dato storico e non rappresenta le ore ancora necessarie. La chiusura dipende dagli esiti dei gate finali, non dall'implementazione di nuove funzioni. Wrapped, import BGA nell'app e amministrazione completa dei cataloghi restano estensioni dopo la prima stabile.
+La stima residua iniziale del 13 ottobre era 58–96 ore, prima dei collaudi e della firma privata. È conservata come dato storico e non rappresenta lavoro ancora da implementare per la 0.5.0. Wrapped, import BGA nell'app e amministrazione completa dei cataloghi restano estensioni dopo la prima stabile.
 
 ## Prossima attività
 
-Concludere il collaudo UI della candidata firmata con MainActivity e account reali, senza ripetere automaticamente scritture dall'esito incerto. Seguono pulizia dei dati temporanei, verifica del risultato ELO ripristinato e CI finale: [STABILITY.md](docs/STABILITY.md). La procedura e le prove del rollout sono in [LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
+Chiudere la consegna della code 15 conservando APK, chiave privata e prove collegate alla fonte immutabile. Le pubblicazioni temporanee sono rimosse; il workflow dei report è distinto dalla CI della fonte immutabile dell'APK: [STABILITY.md](docs/STABILITY.md). Procedura e prove del rollout: [LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
 
 I 21 casi atomici locali, i vettori di ranking e le prove HTTP precedenti restano riproducibili: [local-tests/README.md](local-tests/README.md). I checkpoint del client e dell'editor sono documentati in [PHASE4_ANDROID_RPC_CLIENT.md](docs/PHASE4_ANDROID_RPC_CLIENT.md), [PLAY_EDITOR_STATE.md](docs/PLAY_EDITOR_STATE.md) e [EDITOR_RPC_PC_QA.md](docs/EDITOR_RPC_PC_QA.md). I dati storici incompatibili restano leggibili, con modifica bloccata.

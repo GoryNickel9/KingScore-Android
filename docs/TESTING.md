@@ -1,5 +1,16 @@
 # Verifica KingScore Android
 
+## Prima stabile privata 0.5.0 — 15 ottobre 2026
+
+L'APK firmato code 15 deriva dalla fonte pulita `df39f5b3bc1fad0e11991784864421193c983225`.
+
+1. Build release: 256 test JVM passati, lint con zero errori e 24 avvisi preesistenti. La CI della fonte passa anche i 40 controlli Node.
+2. Aggiornamento RC4/code 12 → 15: stesso certificato e UID, dati cifrati conservati, firma estranea rifiutata e blocco senza Internet verificato.
+3. Test nativi sullo stesso APK: regressione immagini `OK (1 test)`; percorso con MainActivity e backend reali `PASS_FULL`, `OK (1 test)`. Verifica classifica/storico, modifica admin di una partita altrui, cambio account, commenti propri e disconnessione/riconnessione. Le letture usano account reali temporanei; il percorso dura 38,037 secondi, senza costituire un benchmark.
+4. Cinque casi SDK online passati. Cleanup verificato: zero account, ricevute e pubblicazioni di prova; conteggi applicativi iniziali e risultato ELO originale conservati; regola delle registrazioni ripristinata esattamente.
+
+Prove: [build](evidence/private-050-build.json), [aggiornamento](evidence/private-050-upgrade-validation.json), [UI](evidence/private-050-ui-validation.json), [cleanup](evidence/live-backend-cleanup-validation.json) e [rilascio](evidence/private-050-release-validation.json). Le prove native riguardano emulatori del PC; il browser del sito dopo il deploy e telefoni fisici non sono stati verificati. Le sezioni seguenti conservano i checkpoint storici e i relativi limiti.
+
 ## Risultati della fase 1
 
 | Controllo eseguito | Esito | Limite |

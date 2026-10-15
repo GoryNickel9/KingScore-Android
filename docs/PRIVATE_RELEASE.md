@@ -1,6 +1,8 @@
 # APK privato firmato
 
-La versione 0.5.0-rc4 è una candidata privata. Mantiene login e Internet obbligatori, consultazione e commenti propri. Include il collegamento dell'editor e la gestione del ciclo di vita per account, ma l'editor partite admin resta disabilitato perché le API atomiche reali non sono disponibili. Non dichiarare questa candidata la stabile completa. La rc1 è stata ritirata dopo un difetto del monitor rete riprodotto su Android 15; la rc2 lo corregge. La rc3 rende raggiungibile il logout con font grandi e adatta l'altezza delle etichette di navigazione.
+La prima stabile privata è la 0.5.0/code 15: `.work/releases/KingScore-0.5.0-15.apk`, SHA-256 `fd196d0e75f452c24a3cb6e0223732a8ab1f5f02e598f2a808dbfe0a269ff509`. Login e Internet sono obbligatori; l'editor admin usa le RPC reali. Firma, aggiornamento dalla RC4 e percorso UI con account temporanei sul backend reale sono verificati sul PC. I dati di prova sono stati rimossi. Fonte, certificato e prove: [STABILITY.md](STABILITY.md) e [release-validation](evidence/private-050-release-validation.json).
+
+Le RC precedenti restano storiche: la RC4 aveva l'editor disabilitato, la RC1 era stata ritirata per un difetto del monitor rete, la RC2 lo correggeva e la RC3 migliorava logout e navigazione con font grandi.
 
 ## Build e firma sul PC Windows
 
@@ -11,7 +13,7 @@ Servono PowerShell 7, JDK 17 o successivo, Android SDK 36 e build-tools 35.0.0. 
 pwsh -NoProfile -File scripts/build-private-apk.ps1 -InitializeSigningKey
 
 # Build successive: riusano obbligatoriamente la stessa chiave.
-pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 12 -VersionName 0.5.0-rc4
+pwsh -NoProfile -File scripts/build-private-apk.ps1 -VersionCode 15 -VersionName 0.5.0
 ```
 
 Usare -Offline soltanto dopo che le dipendenze release sono state scaricate. Il workaround Java locale, quando necessario su questo PC, si configura nell'ambiente del comando come descritto in TESTING.md; non entra nell'APK o nella firma.

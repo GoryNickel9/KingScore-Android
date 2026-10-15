@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "qualification": "first-private-stable",
+  "versionName": "0.5.0",
+  "versionCode": 15,
+  "sourceCommit": "df39f5b3bc1fad0e11991784864421193c983225",
+  "sourceDirtyAtBuild": false,
+  "apkSha256": "fd196d0e75f452c24a3cb6e0223732a8ab1f5f02e598f2a808dbfe0a269ff509",
+  "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
+  "apkBytes": 14478818,
+  "adminEditorEnabled": true,
+  "jvm": {
+    "tests": 256,
+    "failures": 0,
+    "errors": 0
+  },
+  "lint": {
+    "warnings": 24,
+    "errors": 0
+  },
+  "upgradeFrom12": "PASS",
+  "signedNativeImageClosure": "PASS",
+  "signedRealBackendUi": "PASS_FULL",
+  "temporaryDataCleanup": "PASS",
+  "globalEloRestored": true,
+  "originalRegistrationHookRestored": true,
+  "registrationsClosed": true,
+  "sourceCi": {
+    "status": "PASS",
+    "runId": 38725386747,
+    "url": "https://github.com/GoryNickel9/KingScore-Android/actions/runs/38725386747"
+  },
+  "limitations": [
+    "Native tests use PC emulators; no physical phone was tested.",
+    "Post-deployment browser UI was unavailable; web build and HTTP fixture checks passed."
+  ],
+  "verifiedAt": "2026-10-15T11:23:52.321Z"
+}

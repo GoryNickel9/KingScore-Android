@@ -16,9 +16,9 @@
   "settingsRestored": true,
   "failure": null,
   "baselineVersion": 12,
-  "candidateVersion": 14,
-  "applicationUid": 10213,
+  "candidateVersion": 15,
+  "applicationUid": 10215,
   "baselineSha256": "247dcf22d6f091ce5e283d1c13b548cbae4ae1da06e06775dbeee7f4d6dabd58",
-  "candidateSha256": "ee5ca0b96af47b26a556da0a0e26eeb95ec97dba8bcf7d66a4bb0036a9afcb3b",
-  "probeSha256": "60546d21cde2916c7879535c445b9442e82ee0759188e31a1d74ff7245bd4306"
+  "candidateSha256": "fd196d0e75f452c24a3cb6e0223732a8ab1f5f02e598f2a808dbfe0a269ff509",
+  "probeSha256": "7a8bd5c3b9dd41584aa87f5d1c5dd247c312611588ab3091784ff175e41a32d7"
 }

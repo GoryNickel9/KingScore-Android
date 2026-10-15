@@ -3,24 +3,24 @@
   "candidate": true,
   "stable": false,
   "versionName": "0.5.0",
-  "versionCode": 14,
+  "versionCode": 15,
   "applicationId": "app.kingscore.android",
-  "sourceCommit": "dd9dd44fe4d13c04857263c80a66446ebf8d9bad",
+  "sourceCommit": "df39f5b3bc1fad0e11991784864421193c983225",
   "sourceDirty": false,
-  "apk": "C:\\Users\\GoryNickel\\Documents\\GitHub\\KingScore-Android\\.work\\releases\\KingScore-0.5.0-14.apk",
-  "sha256": "ee5ca0b96af47b26a556da0a0e26eeb95ec97dba8bcf7d66a4bb0036a9afcb3b",
+  "apk": "C:\\Users\\GoryNickel\\Documents\\GitHub\\KingScore-Android\\.work\\releases\\KingScore-0.5.0-15.apk",
+  "sha256": "fd196d0e75f452c24a3cb6e0223732a8ab1f5f02e598f2a808dbfe0a269ff509",
   "certificateSha256": "b00fd08085ba373e9dde52066b3e8fd85b17b94f4b87dc5cd50ddc55d06a294b",
   "debuggable": false,
   "testHooksExcluded": true,
   "adminEditorEnabled": true,
   "remoteDatabaseContacted": false,
   "jvm": {
+    "tests": 256,
     "failures": 0,
-    "tests": 255,
     "errors": 0
   },
   "lint": {
-    "errors": 0,
-    "warnings": 24
+    "warnings": 24,
+    "errors": 0
   }
 }

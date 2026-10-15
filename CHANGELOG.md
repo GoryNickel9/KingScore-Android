@@ -1,16 +1,16 @@
 # Changelog
 
-## 0.5.0 — 15 ottobre 2026 (collaudo finale)
+## 0.5.0 — 15 ottobre 2026
 
 - Abilitata la gestione di tutte le partite per gli amministratori: creazione, modifica ed eliminazione atomiche, conflitti e recupero esplicito degli esiti incerti.
 - Classifiche globali e storici letti dalla stessa pubblicazione. Formula ELO invariata; stati mancanti o in attesa di aggiornamento indicati senza mescolare generazioni diverse.
 - Ruolo admin verificato online prima degli invii e dopo il refresh della sessione. Risposte RPC limitate e UTF-8 verificato; richieste incerte conservate quando l'accesso viene negato.
 - Corrette le chiusure TLS sul thread UI dei pool RPC e immagini: svuotamento sul dispatcher HTTP e chiusura idempotente. Corretto il login mostrato prima della conclusione del logout, che poteva scartare un nuovo tentativo di accesso.
-- VersionCode 15 in preparazione. Login e Internet restano obbligatori; restano esclusi registrazione, modifica credenziali/avatar, uso offline e ricalcolo ELO dall'app.
+- Prima stabile privata, versionCode 15. Login e Internet restano obbligatori; restano esclusi registrazione, modifica credenziali/avatar, uso offline e ricalcolo ELO dall'app.
 
-Checkpoint precedente code 14: 255 test JVM passati, lint con 0 errori e 24 avvisi preesistenti; firma e aggiornamento RC4/code 12 → 14 verificati, compresi dati cifrati e blocco offline. Il percorso UI reale conferma login, ELO, ricerca, dettaglio e modifica admin, poi incontra il crash del pool immagini al logout. Cinque casi SDK remoti passati; regola originale delle registrazioni ripristinata e registrazioni chiuse.
+Code 15 costruita dalla fonte pulita `df39f5b3bc1fad0e11991784864421193c983225`: 256 test JVM passati, lint con 0 errori e 24 avvisi preesistenti. Aggiornamento RC4/code 12 → 15 verificato con lo stesso certificato e dati cifrati conservati. La regressione della chiusura immagini fallisce sulla code 14 e passa sulla code 15. Il percorso UI completo dell'APK firmato con accesso reale restituisce `PASS_FULL` in 38,037 secondi su emulatore API 35: classifiche e storico, modifica admin di una partita altrui, commenti propri, blocco rete, riconnessione e logout.
 
-Build e verifiche dell'APK code 15, UI reale completa, cleanup e CI finale ancora aperti. La versione non è ancora dichiarata stabile: [STABILITY.md](docs/STABILITY.md).
+Cinque casi SDK remoti passati; account, ricevute, dati e quattro pubblicazioni temporanei rimossi, risultato ELO originale ripristinato e registrazioni chiuse. La [CI della fonte dell'APK](https://github.com/GoryNickel9/KingScore-Android/actions/runs/38725386747) è passata; lo stesso workflow verifica i report di consegna: [STABILITY.md](docs/STABILITY.md). Le prove PC non certificano telefoni fisici o interfaccia browser del sito.
 
 ## 0.5.0-rc4 — 15 ottobre 2026
 

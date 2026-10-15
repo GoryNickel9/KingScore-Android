@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "versionCode": 15,
+  "apkSha256": "fd196d0e75f452c24a3cb6e0223732a8ab1f5f02e598f2a808dbfe0a269ff509",
+  "sourceCommit": "df39f5b3bc1fad0e11991784864421193c983225",
+  "testSourceCommit": "df39f5b3bc1fad0e11991784864421193c983225",
+  "realMainActivity": true,
+  "realBackend": true,
+  "temporaryAccountsOnly": true,
+  "stages": [
+    "login_submitted",
+    "admin_authenticated",
+    "global_standings_and_history",
+    "history_search_submitted",
+    "temporary_play_opened",
+    "admin_atomic_update_confirmed",
+    "login_submitted",
+    "history_search_submitted",
+    "temporary_play_opened",
+    "ordinary_account_has_no_editor",
+    "ordinary_own_comment_create_update_delete",
+    "offline_access_blocked",
+    "online_account_restored",
+    "PASS_FULL"
+  ],
+  "durationSeconds": 38.037,
+  "nativeImageClosureRegression": {
+    "oldApk14": "EXPECTED_FAIL",
+    "signedApk15": "PASS"
+  },
+  "nativeEnvironment": "PC emulator Android API 35",
+  "physicalDeviceTested": false,
+  "credentialsIncluded": false
+}

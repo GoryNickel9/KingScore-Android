@@ -1,10 +1,10 @@
 # KingScore Android
 
-App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di KingScore. La candidata privata 0.5.0 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e gestione partite per gli amministratori. Login e Internet sono obbligatori.
+App Android nativa in Kotlin e Jetpack Compose, con il backend Supabase di KingScore. La prima stabile privata 0.5.0 comprende Home, storico paginato con ricerca e filtri, dettagli partita/gioco/giocatore, copertine e avatar in lettura, commenti propri, statistiche essenziali e gestione partite per gli amministratori. Login e Internet sono obbligatori.
 
 Gli amministratori possono creare, modificare ed eliminare tutte le partite tramite salvataggi atomici. Classifiche generali, classifiche per gioco e storici leggono la stessa pubblicazione globale del backend. La formula ELO è invariata e l'app non esegue ricalcoli. Il registro cifrato conserva richieste incerte e conferme; il recupero richiede un'azione esplicita.
 
-La 0.5.0, versionCode 15, è in preparazione. L'APK precedente code 14 supera la modifica admin reale ma presenta un crash al logout, corretto nelle sorgenti della code 15 insieme a una race del successivo login. Firma e aggiornamento dalla RC4 sono verificati soltanto per la code 14. Build, prova UI completa, cleanup e CI della code 15 restano aperti. Backend e sito sono stati attivati il 15 ottobre 2026 su autorizzazione dell'utente. Stato e prove: [LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md) e [STABILITY.md](docs/STABILITY.md). I documenti delle fasi 4.1 e 4.2 descrivono preparazioni precedenti annullate.
+La 0.5.0, versionCode 15, supera build firmata, aggiornamento dalla RC4 e percorso UI completo con MainActivity e account reali su emulatore API 35. Il collaudo verifica classifiche, modifica admin di una partita altrui, commenti propri e blocco senza Internet. Account, dati e pubblicazioni temporanei sono stati rimossi; il risultato ELO originale è verificato dopo la pulizia. La CI della fonte dell'APK è passata; lo stesso workflow verifica i report di consegna. Prove, checksum e limiti: [STABILITY.md](docs/STABILITY.md) e [LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md). I documenti delle fasi 4.1 e 4.2 descrivono preparazioni precedenti annullate.
 
 ## Perimetro confermato
 
@@ -23,7 +23,7 @@ La 0.5.0, versionCode 15, è in preparazione. L'APK precedente code 14 supera la
 | [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md) | Attivazione backend e sito del 15 ottobre, verifiche e collaudo finale |
 | [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md) | Firma privata, chiave locale, checksum, installazione e aggiornamento |
 | [docs/ACTIVITY_LIFECYCLE.md](docs/ACTIVITY_LIFECYCLE.md) | Rotazione, ricreazione e pulizia della sessione |
-| [CHANGELOG.md](CHANGELOG.md) | Modifiche della candidata di rilascio |
+| [CHANGELOG.md](CHANGELOG.md) | Modifiche e cronologia dei rilasci |
 | [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md) | Schema reale, RLS e limiti delle verifiche |
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | API esistenti, DTO e RPC proposte |
 | [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Contratti V1 e prove locali dei salvataggi |
@@ -62,4 +62,4 @@ La build privata firmata usa `scripts/build-private-apk.ps1`; istruzioni e check
 
 Per verificare le evidenze salvate: `node --test scripts/check-evidence.test.mjs`. Per compilare ed eseguire i test Kotlin: `./scripts/check-contracts.ps1` con Kotlin e Java 17 o successivo disponibili.
 
-Le RPC atomiche sono installate sul backend reale e l'editor Android è abilitato nella candidata 0.5.0. Eseguire `pwsh -NoProfile -File scripts/test-local-play-saves.ps1 -Atomic` per riprodurre il collaudo locale. L'app non ripiega su scritture separate di partita e punteggi.
+Le RPC atomiche sono installate sul backend reale e l'editor Android è abilitato nella 0.5.0. Eseguire `pwsh -NoProfile -File scripts/test-local-play-saves.ps1 -Atomic` per riprodurre il collaudo locale. L'app non ripiega su scritture separate di partita e punteggi.

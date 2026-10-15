@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "projectRef": "rixivmeipbizoxyvrvaf",
+  "algorithm": "kingscore-elo-rules-v2",
+  "sourceRevision": "45",
+  "responseSource": "Read-only Supabase audit captured on 2026-10-15",
+  "actualResponseChecksPassed": 7,
+  "v2PublicationAccepted": true,
+  "v2ChartAccepted": true,
+  "chartWindowPlays": 100,
+  "legacyCompatibilityPreservesDecodedValues": true,
+  "unknownAlgorithmsRejected": true,
+  "corruptHistoryRejected": true,
+  "algorithmSubstitutionForComparison": "PC memory only; never sent to Supabase",
+  "probeNetworkContacted": false,
+  "remoteWrites": false,
+  "rawPlayerRowsCommitted": false
+}

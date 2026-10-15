@@ -2,6 +2,7 @@ package app.kingscore.android.feature.plays
 
 import kingscore.contracts.v1.PlayDetail
 import kingscore.contracts.v1.PlayerRow
+import kingscore.contracts.v1.ScoreWithPlayer
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -13,6 +14,21 @@ fun sourceLabel(source: String?): String = when (source) {
     null -> "Modalità non indicata"
     else -> source
 }
+
+internal enum class PlayerOutcome(val label: String?) {
+    WIN("Vincitore"), DRAW("Pareggio"), LOSS(null), UNKNOWN(null)
+}
+
+internal fun playerOutcome(detail: PlayDetail, row: ScoreWithPlayer): PlayerOutcome {
+    val winner = if (detail.play.is_cooperative == true) detail.play.team_won ?: row.score.winner else row.score.winner
+    return when (winner) {
+        null -> PlayerOutcome.UNKNOWN
+        false -> PlayerOutcome.LOSS
+        true -> if (detail.play.is_cooperative != true && detail.scores.count { it.score.winner == true } > 1)
+            PlayerOutcome.DRAW else PlayerOutcome.WIN
+    }
+}
+
 fun resultLabel(detail: PlayDetail): String {
     if (detail.play.is_cooperative == true) return when (detail.play.team_won) {
         true -> "Vittoria della squadra"
@@ -23,6 +39,6 @@ fun resultLabel(detail: PlayDetail): String {
     return when (winners.size) {
         0 -> "Vincitore non indicato"
         1 -> "Vincitore: ${winners.single()}"
-        else -> "Vincitori: ${winners.joinToString()}"
+        else -> "Pareggio: ${winners.joinToString()}"
     }
 }

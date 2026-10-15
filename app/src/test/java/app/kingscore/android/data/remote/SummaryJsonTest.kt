@@ -13,6 +13,15 @@ import org.junit.Test
 
 class SummaryJsonTest {
     private val month = YearMonth.of(2026,10)
+    @Test fun `rules v2 chart preserves values and publication identity`() {
+        val original = SummaryFixture.chart().toString()
+        assertEquals(SummaryJson.chart(original), SummaryJson.chart(original.replace("kingscore-elo-legacy-v1", "kingscore-elo-rules-v2")))
+    }
+    @Test fun `rules v2 chart rejects unknown algorithms and inconsistent publications`() {
+        val v2 = SummaryFixture.chart().toString().replace("kingscore-elo-legacy-v1", "kingscore-elo-rules-v2")
+        invalid { SummaryJson.chart(v2.replace("kingscore-elo-rules-v2", "unknown")) }
+        invalid { SummaryJson.chart(v2.replace("\"publishedRevision\":\"7\"", "\"publishedRevision\":\"6\"")) }
+    }
     private fun invalid(action: () -> Unit) {
         try { action(); fail("Expected invalid response") } catch (failure: DataFailure) { assertEquals(DataProblem.INVALID_RESPONSE,failure.problem) }
     }

@@ -1,0 +1,174 @@
+{
+  "status": "PASS",
+  "versionName": "0.6.1",
+  "versionCode": 19,
+  "passed": 25,
+  "failed": 0,
+  "skipped": 0,
+  "scope": "All six affected/access UI classes, including four new draw/cooperative cases",
+  "completeApplicationSuiteRepeated": false,
+  "baselineFullSuite": "private-060-ui-validation.json",
+  "log": ".work/elo-v2-native-final.log",
+  "logSha256": "a5a02500bd7b07689d141ddf53a00f505c334ed2297761bf067ce66cd62066d8",
+  "cases": [
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "totalTieKeepsEveryPositionAndDrawLabelReachableAtFontTwo",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "cooperativeGroupWinStaysAVictoryEvenWithAStaleIndividualFlag",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "cooperativeLossNeverShowsDrawOrWinnerBadgesFromStaleIndividualFlags",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.EloV2DrawUiTest",
+      "test": "sharedFirstsAreDrawsAcrossHomeHistoryAndDetailAndDisappearWithoutAccess",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.AccessUiTest",
+      "test": "loginExposesOnlyExistingAccountSignIn",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.AccessUiTest",
+      "test": "offlineStateContainsNoAuthenticatedNavigation",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.AccessUiTest",
+      "test": "accountScreenShowsRoleAndLogoutWithoutForbiddenSettings",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "disconnectRemovesDetailAndReconnectionReloadsWithoutCachedRows",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "cooperativeLossUsesStoredTeamResultAndPositions",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "historyOpensDetailAndBackPreservesPages",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "forbiddenOrMissingDetailIsNotPresentedAsEmptyHistory",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.PlaysUiTest",
+      "test": "logoutAndAccountChangeNeverRestorePreviousAccountPages",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "playerShowsIdentityAndPaginatedHistoryWithoutInventingGlobalStatistics",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "historyShowsEveryParticipantAndExactScoresAtLargeFont",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "commentBadgeIsAbsentForUnknownAndZeroAndOpensOnlyComments",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.RemainingScreensUiTest",
+      "test": "statisticsNeverShowsPartialTotalsAndKeepsTheCompletedSnapshotDuringRefresh",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "incompleteOrFailedSummaryNeverInventsZeroTotalsOrHidesRecentPlays",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "redesignedCommentsExposeOnlyOwnActions",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "approvedScreensKeepPublishedValuesAndRemovePrivateContentWhenBlockedOrSignedOut",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.WebStyleUiTest",
+      "test": "twiceSizedTextKeepsAllThreeScreensScrollableAndPreservesExactScore",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "playerExpansionIncludesEveryAverageCoverageAndTheGameEloChart",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "chartUsesTouchAndAccessibleSliderAndExposesWindowBoundaries",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "webSectionsWinRateAndGameCardsReplaceTheOldHomeSummary",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "fontTwoKeepsGameCoverageAndExpansionReachable",
+      "code": 0
+    },
+    {
+      "class": "app.kingscore.android.ui.StatisticsWebUiTest",
+      "test": "missingAndStaleEloDoNotHideTheNumericStatisticsOrInventPoints",
+      "code": 0
+    }
+  ],
+  "screenshots": [
+    {
+      "path": ".work/ui-061-screenshots/detail-draw-font2.png",
+      "sha256": "e36c20754725639165c81d02d4ec794f5a74fa2425d14909da2acf36ab7dc62d",
+      "data": "synthetic fixture"
+    },
+    {
+      "path": ".work/ui-061-screenshots/detail-draw.png",
+      "sha256": "37b10443fd6c3cc2354435af7609083e4ce663987ef3262eac3ac2edbf6b7cef",
+      "data": "synthetic fixture"
+    },
+    {
+      "path": ".work/ui-061-screenshots/history-draw-font2.png",
+      "sha256": "21027bb110101d58926dd5c4745c4290da418b352388863306e736a56de7e1a5",
+      "data": "synthetic fixture"
+    },
+    {
+      "path": ".work/ui-061-screenshots/history-draw.png",
+      "sha256": "d433cfb4a23fde1ae713edf8bfa296fd71f58ee120aa79e4ca97fcb7cc365442",
+      "data": "synthetic fixture"
+    }
+  ],
+  "sourceManifestSha256": "ae85abdbf16bd36b143884a357e2144851cf4216e58721cbe3fd0f183ba61d88",
+  "debugApkSha256": "68823dc5dd565b42f82e9d9a0585cf3caaccd21858b92fdd7e9866db07b2057f",
+  "testApkSha256": "d5028f3c5e81f6a4866a9613dea577bb91d49bcf674de9528f3ab6d1bc30171f",
+  "developmentRun": {
+    "tests": 25,
+    "passed": 23,
+    "failed": 2,
+    "cause": "New tests searched merged history-card descendants; fixed unmerged selectors. Production code unchanged after first JVM/lint pass."
+  },
+  "environment": "Dedicated PC API 35 emulator emulator-5586, 384x832 density160, ART-precompiled. Text2x verified in Compose.",
+  "remoteAccountAuthenticationTested": false,
+  "remoteDatabaseContacted": false
+}

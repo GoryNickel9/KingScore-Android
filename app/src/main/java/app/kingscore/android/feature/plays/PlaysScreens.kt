@@ -213,16 +213,22 @@ internal fun PlayHistoryCard(detail: PlayDetail, onOpen: (UUID) -> Unit,
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 detail.scores.forEach { row ->
-                    val winner = row.score.winner == true
-                    Surface(color = if (winner) MaterialTheme.colorScheme.primary.copy(alpha = 0.14f) else MaterialTheme.colorScheme.surfaceVariant,
+                    val outcome = playerOutcome(detail, row)
+                    val accent = if (outcome == PlayerOutcome.DRAW) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
+                    Surface(color = if (outcome.label != null) accent.copy(alpha = 0.14f) else MaterialTheme.colorScheme.surfaceVariant,
                         shape = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
                         modifier = Modifier.testTag("history-score-${row.score.id}")) {
                         Row(Modifier.padding(horizontal = 9.dp, vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically) {
-                            if (winner) Icon(Icons.Outlined.EmojiEvents, "Vincitore", Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
-                            Text("${playerName(row.player)}: ${row.score.score?.toPlainString()?.replace('.', ',') ?: "punti non registrati"}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (winner) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+                            outcome.label?.let { label ->
+                                Icon(Icons.Outlined.EmojiEvents, if (outcome == PlayerOutcome.DRAW) null else label, Modifier.size(14.dp), tint = accent)
+                            }
+                            Column {
+                                if (outcome == PlayerOutcome.DRAW) Text("Pareggio", color = accent, style = MaterialTheme.typography.bodySmall)
+                                Text("${playerName(row.player)}: ${row.score.score?.toPlainString()?.replace('.', ',') ?: "punti non registrati"}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (outcome.label != null) accent else MaterialTheme.colorScheme.onSurface)
+                            }
                         }
                     }
                 }

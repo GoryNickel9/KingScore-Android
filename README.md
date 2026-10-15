@@ -22,6 +22,7 @@ Il SQL approvato è applicato al progetto ScoreKing verificato. Dati, pubblicazi
 
 | File | Contenuto |
 | --- | --- |
+| [Compatibilità ELO v2](docs/ELO_V2_ANDROID.md) | Letture v1/v2, presentazione dei pareggi e dipendenze backend separate |
 | [ROADMAP.md](ROADMAP.md) | Fasi, stime e stato corrente |
 | [docs/STABILITY.md](docs/STABILITY.md) | Obiettivo stabile, criteri di uscita e lavoro autonomo residuo |
 | [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md) | Attivazione backend e sito del 15 ottobre, verifiche e collaudo finale |

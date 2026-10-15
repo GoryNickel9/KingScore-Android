@@ -49,6 +49,22 @@ internal object EloPublicationFixture {
 
 class EloPublicationJsonTest {
     private val f = EloPublicationFixture
+    @Test fun `rules v2 current and stale publications keep the legacy wire contract`() {
+        val legacy = EloPublicationJson.decode(f.snapshot(2).toString())
+        val v2 = f.snapshot(2).toString().replace("kingscore-elo-legacy-v1", "kingscore-elo-rules-v2")
+        assertEquals(legacy, EloPublicationJson.decode(v2))
+        val stale = f.pending("stale").toString().replace("kingscore-elo-legacy-v1", "kingscore-elo-rules-v2")
+        assertEquals("stale", EloPublicationJson.decode(stale).status)
+        assertNull(EloPublicationJson.decode(stale).result)
+    }
+    @Test fun `rules v2 never disables algorithm or history integrity validation`() {
+        val v2 = f.snapshot().toString().replace("kingscore-elo-legacy-v1", "kingscore-elo-rules-v2")
+        for (body in listOf(v2.replace("kingscore-elo-rules-v2", "kingscore-elo-rules-v3"),
+            v2.replace("\"ratingChange\":1", "\"ratingChange\":2"),
+            v2.replace("\"publishedRevision\":\"9007199254740993\"", "\"publishedRevision\":\"7\""))) {
+            assertThrows(Exception::class.java) { EloPublicationJson.decode(body) }
+        }
+    }
     @Test fun `complete global publication keeps exact bigint identity and all 1200 plays`() {
         val snapshot = EloPublicationJson.decode(f.snapshot(1200).toString())
         assertEquals("9007199254740993", snapshot.sourceRevision)

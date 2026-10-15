@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1 — compatibilità ELO v2 in collaudo
+
+- Classifiche e grafici leggono `kingscore-elo-rules-v2`, mantenendo v1 come compatibilità di lettura. Le versioni sconosciute e gli storici incoerenti restano rifiutati.
+- Primo posto condiviso indicato come «Pareggio» nello storico, nel dettaglio e nel riepilogo Home. Le vittorie cooperative restano vittorie; l'esito esplicito della squadra prevale sui flag individuali.
+- Login e blocco senza Internet invariati. Nessuna formula ELO nel client, modifica backend o deploy web. Le dipendenze dei win rate e dei salvataggi atomici sono descritte in [ELO_V2_ANDROID.md](docs/ELO_V2_ANDROID.md).
+
 ## 0.6.0 — 15 ottobre 2026
 
 - SQL approvato e applicato a ScoreKing: cinque RPC autenticate per riepilogo Home, panoramica Statistiche, dettaglio gioco e finestre dei grafici ELO. Dati, revisione/pubblicazione ELO, policy, grant e funzioni precedenti invariati; nessuna modifica Vercel o web.

@@ -107,7 +107,7 @@ internal object SummaryJson {
         require(plays.zipWithNext().all { (a,b) -> a.ordinal + 1 == b.ordinal && a.date <= b.date })
         val publication = value.optionalUuid("publicationId"); val total = value.count("totalPlays")
         if (status == "current") {
-            require(value.text("algorithm") == "kingscore-elo-legacy-v1")
+            require(value.text("algorithm") in supportedEloAlgorithms)
             require(publication != null && value.optional("publishedRevision") == version(value) && plays.size.toLong() <= total)
             require(plays.lastOrNull()?.ordinal?.let { it <= total } != false)
             if (plays.firstOrNull()?.ordinal == 1L) require(initial.isEmpty())

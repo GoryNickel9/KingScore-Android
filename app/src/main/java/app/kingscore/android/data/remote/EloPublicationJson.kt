@@ -4,6 +4,8 @@ import java.time.LocalDate
 import java.util.UUID
 import kotlinx.serialization.json.*
 
+internal val supportedEloAlgorithms = setOf("kingscore-elo-legacy-v1", "kingscore-elo-rules-v2")
+
 internal data class EloPublishedState(val playerId: UUID, val name: String?, val rating: Int,
     val games: Int, val wins: Int, val losses: Int, val draws: Int, val date: LocalDate)
 internal data class EloPublishedPoint(val gameId: UUID?, val playId: UUID, val playerId: UUID,
@@ -16,7 +18,6 @@ internal data class EloPublication(val status: String, val sourceRevision: Strin
 
 /** Validates a complete global generation; it never computes ratings or combines publications. */
 internal object EloPublicationJson {
-    private const val ALGORITHM = "kingscore-elo-legacy-v1"
     private val uuidPattern = Regex("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
     fun decode(body: String): EloPublication {
         val root = exact(Json.parseToJsonElement(body), "scopeId", "algorithm", "status", "sourceRevision",
@@ -28,7 +29,7 @@ internal object EloPublicationJson {
             require(listOf("algorithm", "publishedRevision", "publicationId", "result").all { root.getValue(it) == JsonNull })
             return EloPublication(status, source, null, null, null)
         }
-        require(text(root.getValue("algorithm")) == ALGORITHM)
+        require(text(root.getValue("algorithm")) in supportedEloAlgorithms)
         val published = revision(root.getValue("publishedRevision"))
         val id = uuid(root.getValue("publicationId"))
         return when (status) {

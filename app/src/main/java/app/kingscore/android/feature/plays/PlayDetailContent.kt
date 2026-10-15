@@ -105,7 +105,7 @@ internal fun PlayDetailContent(state: DetailState, accountId: UUID, onRefresh: (
                             }
                             detail.scores.sortedWith(compareBy<ScoreWithPlayer> { it.score.position ?: Int.MAX_VALUE }
                                 .thenBy { playerName(it.player) }.thenBy { it.score.id.toString() }).forEach { row ->
-                                DetailScore(row, accountId, onOpenPlayer)
+                                DetailScore(detail, row, accountId, onOpenPlayer)
                             }
                         }
                     } }
@@ -175,15 +175,17 @@ private fun PlayMetadata(detail: PlayDetail) {
 }
 
 @Composable
-private fun DetailScore(row: ScoreWithPlayer, accountId: UUID, onOpenPlayer: ((UUID) -> Unit)?) {
-    val winner = row.score.winner == true
+private fun DetailScore(detail: PlayDetail, row: ScoreWithPlayer, accountId: UUID, onOpenPlayer: ((UUID) -> Unit)?) {
+    val outcome = playerOutcome(detail, row)
+    val highlighted = outcome.label != null
+    val accent = if (outcome == PlayerOutcome.DRAW) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
     val points = row.score.score?.toPlainString()?.replace('.', ',')
     val expanded = LocalDensity.current.fontScale > 1.3f || (points?.length ?: 0) > 8
-    Column(Modifier.fillMaxWidth().background(if (winner) MaterialTheme.colorScheme.primary.copy(alpha = 0.09f)
+    Column(Modifier.fillMaxWidth().background(if (highlighted) accent.copy(alpha = 0.09f)
         else androidx.compose.ui.graphics.Color.Transparent).padding(vertical = 4.dp, horizontal = 6.dp)
         .testTag("score-${row.score.id}"), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Box(Modifier.size(if (LocalDensity.current.fontScale > 1.3f) 40.dp else 26.dp).background(if (winner) MaterialTheme.colorScheme.tertiary.copy(alpha = 0.25f)
+            Box(Modifier.size(if (LocalDensity.current.fontScale > 1.3f) 40.dp else 26.dp).background(if (highlighted) accent.copy(alpha = 0.25f)
                 else MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                 .semantics { contentDescription = "Posizione: ${row.score.position ?: "—"}" }, contentAlignment = Alignment.Center) {
                 Text(row.score.position?.toString() ?: "—", style = MaterialTheme.typography.labelMedium)
@@ -196,9 +198,11 @@ private fun DetailScore(row: ScoreWithPlayer, accountId: UUID, onOpenPlayer: ((U
                     }) { Text(playerName(row.player), color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium) }
                 else Text(playerName(row.player), style = MaterialTheme.typography.bodyMedium)
                 if (row.player?.account_user_id == accountId) WebBadge("Sei tu")
-                if (winner) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Icon(Icons.Outlined.EmojiEvents, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
-                    Text("Vincitore", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodySmall)
+                outcome.label?.let { label ->
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Icon(Icons.Outlined.EmojiEvents, null, Modifier.size(14.dp), tint = accent)
+                        Text(label, color = accent, style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             }
             if (!expanded) ScoreValue(points)

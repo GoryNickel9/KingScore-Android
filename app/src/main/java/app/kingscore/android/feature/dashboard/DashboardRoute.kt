@@ -62,7 +62,7 @@ fun DashboardRoute(account: Account, repository: PlaysRepository, onAccessFailur
                 when {
                     summary.loading && summary.snapshot == null -> item { KingScorePanel {
                         LinearProgressIndicator(Modifier.fillMaxWidth())
-                        Text("Lettura riepilogo: ${summary.processed} partite…", style = MaterialTheme.typography.bodySmall)
+                        Text("Caricamento riepilogo…", style = MaterialTheme.typography.bodySmall)
                     } }
                     summary.problem != null -> item { KingScorePanel {
                         Text("Il riepilogo non è disponibile. Le ultime partite restano consultabili.", style = MaterialTheme.typography.bodyMedium)

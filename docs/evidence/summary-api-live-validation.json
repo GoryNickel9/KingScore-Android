@@ -59,6 +59,15 @@
   "capturedAt": "2026-10-15",
   "authenticatedRoleReadOnlySmoke": true,
   "goTrueLoginTested": false,
+  "androidDecoder": {
+    "status": "PASS",
+    "actualSupabaseResponse": true,
+    "homePlays": 483,
+    "overviewGames": 17,
+    "detailPlayers": 4,
+    "chartPlays": 100,
+    "remoteWrites": false
+  },
   "anonymousHttp": {
     "status": "PASS",
     "rows": [

@@ -4,7 +4,7 @@ Avviare un'app Android nativa in Kotlin e Jetpack Compose, mantenendo Supabase e
 
 Piano iniziale: 13 ottobre 2026. Stato aggiornato: 15 ottobre 2026. Scelta nativa confermata dall'utente. Questa roadmap riguarda KingScore, l'app per giochi da tavolo.
 
-Attività successiva alla 0.5.2: [API di riepilogo e Statistiche](docs/proposals/SUMMARY_API_V1.md), candidata SQL da provare solo sul PC e mostrare prima dell'applicazione a Supabase. La parità funzionale di Statistiche con il web resta da implementare nell'APK; il riepilogo attuale non include ancora tutte le sezioni web. In questa attività non sono autorizzate modifiche cloud.
+Attività successiva alla 0.5.2: [API di riepilogo e Statistiche](docs/SUMMARY_STATISTICS.md). Il SQL approvato è applicato a ScoreKing dopo preflight, confronto dello stato precedente e letture con ruolo authenticated. Home usa il riepilogo RPC; Statistiche implementa le sezioni web con dettagli e grafici paginati. La 0.6.0/code 18 è in collaudo per la consegna firmata. Nessuna modifica al codice web o Vercel.
 
 La prima stabile privata 0.5.0/code 15 ha l'editor admin abilitato. Backend e sito sono stati attivati il 15 ottobre su autorizzazione dell'utente; le preparazioni annullate delle fasi 4.1 e 4.2 restano storiche. Build firmata, aggiornamento RC4/code 12 → 15 e percorso UI completo con MainActivity e account reali sono verificati su emulatore API 35. I dati temporanei sono rimossi e il risultato ELO originale è verificato dopo cleanup. La CI della fonte dell'APK è passata; anche le pubblicazioni temporanee sono state rimosse. Report di consegna: [docs/STABILITY.md](docs/STABILITY.md) e [docs/LIVE_ROLLOUT.md](docs/LIVE_ROLLOUT.md).
 

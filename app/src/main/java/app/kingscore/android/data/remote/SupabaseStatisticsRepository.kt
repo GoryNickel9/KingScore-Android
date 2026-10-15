@@ -18,6 +18,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
+/** Reference scan for parity tests; production uses SupabaseSummaryRepository without a scan fallback. */
 class SupabaseStatisticsRepository(
     private val reader: AuthenticatedReader,
     private val accountId: UUID,

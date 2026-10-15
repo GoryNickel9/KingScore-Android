@@ -13,7 +13,8 @@ import app.kingscore.android.data.repository.AccountCommentOutcomes
 import app.kingscore.android.data.local.EncryptedCommentOutcomeStore
 import app.kingscore.android.data.remote.SupabasePublishedRatingsRepository
 import app.kingscore.android.data.remote.SupabaseEloPublication
-import app.kingscore.android.data.remote.SupabaseStatisticsRepository
+import app.kingscore.android.data.remote.SupabaseSummaryRepository
+import app.kingscore.android.data.remote.SupabaseSummaryRpc
 import app.kingscore.android.data.remote.SupabaseCommentWrites
 import java.util.UUID
 import io.github.jan.supabase.createSupabaseClient
@@ -55,7 +56,8 @@ class KingScoreApplication : Application() {
         SupabaseCommentWrites(checkNotNull(auth), network, accountId, outcomes = commentOutcomes.forAccount(accountId)))
     fun ratings(accountId: UUID): RatingsRepository = SupabasePublishedRatingsRepository(SupabaseReader(checkNotNull(auth), network),
         accountId, SupabaseEloPublication(checkNotNull(auth), network))
-    fun statistics(accountId: UUID): StatisticsRepository = SupabaseStatisticsRepository(SupabaseReader(checkNotNull(auth), network), accountId, plays(accountId))
+    fun statistics(accountId: UUID): StatisticsRepository = SupabaseSummaryRepository(
+        SupabaseSummaryRpc(checkNotNull(auth), network, accountId), SupabaseReader(checkNotNull(auth), network), accountId)
     fun images(accountId: UUID, onAccessFailure: (AuthProblem) -> Unit) = AccountImages(this, BuildConfig.SUPABASE_URL,
         network, verifyAccount = {
             if (!network.connected.value) throw AuthFailure(AuthProblem.NETWORK_UNAVAILABLE)

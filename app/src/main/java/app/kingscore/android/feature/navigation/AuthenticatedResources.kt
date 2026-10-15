@@ -17,16 +17,23 @@ class AuthenticatedResources : ViewModel() {
         internal val isAdmin: Boolean, internal val editorAvailable: Boolean) : ViewModelStoreOwner {
         override val viewModelStore = ViewModelStore()
         private var closed = false
+        private var serverRevision: String? = null
         private val revision = MutableStateFlow(0)
         val playDataRevision: StateFlow<Int> = revision
         private val commentRevision = MutableStateFlow(0)
         val commentDataRevision: StateFlow<Int> = commentRevision
         fun commentsSaved() { if (!closed) commentRevision.value++ }
         fun playSaved() { if (!closed) { ratings?.invalidate(); revision.value++ } }
+        fun observeServerRevision(value: String) {
+            if (closed) return
+            val previous = serverRevision
+            serverRevision = value
+            if (previous != null && previous != value) playSaved()
+        }
         internal fun close() {
             if (closed) return
             closed = true
-            viewModelStore.clear(); plays?.commentWrites?.close(); ratings?.close()
+            viewModelStore.clear(); plays?.commentWrites?.close(); ratings?.close(); (statistics as? AutoCloseable)?.close()
         }
     }
     private var current: Session? = null

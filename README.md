@@ -32,7 +32,8 @@ La precedente 0.5.0, versionCode 15, supera build firmata, aggiornamento dalla R
 | [docs/PRIVATE_RELEASE.md](docs/PRIVATE_RELEASE.md) | Firma privata, chiave locale, checksum, installazione e aggiornamento |
 | [docs/ACTIVITY_LIFECYCLE.md](docs/ACTIVITY_LIFECYCLE.md) | Rotazione, ricreazione e pulizia della sessione |
 | [CHANGELOG.md](CHANGELOG.md) | Modifiche e cronologia dei rilasci |
-| [API riepilogo — candidata locale](docs/proposals/SUMMARY_API_V1.md) | SQL completo, permessi, contratti per Statistiche e collaudo PC; non applicata al cloud |
+| [API riepilogo](docs/proposals/SUMMARY_API_V1.md) | SQL completo, permessi, contratti per Statistiche e collaudi locale/ScoreKing |
+| [Riepilogo e Statistiche 0.6.0](docs/SUMMARY_STATISTICS.md) | API applicate a ScoreKing, integrazione Android e comportamento dei grafici; APK in collaudo |
 | [docs/SUPABASE_AUDIT.md](docs/SUPABASE_AUDIT.md) | Schema reale, RLS e limiti delle verifiche |
 | [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | API esistenti, DTO e RPC proposte |
 | [docs/PLAY_SAVE_CONTRACT.md](docs/PLAY_SAVE_CONTRACT.md) | Contratti V1 e prove locali dei salvataggi |

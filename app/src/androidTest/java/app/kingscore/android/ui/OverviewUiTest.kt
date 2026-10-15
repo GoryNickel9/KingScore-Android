@@ -32,7 +32,7 @@ class OverviewUiTest {
         compose.onNodeWithTag("recent-${play.play.id}").assertTextContains("Azul")
         capture("phase3-dashboard")
         compose.onNodeWithText("Statistiche").performClick()
-        compose.onNodeWithText("1051").assertIsDisplayed()
+        compose.onNodeWithText("100%").assertIsDisplayed()
         compose.onNodeWithTag("statistics-content").performScrollToNode(hasText("Durata disponibile per 2 di 1051 partite"))
         compose.onNodeWithText("Durata disponibile per 2 di 1051 partite").assertIsDisplayed()
         capture("phase3-statistics")
@@ -95,6 +95,12 @@ class OverviewUiTest {
         val statistics = object : StatisticsRepository {
             override suspend fun load(onProgress: (Int) -> Unit) = StatisticsSnapshot(1051, 1, 1, 2, 60, 2,
                 listOf(GameStatistic(game.id, game.name, 1051)), if (unlinked) null else player, 1, 1)
+            override suspend fun overview(revision: String?, cursor: String?) = StatisticsOverview("1", !unlinked,
+                if (unlinked) emptyList() else listOf(WinRateStatistic(game.id, game.name, 1, 1, 100)),
+                listOf(GameStatistics(game.id,game.name,null,1051,2102,java.math.BigDecimal.ZERO,0,null,
+                    java.math.BigDecimal(60),2,java.math.BigDecimal(30),0)),1,null)
+            override suspend fun eloChart(gameId: UUID?, publication: UUID?, cursor: String?, players: Set<UUID>?) =
+                StatisticsChart("1",null,gameId,"missing",emptyList(),emptyMap(),emptyList(),0,null)
         }
         val plays = object : PlaysRepository {
             override suspend fun player(id: UUID) = player

@@ -80,7 +80,7 @@ class WebStyleUiTest {
         }
         showApp(statistics = statistics)
         compose.onNodeWithTag("dashboard-total").assertDoesNotExist()
-        compose.onNodeWithText("Lettura riepilogo: 50 partite…").assertExists()
+        compose.onNodeWithText("Caricamento riepilogo…").assertExists()
         pending.completeExceptionally(DataFailure(DataProblem.INVALID_RESPONSE))
         compose.onNodeWithTag("dashboard-content").performScrollToNode(hasText("Riprova riepilogo"))
         compose.onNodeWithTag("dashboard-total").assertDoesNotExist()

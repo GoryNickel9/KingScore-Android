@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { createHash } from 'node:crypto';
 
 const readJson = async p => JSON.parse(await readFile(new URL(p, import.meta.url), 'utf8'));
 const { audit } = await readJson('../docs/evidence/supabase-audit.json');
@@ -10,6 +11,31 @@ const probes = await readJson('../docs/evidence/permission-probes.json');
 const http = await readJson('../docs/evidence/http-probes.json');
 const comparison = await readJson('../docs/evidence/schema-comparison.json');
 const column = (table, name) => audit.columns.find(c => c.table_name === table && c.column_name === name);
+
+test('summary rollout matches approved SQL and preserves data, ELO and authenticated-only access', async () => {
+  const live = await readJson('../docs/evidence/summary-api-live-validation.json');
+  const sql = await readFile(new URL('../local-tests/summary-api/01-install.sql', import.meta.url));
+  assert.equal(createHash('sha256').update(sql).digest('hex'), live.appliedSqlSha256);
+  assert.equal(live.status, 'PASS');
+  assert.equal(live.projectRef, 'rixivmeipbizoxyvrvaf');
+  for (const key of ['sourceUnchanged', 'policiesAndGrantsUnchanged', 'existingRpcUnchanged', 'eloPublicationUnchanged']) {
+    assert.equal(live[key], true, key);
+  }
+  assert.equal(live.sourceDataMutated, false);
+  assert.equal(live.vercelChanged, false);
+  assert.equal(live.newRpcAcl.length, 5);
+  for (const rpc of live.newRpcAcl) {
+    assert.equal(rpc.authenticated, true);
+    assert.equal(rpc.anon, false);
+    assert.equal(rpc.service, false);
+    assert.equal(rpc.stable, true);
+    assert.equal(rpc.definer, rpc.name === 'get_app_data_version_v1');
+    assert.ok(live.anonymousHttp.rows.some(row => row.name === rpc.name && row.status === 401));
+  }
+  assert.equal(live.androidDecoder.status, 'PASS');
+  assert.equal(live.androidDecoder.actualSupabaseResponse, true);
+  assert.equal(live.androidDecoder.remoteWrites, false);
+});
 
 test('the HTTP test exception is restricted to debug loopback and absent from release sources', async () => {
   const main = await readFile(new URL('../app/src/main/AndroidManifest.xml', import.meta.url), 'utf8');

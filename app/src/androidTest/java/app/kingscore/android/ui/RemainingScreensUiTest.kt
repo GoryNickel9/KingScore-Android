@@ -22,7 +22,7 @@ import app.kingscore.android.feature.plays.HistoryScreen
 import app.kingscore.android.feature.plays.HistoryState
 import app.kingscore.android.feature.plays.PlayHistoryCard
 import app.kingscore.android.feature.stats.StatisticsScreen
-import app.kingscore.android.feature.stats.StatisticsState
+import app.kingscore.android.feature.stats.StatisticsDetailsState
 import java.io.File
 import java.math.BigDecimal
 import java.time.Instant
@@ -73,18 +73,19 @@ class RemainingScreensUiTest {
     }
 
     @Test fun statisticsNeverShowsPartialTotalsAndKeepsTheCompletedSnapshotDuringRefresh() {
-        val state = mutableStateOf(StatisticsState(processed = 50))
+        val state = mutableStateOf(StatisticsDetailsState())
         compose.setContent { TestSurface { StatisticsScreen(state.value, {}) } }
-        compose.onNodeWithText("Lettura archivio: 50 partite…").assertIsDisplayed()
+        compose.onNodeWithText("Caricamento statistiche…").assertIsDisplayed()
         compose.onNodeWithText("0 partite").assertDoesNotExist()
-        compose.runOnIdle { state.value = StatisticsState(snapshot, loading = false) }
-        compose.onNodeWithText("483").assertIsDisplayed()
+        val overview = StatisticsOverview("1",true,listOf(WinRateStatistic(game.id,game.name,4,2,50)),
+            listOf(GameStatistics(game.id,game.name,null,483,966,BigDecimal(100),2,BigDecimal(50),BigDecimal(60),2,BigDecimal(30),0)),1,null)
+        compose.runOnIdle { state.value = StatisticsDetailsState(overview, loading = false) }
+        compose.onNodeWithText("50%").assertIsDisplayed()
         capture("statistics")
-        compose.runOnIdle { state.value = StatisticsState(snapshot, loading = true) }
-        compose.onNodeWithText("483").assertIsDisplayed()
+        compose.runOnIdle { state.value = StatisticsDetailsState(overview, loading = true) }
+        compose.onNodeWithText("50%").assertIsDisplayed()
         compose.onNodeWithTag("statistics-content").performScrollToNode(hasText("Durata disponibile per 2 di 483 partite"))
         compose.onNodeWithText("Durata disponibile per 2 di 483 partite").assertIsDisplayed()
-        compose.onNodeWithText("Le durate mancanti sono escluse dalla media.").assertIsDisplayed()
         compose.onNodeWithText("Aggiorna statistiche").assertDoesNotExist()
     }
 

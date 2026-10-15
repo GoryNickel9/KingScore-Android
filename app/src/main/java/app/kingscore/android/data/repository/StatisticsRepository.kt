@@ -26,9 +26,18 @@ data class StatisticsSnapshot(
     val personalPlays: Int,
     val personalWins: Int,
     val months: List<MonthStatistic> = emptyList(),
+    val sourceRevision: String? = null,
 )
 
 interface StatisticsRepository {
+    val dataRevision: kotlinx.coroutines.flow.StateFlow<String?>? get() = null
     /** Reports processed unique plays, never an incomplete StatisticsSnapshot. */
     suspend fun load(onProgress: (Int) -> Unit): StatisticsSnapshot
+    suspend fun overview(revision: String? = null, cursor: String? = null): StatisticsOverview =
+        throw DataFailure(DataProblem.INVALID_RESPONSE)
+    suspend fun gameStatistics(id: UUID, revision: String, cursor: String? = null): GameStatisticsPage =
+        throw DataFailure(DataProblem.INVALID_RESPONSE)
+    suspend fun eloChart(gameId: UUID? = null, publication: UUID? = null, cursor: String? = null,
+        players: Set<UUID>? = null): StatisticsChart = throw DataFailure(DataProblem.INVALID_RESPONSE)
+    suspend fun chartPlayers(): List<ChartPlayer> = emptyList()
 }

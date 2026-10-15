@@ -13,6 +13,7 @@ import kingscore.contracts.v1.GameRow
 import kingscore.contracts.v1.PlayDetail
 import kingscore.contracts.v1.PlayerRow
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -20,15 +21,27 @@ import org.junit.Test
 class SessionSummaryUiTest {
     @get:Rule val compose = createComposeRule()
 
-    @Test fun homeAndStatisticsSharePendingAndCompleteSummaryAndExplicitRefreshUpdatesBoth() {
+    @Test fun homeAndStatisticsLoadIndependentlyAndShareServerRevisionInvalidation() {
         val calls = AtomicInteger()
+        val overviewCalls = AtomicInteger()
+        val revisionState = MutableStateFlow<String?>(null)
+        var serverRevision = "7"
         val initial = CompletableDeferred<StatisticsSnapshot>()
         val statistics = object : StatisticsRepository {
+            override val dataRevision = revisionState
             override suspend fun load(onProgress: (Int) -> Unit): StatisticsSnapshot {
                 val call = calls.incrementAndGet()
                 onProgress(50)
-                return if (call == 1) initial.await() else snapshot(1052)
+                val result = if (call == 1) initial.await() else snapshot(1052)
+                revisionState.value = result.sourceRevision
+                return result
             }
+            override suspend fun overview(revision: String?, cursor: String?): StatisticsOverview {
+                overviewCalls.incrementAndGet(); revisionState.value = serverRevision
+                return StatisticsOverview(serverRevision,false,emptyList(),emptyList(),0,null)
+            }
+            override suspend fun eloChart(gameId: UUID?, publication: UUID?, cursor: String?, players: Set<UUID>?) =
+                StatisticsChart(serverRevision,null,gameId,"missing",emptyList(),emptyMap(),emptyList(),0,null)
         }
         val account = Account(UUID(0, 1), "Marta", "test@example.com", false)
         val access = mutableStateOf<AccessState>(AccessState.Connected(account))
@@ -48,6 +61,7 @@ class SessionSummaryUiTest {
 
         compose.onNodeWithText("Statistiche", useUnmergedTree = true).performClick()
         compose.onNodeWithTag("statistics-content").assertExists()
+        compose.onNodeWithTag("statistics-win-rates").assertExists()
         compose.runOnIdle { assertEquals(1, calls.get()) }
         compose.onNodeWithText("Home", useUnmergedTree = true).performClick()
         compose.runOnIdle { assertEquals(1, calls.get()); initial.complete(snapshot(1051)) }
@@ -55,14 +69,14 @@ class SessionSummaryUiTest {
             .assert(hasAnyDescendant(hasText("1051")))
 
         compose.onNodeWithText("Statistiche", useUnmergedTree = true).performClick()
-        compose.onNodeWithText("1051").assertIsDisplayed()
-        compose.runOnIdle { assertEquals(1, calls.get()) }
+        compose.onNodeWithTag("statistics-win-rates").assertExists()
+        compose.runOnIdle { assertEquals(1, calls.get()); assertEquals(1, overviewCalls.get()); serverRevision = "8" }
         compose.onNodeWithText("Aggiorna statistiche").assertDoesNotExist()
         val action = compose.onNodeWithTag("pull-refresh").fetchSemanticsNode().config[SemanticsActions.CustomActions]
             .single { it.label == "Aggiorna" }
         compose.runOnIdle { assertTrue(action.action()) }
-        compose.onNodeWithText("1052").assertIsDisplayed()
-        compose.runOnIdle { assertEquals(2, calls.get()) }
+        compose.onNodeWithTag("statistics-win-rates").assertExists()
+        compose.runOnIdle { assertTrue(overviewCalls.get() >= 2); assertEquals(1, calls.get()) }
         compose.onNodeWithText("Home", useUnmergedTree = true).performClick()
         compose.onNodeWithTag("dashboard-total", useUnmergedTree = true)
             .assert(hasAnyDescendant(hasText("1052")))
@@ -71,5 +85,6 @@ class SessionSummaryUiTest {
         compose.runOnIdle { assertEquals(2, calls.get()) }
     }
 
-    private fun snapshot(total: Int) = StatisticsSnapshot(total, 1, 0, 0, 0, 0, emptyList(), null, 0, 0)
+    private fun snapshot(total: Int) = StatisticsSnapshot(total, 1, 0, 0, 0, 0, emptyList(), null, 0, 0,
+        sourceRevision = if (total == 1051) "7" else "8")
 }

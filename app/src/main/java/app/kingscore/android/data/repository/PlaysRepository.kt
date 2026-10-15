@@ -26,7 +26,7 @@ data class HistoryFilters(
     val active: Boolean get() = query.isNotBlank() || source != null || gameId != null || playerId != null || from != null || to != null
 }
 data class HistoryOptions(val games: List<GameRow> = emptyList(), val players: List<PlayerRow> = emptyList())
-enum class DataProblem { FORBIDDEN, INVALID_RESPONSE, PUBLICATION_STALE, PUBLICATION_MISSING }
+enum class DataProblem { FORBIDDEN, INVALID_RESPONSE, PUBLICATION_STALE, PUBLICATION_MISSING, REVISION_CHANGED, SELECTION_REQUIRED }
 class DataFailure(val problem: DataProblem) : Exception(problem.name)
 
 interface PlaysRepository {

@@ -1,12 +1,13 @@
 # Changelog
 
-## In preparazione — API riepilogo e Statistiche
+## 0.6.0 — integrazione in collaudo
 
-- Candidata SQL locale con cinque RPC autenticate per riepilogo Home, panoramica Statistiche, dettaglio gioco e finestre dei grafici ELO. Riusa la revisione dati e la pubblicazione esistenti, senza nuovi writer, tabelle o ricalcoli ELO.
+- SQL approvato e applicato a ScoreKing: cinque RPC autenticate per riepilogo Home, panoramica Statistiche, dettaglio gioco e finestre dei grafici ELO. Dati, revisione/pubblicazione ELO, policy, grant e funzioni precedenti invariati; nessuna modifica Vercel o web.
 - Win rate sulle partite del proprio giocatore; medie senza valori mancanti, con campioni disponibili. Cursori legati ad account e revisione, calcoli NUMERIC esatti e controlli RLS.
-- SQL di installazione e rollback, runner PostgreSQL/PostgREST sul PC e benchmark su 1.000, 10.000 e 100.000 partite. Nessuna applicazione cloud o nuova versione APK in questa attività.
+- Home con una RPC al posto della scansione completa; Statistiche con win rate, grafici ELO per finestre di 100 partite e schede gioco espandibili. Numeri, giocatori e grafici si caricano indipendentemente. Cache invalidata quando viene osservata una nuova revisione, anche attraverso ricreazione Activity.
+- Grafici consultabili con tocco, slider accessibile e legenda. Testo 2× con metriche e comandi su più righe; colori del giocatore adattati quando manca contrasto sul fondo. Login, blocco senza Internet e funzioni escluse restano invariati.
 
-La pagina Statistiche della 0.5.2 conserva il riepilogo derivato dalla Home: l'allineamento di stile non copre ancora i grafici ELO e le schede statistiche del web. Il [nuovo contratto](docs/proposals/SUMMARY_API_V1.md) e il [confronto delle schermate](docs/proposals/STATISTICS_WEB_PARITY.md) preparano quell'integrazione.
+La pagina Statistiche della 0.5.2 conservava il riepilogo derivato dalla Home: il precedente allineamento di stile non copriva i grafici ELO e le schede statistiche del web. [Implementazione e limiti](docs/SUMMARY_STATISTICS.md), [contratto](docs/proposals/SUMMARY_API_V1.md) e [confronto delle schermate](docs/proposals/STATISTICS_WEB_PARITY.md).
 
 ## 0.5.2 — 15 ottobre 2026
 

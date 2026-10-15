@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.key
@@ -71,6 +72,7 @@ import app.kingscore.android.core.network.NetworkMonitor
 import app.kingscore.android.data.repository.PlayWrites
 import app.kingscore.android.feature.playeditor.PlayEditorRoute
 import app.kingscore.android.feature.playeditor.PlayEditorViewModel
+import kotlinx.coroutines.flow.filterNotNull
 
 private data class Destination(val route: String, val label: String, val icon: ImageVector)
 private val destinations = listOf(
@@ -101,6 +103,11 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
     val repository = resources.plays
     val statistics = resources.statistics
     val ratings = resources.ratings
+    LaunchedEffect(resources) {
+        statistics?.dataRevision?.filterNotNull()?.collect { sourceRevision ->
+            resources.observeServerRevision(sourceRevision)
+        }
+    }
     val sharedStatistics: StatisticsViewModel? = statistics?.let {
         viewModel(viewModelStoreOwner = resources, key = "session-statistics",
             factory = modelFactory { StatisticsViewModel(it, onAccessFailure) })
@@ -149,7 +156,7 @@ fun AuthenticatedNavigation(account: Account, onSignOut: () -> Unit,
                                 onRatings = { navigation.navigate("elo") }, statisticsRepository = statistics, sharedModel = sharedStatistics,
                                 onProfile = { navigation.navigate("account") { launchSingleTop = true } })
                         } else if (destination.route == "stats" && statistics != null) {
-                            StatisticsRoute(statistics, onAccessFailure, sharedModel = sharedStatistics)
+                            StatisticsRoute(statistics, onAccessFailure)
                         } else if (destination.route == "elo" && ratings != null) {
                             RatingsRoute(account, ratings, onAccessFailure,
                                 onProfile = { navigation.navigate("account") { launchSingleTop = true } })

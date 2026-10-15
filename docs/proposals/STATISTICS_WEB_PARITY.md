@@ -1,6 +1,6 @@
 # Statistiche Android: allineamento alla web app
 
-Obiettivo confermato: la pagina deve essere il più possibile simile al web, nei contenuti e nell'ordine, oltre che nello stile. Stato di questo documento: proposta; nessuna modifica UI applicata in questa attività.
+Obiettivo confermato: la pagina deve essere il più possibile simile al web, nei contenuti e nell'ordine, oltre che nello stile. Questa proposta è implementata nella 0.6.0; integrazione, interazioni e limiti sono descritti in [SUMMARY_STATISTICS.md](../SUMMARY_STATISTICS.md). Le sezioni seguenti conservano il confronto con la precedente 0.5.2.
 
 ## Perché la 0.5.2 appare diversa
 
